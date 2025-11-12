@@ -20,19 +20,21 @@ global {
         }
         
         // Create food stores at fixed locations on the left side
+        list<point> food_locations <- [{20, 30}, {20, 70}];
         create Store number: nb_food_stores {
             store_type <- "FOOD";
             color <- #orange;
-            // Fixed locations on the left side, evenly distributed
-            location <- {20, 20 + (index * (60 / max(1, nb_food_stores - 1)))};
+            // Fixed locations on the left side
+            location <- food_locations[index];
         }
         
         // Create water stores at fixed locations on the right side
+        list<point> water_locations <- [{80, 30}, {80, 70}];
         create Store number: nb_water_stores {
             store_type <- "WATER";
             color <- #blue;
-            // Fixed locations on the right side, evenly distributed
-            location <- {80, 20 + (index * (60 / max(1, nb_water_stores - 1)))};
+            // Fixed locations on the right side
+            location <- water_locations[index];
         }
         
         // Create guests
