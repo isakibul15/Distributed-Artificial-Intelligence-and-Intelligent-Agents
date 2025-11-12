@@ -1,134 +1,198 @@
 /**
-* Name: FestivalSimulation
-* Based on the internal skeleton template. 
-* Author: md.sakibulislam
-* Tags: 
+* Name: Festival Simulation
+* Author: Based on Assignment 1 Requirements
+* Description: A festival simulation where guests get hungry/thirsty and visit stores
 */
 
-model festival_simulation
+model FestivalSimulation
 
-/********** WORLD **********/
 global {
-	int world_w <- 100;
-	int world_h <- 100;
-
-	init {
-		create store number: 2 with: [serves_food:: true,  serves_water:: false];
-		create store number: 2 with: [serves_food:: false, serves_water:: true];
-		create information_center number: 1;
-		create guest number: 10;
-	}
+    int nb_guests <- 15;
+    int nb_food_stores <- 2;
+    int nb_water_stores <- 2;
+    
+    geometry shape <- square(100);
+    
+    init {
+        // Create the information center at the center of the world
+        create InformationCenter number: 1 {
+            location <- {50, 50};
+        }
+        
+        // Create food stores
+        create Store number: nb_food_stores {
+            store_type <- "FOOD";
+            color <- #orange;
+            location <- {rnd(100), rnd(100)};
+        }
+        
+        // Create water stores
+        create Store number: nb_water_stores {
+            store_type <- "WATER";
+            color <- #blue;
+            location <- {rnd(100), rnd(100)};
+        }
+        
+        // Create guests
+        create Guest number: nb_guests {
+            location <- {rnd(100), rnd(100)};
+        }
+    }
 }
 
-/********** AGENTS **********/
-species store {
-	bool serves_food  <- false;
-	bool serves_water <- false;
-	aspect default { draw circle(2) color: rgb("green"); }
+species InformationCenter {
+    rgb color <- #red;
+    float size <- 3.0;
+    
+    // Find nearest store of a specific type
+    Store find_nearest_store(string need_type) {
+        list<Store> available_stores <- Store where (each.store_type = need_type);
+        if (empty(available_stores)) {
+            return nil;
+        }
+        return available_stores closest_to self;
+    }
+    
+    aspect default {
+        draw square(size) color: color border: #black;
+    }
 }
 
-species information_center {
-	float service_radius <- 8.0;
-
-	// Return the LOCATION of the nearest valid store from a given point.
-	// Signature uses only core types to avoid version differences.
-	action get_store_location(string need, point from) {
-	list<store> candidates <-
-		(need = "food")
-			? (store where (each.serves_food))
-			: (store where (each.serves_water));
-	if (length(candidates) = 0) { return from; }
-
-	// distances of each candidate from 'from'
-	list<float> ds <- (candidates collect (distance(from, each.location)));
-	float m <- min(ds);
-
-	// pick the store whose distance equals the minimum
-	store s <- first (candidates where (distance(from, each.location) = m));
-	return s.location;
-}
-	
-
-	aspect default { draw square(3) color: rgb("blue"); }
+species Store {
+    string store_type; // "FOOD" or "WATER"
+    rgb color;
+    float size <- 2.0;
+    
+    aspect default {
+        draw triangle(size) color: color border: #black;
+    }
 }
 
-species guest skills: [moving] {
-	// needs
-	float hunger <- rnd(1.0);
-	float thirst <- rnd(1.0);
-	float hunger_decay <- 0.002;
-	float thirst_decay <- 0.002;
-	float need_threshold <- 0.25;
-
-	// state
-	string need <- "";                  // "", "food", "water"
-	string mode <- "idle";              // "idle","to_info","to_store","consume"
-	point  target_pos <- {0,0};         // location of chosen store
-	bool   has_target <- false;
-
-	// references
-	information_center info <- one_of(information_center);
-
-	// movement
-	float base_speed <- 0.6;
-
-	// idle roam inside bounds
-	reflex idle_roam when: mode = "idle" {
-		point candidate <- location + point(rnd(-0.6,0.6), rnd(-0.6,0.6));
-		if (candidate.x > 0 and candidate.x < world.shape.width and
-		    candidate.y > 0 and candidate.y < world.shape.height) {
-			location <- candidate;
-		}
-	}
-
-	// decay needs
-	reflex decay {
-		hunger <- max(0.0, hunger - hunger_decay);
-		thirst <- max(0.0, thirst - thirst_decay);
-
-		if (mode = "idle" and need = "") {
-			if (hunger < need_threshold) { need <- "food";  mode <- "to_info"; }
-			else if (thirst < need_threshold) { need <- "water"; mode <- "to_info"; }
-		}
-	}
-
-	// go to info center to ask directions
-	reflex go_to_info when: mode = "to_info" {
-		do goto target: info.location speed: base_speed;
-		if (distance(self, info) < info.service_radius) {
-			point p <- info.get_store_location(need, location);
-			// if no candidates, p == current location → fallback to idle
-			if (p != location) {
-				target_pos <- p; has_target <- true; mode <- "to_store";
-			} else {
-				need <- ""; mode <- "idle";
-			}
-		}
-	}
-
-	// go to store
-	reflex go_to_store when: mode = "to_store" and has_target {
-		do goto target: target_pos speed: base_speed;
-		if (distance(self, target_pos) < 1.5) { mode <- "consume"; }
-	}
-
-	// consume and reset
-	reflex consume when: mode = "consume" {
-		if (need = "food")  { hunger <- 1.0; }
-		if (need = "water") { thirst <- 1.0; }
-		need <- ""; has_target <- false; mode <- "idle";
-	}
-
-	aspect default { draw circle(1.5) color: rgb("red"); }
+species Guest skills: [moving] {
+    float hunger <- rnd(50.0, 100.0);
+    float thirst <- rnd(50.0, 100.0);
+    float hunger_decrease_rate <- rnd(0.1, 0.3);
+    float thirst_decrease_rate <- rnd(0.1, 0.3);
+    float speed <- 2.0;
+    
+    rgb color <- #green;
+    float size <- 1.5;
+    
+    point target_location <- nil;
+    Store target_store <- nil;
+    InformationCenter info_center <- nil;
+    
+    string state <- "idle"; // States: idle, seeking_info, going_to_store, at_store
+    string current_need <- nil; // "FOOD" or "WATER"
+    
+    init {
+        info_center <- first(InformationCenter);
+    }
+    
+    reflex decrease_attributes when: state = "idle" {
+        hunger <- hunger - hunger_decrease_rate;
+        thirst <- thirst - thirst_decrease_rate;
+        
+        // Random wandering while idle
+        if (target_location = nil or location distance_to target_location < 1) {
+            target_location <- {rnd(100), rnd(100)};
+        }
+        do goto target: target_location speed: speed * 0.5;
+    }
+    
+    reflex check_needs when: state = "idle" {
+        if (hunger <= 20.0) {
+            current_need <- "FOOD";
+            state <- "seeking_info";
+            target_location <- info_center.location;
+        } else if (thirst <= 20.0) {
+            current_need <- "WATER";
+            state <- "seeking_info";
+            target_location <- info_center.location;
+        }
+    }
+    
+    reflex go_to_info_center when: state = "seeking_info" {
+        do goto target: target_location speed: speed;
+        
+        if (location distance_to target_location < 2) {
+            // Ask information center for nearest store
+            ask info_center {
+                myself.target_store <- self.find_nearest_store(myself.current_need);
+            }
+            
+            if (target_store != nil) {
+                target_location <- target_store.location;
+                state <- "going_to_store";
+            } else {
+                // No store available, go back to idle
+                state <- "idle";
+                current_need <- nil;
+                target_location <- nil;
+            }
+        }
+    }
+    
+    reflex go_to_store when: state = "going_to_store" {
+        do goto target: target_location speed: speed;
+        
+        if (location distance_to target_location < 2) {
+            state <- "at_store";
+        }
+    }
+    
+    reflex replenish_at_store when: state = "at_store" {
+        if (current_need = "FOOD") {
+            hunger <- 100.0;
+        } else if (current_need = "WATER") {
+            thirst <- 100.0;
+        }
+        
+        // Reset state and go back to idle
+        state <- "idle";
+        current_need <- nil;
+        target_store <- nil;
+        target_location <- nil;
+    }
+    
+    aspect default {
+        rgb display_color <- color;
+        
+        // Change color based on state
+        if (state = "seeking_info") {
+            display_color <- #yellow;
+        } else if (state = "going_to_store") {
+            display_color <- #purple;
+        } else if (state = "at_store") {
+            display_color <- #white;
+        } else if (hunger <= 20.0 or thirst <= 20.0) {
+            display_color <- #pink;
+        }
+        
+        draw circle(size) color: display_color border: #black;
+    }
 }
 
-/********** GUI **********/
-experiment main type: gui {
-	output {
-		display map_display {
-			species guest;
-			species store;
-			species information_center;
-		}
-	}
+experiment FestivalSimulation type: gui {
+    parameter "Number of Guests" var: nb_guests min: 10 max: 50;
+    parameter "Number of Food Stores" var: nb_food_stores min: 1 max: 10;
+    parameter "Number of Water Stores" var: nb_water_stores min: 1 max: 10;
+    
+    output {
+        display main_display {
+            graphics "background" {
+                draw shape color: #lightgray;
+            }
+            
+            species InformationCenter;
+            species Store;
+            species Guest;
+        }
+        
+        monitor "Number of Guests" value: length(Guest);
+        monitor "Guests Seeking Help" value: length(Guest where (each.state = "seeking_info"));
+        monitor "Guests at Stores" value: length(Guest where (each.state = "at_store"));
+        monitor "Average Hunger" value: mean(Guest collect each.hunger);
+        monitor "Average Thirst" value: mean(Guest collect each.thirst);
+    }
 }
