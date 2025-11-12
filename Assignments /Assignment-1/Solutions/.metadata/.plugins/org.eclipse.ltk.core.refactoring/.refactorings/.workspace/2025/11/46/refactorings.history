@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;Festival_Project/models/Variables.gaml&apos;" deleteContents="false" description="Delete resource &apos;Festival_Project/models/Variables.gaml&apos;" element1="/Festival_Project/models/Variables.gaml" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1762680808900"/>
+</session>
