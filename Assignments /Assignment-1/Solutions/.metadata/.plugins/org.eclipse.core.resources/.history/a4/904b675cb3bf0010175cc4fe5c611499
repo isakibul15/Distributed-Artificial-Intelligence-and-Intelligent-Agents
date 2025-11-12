@@ -42,6 +42,7 @@ global {
     }
 }
 
+
 species InformationCenter {
     rgb color <- #red;
     float size <- 3.0;
