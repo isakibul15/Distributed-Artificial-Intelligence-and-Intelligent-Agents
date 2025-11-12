@@ -19,20 +19,18 @@ global {
             location <- {50, 50};
         }
         
-        // Create food stores at fixed locations on the left side
+        // Create food stores
         create Store number: nb_food_stores {
             store_type <- "FOOD";
             color <- #orange;
-            // Fixed locations on the left side
-            location <- {20, 20 + (index * 30)};
+            location <- {rnd(100), rnd(100)};
         }
         
-        // Create water stores at fixed locations on the right side
+        // Create water stores
         create Store number: nb_water_stores {
             store_type <- "WATER";
             color <- #blue;
-            // Fixed locations on the right side
-            location <- {80, 20 + (index * 30)};
+            location <- {rnd(100), rnd(100)};
         }
         
         // Create guests
@@ -63,7 +61,7 @@ species InformationCenter {
 species Store {
     string store_type; // "FOOD" or "WATER"
     rgb color;
-    float size <- 4.0;
+    float size <- 2.0;
     
     aspect default {
         draw triangle(size) color: color border: #black;
