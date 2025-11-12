@@ -1,0 +1,200 @@
+/**
+* Name: Festival Simulation
+* Author: Based on Assignment 1 Requirements
+* Description: A festival simulation where guests get hungry/thirsty and visit stores
+*/
+
+model FestivalSimulation
+
+global {
+    int nb_guests <- 15;
+    int nb_food_stores <- 2;
+    int nb_water_stores <- 2;
+    
+    geometry shape <- square(100);
+    
+    init {
+        // Create the information center at the center of the world
+        create InformationCenter number: 1 {
+            location <- {50, 50};
+        }
+        
+        // Create food stores at fixed locations on the left side
+        create Store number: nb_food_stores {
+            store_type <- "FOOD";
+            color <- #orange;
+            // Fixed locations on the left side, evenly distributed
+            location <- {20, 20 + (index * (60 / max(1, nb_food_stores - 1)))};
+        }
+        
+        // Create water stores at fixed locations on the right side
+        create Store number: nb_water_stores {
+            store_type <- "WATER";
+            color <- #blue;
+            // Fixed locations on the right side, evenly distributed
+            location <- {80, 20 + (index * (60 / max(1, nb_water_stores - 1)))};
+        }
+        
+        // Create guests
+        create Guest number: nb_guests {
+            location <- {rnd(100), rnd(100)};
+        }
+    }
+}
+
+species InformationCenter {
+    rgb color <- #red;
+    float size <- 3.0;
+    
+    // Find nearest store of a specific type
+    Store find_nearest_store(string need_type) {
+        list<Store> available_stores <- Store where (each.store_type = need_type);
+        if (empty(available_stores)) {
+            return nil;
+        }
+        return available_stores closest_to self;
+    }
+    
+    aspect default {
+        draw square(size) color: color border: #black;
+    }
+}
+
+species Store {
+    string store_type; // "FOOD" or "WATER"
+    rgb color;
+    float size <- 4.0;
+    
+    aspect default {
+        draw triangle(size) color: color border: #black;
+    }
+}
+
+species Guest skills: [moving] {
+    float hunger <- rnd(50.0, 100.0);
+    float thirst <- rnd(50.0, 100.0);
+    float hunger_decrease_rate <- rnd(0.1, 0.3);
+    float thirst_decrease_rate <- rnd(0.1, 0.3);
+    float speed <- 2.0;
+    
+    rgb color <- #green;
+    float size <- 1.5;
+    
+    point target_location <- nil;
+    Store target_store <- nil;
+    InformationCenter info_center <- nil;
+    
+    string state <- "idle"; // States: idle, seeking_info, going_to_store, at_store
+    string current_need <- nil; // "FOOD" or "WATER"
+    
+    init {
+        info_center <- first(InformationCenter);
+    }
+    
+    reflex decrease_attributes when: state = "idle" {
+        hunger <- hunger - hunger_decrease_rate;
+        thirst <- thirst - thirst_decrease_rate;
+        
+        // Random wandering while idle
+        if (target_location = nil or location distance_to target_location < 1) {
+            target_location <- {rnd(100), rnd(100)};
+        }
+        do goto target: target_location speed: speed * 0.5;
+    }
+    
+    reflex check_needs when: state = "idle" {
+        if (hunger <= 20.0) {
+            current_need <- "FOOD";
+            state <- "seeking_info";
+            target_location <- info_center.location;
+        } else if (thirst <= 20.0) {
+            current_need <- "WATER";
+            state <- "seeking_info";
+            target_location <- info_center.location;
+        }
+    }
+    
+    reflex go_to_info_center when: state = "seeking_info" {
+        do goto target: target_location speed: speed;
+        
+        if (location distance_to target_location < 2) {
+            // Ask information center for nearest store
+            ask info_center {
+                myself.target_store <- self.find_nearest_store(myself.current_need);
+            }
+            
+            if (target_store != nil) {
+                target_location <- target_store.location;
+                state <- "going_to_store";
+            } else {
+                // No store available, go back to idle
+                state <- "idle";
+                current_need <- nil;
+                target_location <- nil;
+            }
+        }
+    }
+    
+    reflex go_to_store when: state = "going_to_store" {
+        do goto target: target_location speed: speed;
+        
+        if (location distance_to target_location < 2) {
+            state <- "at_store";
+        }
+    }
+    
+    reflex replenish_at_store when: state = "at_store" {
+        if (current_need = "FOOD") {
+            hunger <- 100.0;
+        } else if (current_need = "WATER") {
+            thirst <- 100.0;
+        }
+        
+        // Reset state and go back to idle
+        state <- "idle";
+        current_need <- nil;
+        target_store <- nil;
+        target_location <- nil;
+    }
+    
+    aspect default {
+        rgb display_color <- color;
+        
+        // Change color based on state
+        if (state = "seeking_info") {
+            display_color <- #yellow;
+        } else if (state = "going_to_store") {
+            display_color <- #purple;
+        } else if (state = "at_store") {
+            display_color <- #white;
+        } else if (hunger <= 20.0 or thirst <= 20.0) {
+            display_color <- #pink;
+        }
+        
+        draw circle(size) color: display_color border: #black;
+    }
+}
+
+experiment FestivalSimulation type: gui {
+    parameter "Number of Guests" var: nb_guests min: 10 max: 50;
+    parameter "Number of Food Stores" var: nb_food_stores min: 1 max: 10;
+    parameter "Number of Water Stores" var: nb_water_stores min: 1 max: 10;
+    
+    output {
+        display main_display {
+            graphics "background" {
+                draw shape color: #lightgray;
+            }
+            
+            species InformationCenter;
+            species Store;
+            species Guest;
+        }
+        
+        monitor "Number of Guests" value: length(Guest);
+        monitor "Guests Seeking Help" value: length(Guest where (each.state = "seeking_info"));
+        monitor "Guests at Stores" value: length(Guest where (each.state = "at_store"));
+        monitor "Average Hunger" value: mean(Guest collect each.hunger);
+        monitor "Average Thirst" value: mean(Guest collect each.thirst);
+    }
+}

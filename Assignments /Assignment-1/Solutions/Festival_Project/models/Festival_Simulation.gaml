@@ -24,7 +24,8 @@ global {
             store_type <- "FOOD";
             color <- #orange;
             // Fixed locations on the left side, evenly distributed
-            location <- {20, 20 + (index * (60 / max(1, nb_food_stores - 1)))};
+            float spacing <- nb_food_stores > 1 ? 60 / (nb_food_stores - 1) : 0;
+            location <- {20, 20 + (index * spacing)};
         }
         
         // Create water stores at fixed locations on the right side
@@ -32,12 +33,13 @@ global {
             store_type <- "WATER";
             color <- #blue;
             // Fixed locations on the right side, evenly distributed
-            location <- {80, 20 + (index * (60 / max(1, nb_water_stores - 1)))};
+            float spacing <- nb_water_stores > 1 ? 60 / (nb_water_stores - 1) : 0;
+            location <- {80, -100 + (index * spacing)};
         }
         
         // Create guests
         create Guest number: nb_guests {
-            location <- {rnd(100), rnd(100)};
+            location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         }
     }
 }
@@ -95,11 +97,14 @@ species Guest skills: [moving] {
         hunger <- hunger - hunger_decrease_rate;
         thirst <- thirst - thirst_decrease_rate;
         
-        // Random wandering while idle
+        // Random wandering while idle - keep within bounds
         if (target_location = nil or location distance_to target_location < 1) {
-            target_location <- {rnd(100), rnd(100)};
+            target_location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         }
         do goto target: target_location speed: speed * 0.5;
+        
+        // Keep agent within bounds
+        location <- {max(5, min(95, location.x)), max(5, min(95, location.y))};
     }
     
     reflex check_needs when: state = "idle" {
