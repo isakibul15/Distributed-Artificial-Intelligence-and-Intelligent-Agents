@@ -1,0 +1,349 @@
+/**
+* Name: Challange1Test
+* Based on the internal empty template. 
+* Author: md.sakibulislam
+* Tags: 
+*/
+
+model Challange1
+
+global {
+    int nb_guests <- 15;
+    int nb_food_stores <- 2;
+    int nb_water_stores <- 2;
+    float memory_use_probability <- 0.7;
+    
+    // Separate groups
+    int guests_with_memory <- 8;
+    int guests_without_memory <- 7;
+    
+    geometry shape <- square(100);
+    
+    init {
+        // Create the information center at the center of the world
+        create InformationCenter number: 1 {
+            location <- {50, 50};
+        }
+        
+        // Create food stores at fixed locations
+        create Store number: nb_food_stores {
+            store_type <- "FOOD";
+            color <- #orange;
+            float spacing <- nb_food_stores > 1 ? 60 / (nb_food_stores - 1) : 0;
+            location <- {20, 20 + (index * spacing)};
+        }
+        
+        // Create water stores at fixed locations
+        create Store number: nb_water_stores {
+            store_type <- "WATER";
+            color <- #blue;
+            float spacing <- nb_water_stores > 1 ? 60 / (nb_water_stores - 1) : 0;
+            location <- {80, 20 + (index * spacing)};
+        }
+        
+        // Create guests WITH memory (first group)
+        create Guest number: guests_with_memory {
+            location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
+            has_memory <- true;
+            color <- #green;
+            guest_name <- "Memory_Guest_" + string(index);
+        }
+        
+        // Create guests WITHOUT memory (second group)
+        create Guest number: guests_without_memory {
+            location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
+            has_memory <- false;
+            color <- #red; // Changed to red for clearer distinction
+            guest_name <- "NoMemory_Guest_" + string(index);
+        }
+    }
+}
+
+species InformationCenter {
+    rgb color <- #red;
+    float size <- 3.0;
+    
+    Store find_nearest_store(string need_type) {
+        list<Store> available_stores <- Store where (each.store_type = need_type);
+        if (empty(available_stores)) {
+            return nil;
+        }
+        return available_stores closest_to self;
+    }
+    
+    aspect default {
+        draw square(size) color: color border: #black;
+    }
+}
+
+species Store {
+    string store_type;
+    rgb color;
+    float size <- 4.0;
+    
+    aspect default {
+        draw triangle(size) color: color border: #black;
+    }
+}
+
+species Guest skills: [moving] {
+    float hunger <- rnd(50.0, 100.0);
+    float thirst <- rnd(50.0, 100.0);
+    float hunger_decrease_rate <- rnd(0.1, 0.3);
+    float thirst_decrease_rate <- rnd(0.1, 0.3);
+    float speed <- 2.0;
+    
+    rgb color <- #green;
+    float size <- 1.5;
+    
+    bool has_memory <- true;
+    
+    point target_location <- nil;
+    Store target_store <- nil;
+    InformationCenter info_center <- nil;
+    
+    string state <- "idle";
+    string current_need <- nil;
+    string guest_name <- "Guest_" + string(self);
+    
+    // MEMORY SYSTEM
+    map<string, Store> memory_stores;
+    float total_distance_traveled <- 0.0;
+    int memory_uses <- 0;
+    int discovery_uses <- 0;
+    int info_center_visits <- 0;
+    int direct_store_visits <- 0; // NEW: Track when going directly to store
+    
+    init {
+        info_center <- first(InformationCenter);
+        memory_stores <- map([]);
+        write guest_name + " created [Memory: " + has_memory + "]";
+    }
+    
+    reflex decrease_attributes when: state = "idle" {
+        hunger <- hunger - hunger_decrease_rate;
+        thirst <- thirst - thirst_decrease_rate;
+        
+        if (target_location = nil or location distance_to target_location < 1) {
+            target_location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
+        }
+        
+        point old_location <- location;
+        do goto target: target_location speed: speed * 0.5;
+        total_distance_traveled <- total_distance_traveled + (location distance_to old_location);
+        
+        location <- {max(5, min(95, location.x)), max(5, min(95, location.y))};
+    }
+    
+    reflex check_needs when: state = "idle" {
+        if (hunger <= 20.0) {
+            current_need <- "FOOD";
+            
+            // NO-MEMORY GUESTS: Always go to information center
+            if (not has_memory) {
+                state <- "seeking_info";
+                target_location <- info_center.location;
+                write "🍔 " + guest_name + " is HUNGRY! [No Memory] → Info Center";
+            } 
+            // MEMORY GUESTS: Check if they have memory of this store type
+            else {
+                if (memory_stores contains_key current_need) {
+                    // Memory exists - decide whether to use it or discover
+                    float random_choice <- rnd(1.0);
+                    
+                    if (random_choice < memory_use_probability) {
+                        // USE MEMORY - go directly to store (NO info center!)
+                        target_store <- memory_stores[current_need];
+                        target_location <- target_store.location;
+                        state <- "going_to_store";
+                        memory_uses <- memory_uses + 1;
+                        direct_store_visits <- direct_store_visits + 1;
+                        write "🧠 " + guest_name + " is HUNGRY! [Using Memory] → Direct to Store";
+                    } else {
+                        // DISCOVER - go to info center for new store
+                        state <- "seeking_info";
+                        target_location <- info_center.location;
+                        discovery_uses <- discovery_uses + 1;
+                        write "🍔🔍 " + guest_name + " is HUNGRY! [Discovering] → Info Center";
+                    }
+                } else {
+                    // No memory yet - must go to info center
+                    state <- "seeking_info";
+                    target_location <- info_center.location;
+                    write "🍔 " + guest_name + " is HUNGRY! [No Memory Yet] → Info Center";
+                }
+            }
+        } else if (thirst <= 20.0) {
+            current_need <- "WATER";
+            
+            // NO-MEMORY GUESTS: Always go to information center
+            if (not has_memory) {
+                state <- "seeking_info";
+                target_location <- info_center.location;
+                write "💧 " + guest_name + " is THIRSTY! [No Memory] → Info Center";
+            } 
+            // MEMORY GUESTS: Check if they have memory of this store type
+            else {
+                if (memory_stores contains_key current_need) {
+                    // Memory exists - decide whether to use it or discover
+                    float random_choice <- rnd(1.0);
+                    
+                    if (random_choice < memory_use_probability) {
+                        // USE MEMORY - go directly to store (NO info center!)
+                        target_store <- memory_stores[current_need];
+                        target_location <- target_store.location;
+                        state <- "going_to_store";
+                        memory_uses <- memory_uses + 1;
+                        direct_store_visits <- direct_store_visits + 1;
+                        write "🧠 " + guest_name + " is THIRSTY! [Using Memory] → Direct to Store";
+                    } else {
+                        // DISCOVER - go to info center for new store
+                        state <- "seeking_info";
+                        target_location <- info_center.location;
+                        discovery_uses <- discovery_uses + 1;
+                        write "💧🔍 " + guest_name + " is THIRSTY! [Discovering] → Info Center";
+                    }
+                } else {
+                    // No memory yet - must go to info center
+                    state <- "seeking_info";
+                    target_location <- info_center.location;
+                    write "💧 " + guest_name + " is THIRSTY! [No Memory Yet] → Info Center";
+                }
+            }
+        }
+    }
+    
+    reflex go_to_info_center when: state = "seeking_info" {
+        point old_location <- location;
+        do goto target: target_location speed: speed;
+        total_distance_traveled <- total_distance_traveled + (location distance_to old_location);
+        
+        if (location distance_to target_location < 2) {
+            info_center_visits <- info_center_visits + 1;
+            write "ℹ️  " + guest_name + " at Info Center - Asking for " + current_need;
+            
+            ask info_center {
+                myself.target_store <- self.find_nearest_store(myself.current_need);
+            }
+            
+            if (target_store != nil) {
+                target_location <- target_store.location;
+                state <- "going_to_store";
+                write "📍 " + guest_name + " got directions to " + target_store.store_type + " store";
+            } else {
+                state <- "idle";
+                current_need <- nil;
+                target_location <- nil;
+                write "❌ " + guest_name + " - No store available!";
+            }
+        }
+    }
+    
+    reflex go_to_store when: state = "going_to_store" {
+        point old_location <- location;
+        do goto target: target_location speed: speed;
+        total_distance_traveled <- total_distance_traveled + (location distance_to old_location);
+        
+        if (location distance_to target_location < 2) {
+            state <- "at_store";
+            write "🏪 " + guest_name + " arrived at " + target_store.store_type + " store";
+        }
+    }
+    
+    reflex replenish_at_store when: state = "at_store" {
+        // SAVE TO MEMORY - Only if this guest has memory capability
+        if (has_memory and not (memory_stores contains_key current_need)) {
+            memory_stores[current_need] <- target_store;
+            write "💾 " + guest_name + " saved " + current_need + " store to memory!";
+        }
+        
+        if (current_need = "FOOD") {
+            hunger <- 100.0;
+            write "✅ " + guest_name + " replenished HUNGER";
+        } else if (current_need = "WATER") {
+            thirst <- 100.0;
+            write "✅ " + guest_name + " replenished THIRST";
+        }
+        
+        state <- "idle";
+        current_need <- nil;
+        target_store <- nil;
+        target_location <- nil;
+    }
+    
+    aspect default {
+        rgb display_color <- color;
+        
+        if (state = "seeking_info") {
+            display_color <- #yellow;
+        } else if (state = "going_to_store") {
+            display_color <- #purple;
+        } else if (state = "at_store") {
+            display_color <- #white;
+        } else if (hunger <= 20.0 or thirst <= 20.0) {
+            display_color <- #pink;
+        }
+        
+        draw circle(size) color: display_color border: #black;
+        
+        // Add label to show memory status
+        draw string(has_memory ? "M" : "NM") color: #black size: 1 at: {location.x, location.y + 2};
+    }
+}
+
+experiment Challange1 type: gui {
+    parameter "Total Number of Guests" var: nb_guests min: 10 max: 50;
+    parameter "Guests WITH Memory" var: guests_with_memory min: 1 max: 25;
+    parameter "Guests WITHOUT Memory" var: guests_without_memory min: 1 max: 25;
+    parameter "Number of Food Stores" var: nb_food_stores min: 1 max: 10;
+    parameter "Number of Water Stores" var: nb_water_stores min: 1 max: 10;
+    parameter "Memory Use Probability" var: memory_use_probability <- 0.7 min: 0.0 max: 1.0;
+    
+    output {
+        display main_display {
+            graphics "background" {
+                draw shape color: #lightgray;
+            }
+            
+            species InformationCenter;
+            species Store;
+            species Guest;
+        }
+        
+        // BASIC MONITORS
+        monitor "Total Guests" value: length(Guest);
+        monitor "Memory Guests" value: length(Guest where (each.has_memory = true));
+        monitor "No-Memory Guests" value: length(Guest where (each.has_memory = false));
+        
+        // MEMORY COMPARISON MONITORS
+        monitor "--- MEMORY GUESTS STATS ---" value: "";
+        monitor "Memory Guests - Direct Store Visits" value: sum((Guest where (each.has_memory = true)) collect each.direct_store_visits);
+        monitor "Memory Guests - Info Center Visits" value: sum((Guest where (each.has_memory = true)) collect each.info_center_visits);
+        monitor "Memory Guests - Memory Uses" value: sum((Guest where (each.has_memory = true)) collect each.memory_uses);
+        monitor "Memory Guests - Discovery Uses" value: sum((Guest where (each.has_memory = true)) collect each.discovery_uses);
+        monitor "Memory Guests - Avg Distance" value: mean((Guest where (each.has_memory = true)) collect each.total_distance_traveled);
+        
+        monitor "--- NO-MEMORY GUESTS STATS ---" value: "";
+        monitor "No-Memory Guests - Info Center Visits" value: sum((Guest where (each.has_memory = false)) collect each.info_center_visits);
+        monitor "No-Memory Guests - Avg Distance" value: mean((Guest where (each.has_memory = false)) collect each.total_distance_traveled);
+        
+
+        // COMPARISON CHARTS
+display comparison_charts {
+            chart "Distance Traveled Comparison" type: series background: #white {
+                data "Memory Guests Avg Distance" value: mean((Guest where (each.has_memory = true)) collect each.total_distance_traveled) color: #green;
+                data "No-Memory Guests Avg Distance" value: mean((Guest where (each.has_memory = false)) collect each.total_distance_traveled) color: #brown;
+            }
+            
+            chart "Information Center Visits" type: series background: #white {
+                data "Memory Guests Visits" value: sum((Guest where (each.has_memory = true)) collect each.info_center_visits) color: #blue;
+                data "No-Memory Guests Visits" value: sum((Guest where (each.has_memory = false)) collect each.info_center_visits) color: #red;
+            }
+            
+            chart "Memory Usage" type: pie background: #white {
+                data "Memory Guests" value: length(Guest where (each.has_memory = true)) color: #green;
+                data "No-Memory Guests" value: length(Guest where (each.has_memory = false)) color: #brown;
+            }
+        }
+    }
+}

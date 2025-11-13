@@ -1,0 +1,164 @@
+model FestivalMemory
+
+global {
+    int nb_guests <- 10;
+    int nb_food_stores <- 2;
+    int nb_water_stores <- 2;
+    
+    init {
+        // Create information center
+        create InformationCenter number: 1 {
+            location <- {50, 50};
+        }
+        
+        // Create food stores
+        create Store number: nb_food_stores {
+            store_type <- "FOOD";
+            location <- {20, 20 + (index * 30)};
+        }
+        
+        // Create water stores  
+        create Store number: nb_water_stores {
+            store_type <- "WATER";
+            location <- {80, 20 + (index * 30)};
+        }
+        
+        // Create guests - half with memory, half without
+        create Guest number: nb_guests {
+            location <- {rnd(10, 90), rnd(10, 90)};
+            has_memory <- (index < nb_guests / 2);
+        }
+    }
+}
+
+species InformationCenter {
+    aspect default {
+        draw square(3) color: #red;
+    }
+}
+
+species Store {
+    string store_type;
+    
+    aspect default {
+        draw circle(2) color: (store_type = "FOOD") ? #orange : #blue;
+    }
+}
+
+species Guest skills: [moving] {
+    float hunger <- rnd(50, 100);
+    float thirst <- rnd(50, 100);
+    bool has_memory <- false;
+    
+    point target_location;
+    string current_need;
+    string state <- "wandering";
+    
+    // Memory system
+    map<string, point> memory;
+    float total_distance <- 0.0;
+    point last_location <- location;
+    
+    reflex wander when: state = "wandering" {
+        // Decrease needs over time
+        hunger <- hunger - 0.1;
+        thirst <- thirst - 0.2;
+        
+        // Move randomly
+        if (target_location = nil or distance_to(target_location) < 2) {
+            target_location <- {rnd(10, 90), rnd(10, 90)};
+        }
+        
+        last_location <- location;
+        do goto target: target_location speed: 1.0;
+        total_distance <- total_distance + distance_to(last_location);
+        
+        // Check if needs are low
+        if (hunger < 30) {
+            current_need <- "FOOD";
+            state <- "seeking";
+        } else if (thirst < 30) {
+            current_need <- "WATER";
+            state <- "seeking";
+        }
+    }
+    
+    reflex seek_help when: state = "seeking" {
+        InformationCenter info_center <- first(InformationCenter);
+        
+        // Guests with memory check their memory first
+        if (has_memory and memory contains_key current_need) {
+            // 70% chance to use memory, 30% to discover new place
+            if (rnd(100) < 70) {
+                target_location <- memory[current_need];
+                state <- "going_to_store";
+                write name + " using memory to go to " + current_need + " store";
+                return;
+            }
+        }
+        
+        // No memory or wants to discover - go to info center
+        target_location <- info_center.location;
+        
+        last_location <- location;
+        do goto target: target_location speed: 2.0;
+        total_distance <- total_distance + distance_to(last_location);
+        
+        if (distance_to(target_location) < 3) {
+            // Ask for nearest store
+            Store nearest_store <- first(Store where (each.store_type = current_need));
+            if (nearest_store != nil) {
+                target_location <- nearest_store.location;
+                state <- "going_to_store";
+            }
+        }
+    }
+    
+    reflex go_to_store when: state = "going_to_store" {
+        last_location <- location;
+        do goto target: target_location speed: 2.0;
+        total_distance <- total_distance + distance_to(last_location);
+        
+        if (distance_to(target_location) < 3) {
+            state <- "at_store";
+        }
+    }
+    
+    reflex at_store when: state = "at_store" {
+        // Save to memory if this guest has memory
+        if (has_memory) {
+            memory[current_need] <- target_location;
+        }
+        
+        // Replenish needs
+        if (current_need = "FOOD") {
+            hunger <- 100.0;
+        } else {
+            thirst <- 100.0;
+        }
+        
+        state <- "wandering";
+        target_location <- nil;
+        current_need <- nil;
+    }
+    
+    aspect default {
+        draw circle(1) color: (has_memory) ? #green : #red;
+    }
+}
+
+experiment Festival type: gui {
+    output {
+        display Main {
+            species InformationCenter;
+            species Store;
+            species Guest;
+        }
+        
+        monitor "Memory Guests" value: length(Guest where (each.has_memory = true));
+        monitor "No-Memory Guests" value: length(Guest where (each.has_memory = false));
+        monitor "Memory Guests Avg Distance" value: mean((Guest where (each.has_memory = true)) collect each.total_distance);
+        monitor "No-Memory Guests Avg Distance" value: mean((Guest where (each.has_memory = false)) collect each.total_distance);
+        monitor "Distance Reduction" value: round((mean((Guest where (each.has_memory = false)) collect each.total_distance) - mean((Guest where (each.has_memory = true)) collect each.total_distance)) / mean((Guest where (each.has_memory = false)) collect each.total_distance) * 100) + "%";
+    }
+}
