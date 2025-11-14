@@ -1,20 +1,22 @@
 /**
-* Name: Challange1
-* Based on the internal skeleton template. 
-* Author: md.sakibulislam
-* Tags: 
+* Name: Festival Simulation - Challenge 1: Memory System
+* Author: Based on Assignment 1 Requirements
+* Description: A festival simulation with guests that have memory (brain) and without
 */
 
-model Challange1
+model FestivalSimulation
 
 global {
-    int nb_guests <- 15;
+    int nb_guests <- 20;
     int nb_food_stores <- 2;
     int nb_water_stores <- 2;
-    bool enable_memory <- false; // Toggle memory feature
-    float memory_use_probability <- 0.7; // 70% chance to use memory, 30% to discover
+    int nb_guests_with_brain <- 10; // Half with brain, half without
     
     geometry shape <- square(100);
+    
+    // Global tracking for comparison
+    list<float> avg_distance_with_brain <- [];
+    list<float> avg_distance_without_brain <- [];
     
     init {
         // Create the information center at the center of the world
@@ -26,7 +28,6 @@ global {
         create Store number: nb_food_stores {
             store_type <- "FOOD";
             color <- #orange;
-            // Fixed locations on the left side, evenly distributed
             float spacing <- nb_food_stores > 1 ? 60 / (nb_food_stores - 1) : 0;
             location <- {20, 20 + (index * spacing)};
         }
@@ -35,14 +36,34 @@ global {
         create Store number: nb_water_stores {
             store_type <- "WATER";
             color <- #blue;
-            // Fixed locations on the right side, evenly distributed
             float spacing <- nb_water_stores > 1 ? 60 / (nb_water_stores - 1) : 0;
             location <- {80, -100 + (index * spacing)};
         }
         
-        // Create guests
-        create Guest number: nb_guests {
+        // Create guests WITH BRAIN (memory)
+        create Guest number: nb_guests_with_brain {
             location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
+            has_brain <- true;
+        }
+        
+        // Create guests WITHOUT BRAIN (no memory)
+        create Guest number: (nb_guests - nb_guests_with_brain) {
+            location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
+            has_brain <- false;
+        }
+    }
+    
+    // Update tracking data every cycle
+    reflex update_tracking {
+        list<Guest> guests_with_brain <- Guest where (each.has_brain = true);
+        list<Guest> guests_without_brain <- Guest where (each.has_brain = false);
+        
+        if (!empty(guests_with_brain)) {
+            add mean(guests_with_brain collect each.total_distance_traveled) to: avg_distance_with_brain;
+        }
+        
+        if (!empty(guests_without_brain)) {
+            add mean(guests_without_brain collect each.total_distance_traveled) to: avg_distance_without_brain;
         }
     }
 }
@@ -89,27 +110,27 @@ species Guest skills: [moving] {
     Store target_store <- nil;
     InformationCenter info_center <- nil;
     
-    string state <- "idle"; // States: idle, seeking_info, going_to_store, at_store
-    string current_need <- nil; // "FOOD" or "WATER"
-    string guest_name <- "Guest_" + string(self);
+    string state <- "idle";
+    string current_need <- nil;
+    string guest_name;
     
-    // MEMORY SYSTEM - Small Brain
-    map<string, Store> memory_stores; // Stores visited memory: "FOOD" -> Store, "WATER" -> Store
+    // CHALLENGE 1: Brain/Memory System - Simple list of visited stores
+    bool has_brain <- false;
+    list<Store> visited_stores <- []; // List of stores this guest has visited
     float total_distance_traveled <- 0.0;
-    int memory_uses <- 0; // Times used memory
-    int discovery_uses <- 0; // Times discovered new places
+    int memory_uses <- 0;
+    int info_center_visits <- 0;
     
     init {
         info_center <- first(InformationCenter);
-        memory_stores <- map([]);
-        write guest_name + " created at location " + location + " [Hunger: " + hunger + ", Thirst: " + thirst + "]";
+        guest_name <- "Guest_" + string(index) + (has_brain ? "[BRAIN]" : "[NO-BRAIN]");
+        write guest_name + " created at " + location;
     }
     
     reflex decrease_attributes when: state = "idle" {
         hunger <- hunger - hunger_decrease_rate;
         thirst <- thirst - thirst_decrease_rate;
         
-        // Random wandering while idle - keep within bounds
         if (target_location = nil or location distance_to target_location < 1) {
             target_location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         }
@@ -118,64 +139,66 @@ species Guest skills: [moving] {
         do goto target: target_location speed: speed * 0.5;
         total_distance_traveled <- total_distance_traveled + (location distance_to old_location);
         
-        // Keep agent within bounds
         location <- {max(5, min(95, location.x)), max(5, min(95, location.y))};
     }
     
     reflex check_needs when: state = "idle" {
         if (hunger <= 20.0) {
             current_need <- "FOOD";
-            state <- "seeking_info";
             
-            // CHECK MEMORY FIRST
-            if (enable_memory and memory_stores contains_key current_need) {
-                // Agent has memory of this type of store
-                float random_choice <- rnd(1.0);
+            // Check if guest has brain AND has visited a FOOD store before
+            if (has_brain) {
+                list<Store> known_food_stores <- visited_stores where (each.store_type = "FOOD");
                 
-                if (random_choice < memory_use_probability) {
-                    // Use memory - go directly to remembered store
-                    target_store <- memory_stores[current_need];
+                if (!empty(known_food_stores)) {
+                    // Guest remembers a food store! Go directly there
+                    target_store <- first(known_food_stores);
                     target_location <- target_store.location;
                     state <- "going_to_store";
                     memory_uses <- memory_uses + 1;
-                    write "🧠 " + guest_name + " is HUNGRY! Using MEMORY - Going directly to remembered FOOD store";
+                    write "🧠 " + guest_name + " is HUNGRY! I remember the FOOD store location - going directly there!";
                 } else {
-                    // Discover new place - go to info center
+                    // First time needing food, must ask info center
+                    state <- "seeking_info";
                     target_location <- info_center.location;
-                    discovery_uses <- discovery_uses + 1;
-                    write "🍔🔍 " + guest_name + " is HUNGRY! Wants to DISCOVER new FOOD store - Going to Information Center";
+                    info_center_visits <- info_center_visits + 1;
+                    write "🍔 " + guest_name + " is HUNGRY! First time - going to Information Center";
                 }
             } else {
-                // No memory, must go to info center
+                // No brain - always ask info center
+                state <- "seeking_info";
                 target_location <- info_center.location;
-                write "🍔 " + guest_name + " is HUNGRY! [Hunger: " + hunger + "] - Going to Information Center (No memory)";
+                info_center_visits <- info_center_visits + 1;
+                write "🍔 " + guest_name + " is HUNGRY! No brain - must go to Information Center";
             }
+            
         } else if (thirst <= 20.0) {
             current_need <- "WATER";
-            state <- "seeking_info";
             
-            // CHECK MEMORY FIRST
-            if (enable_memory and memory_stores contains_key current_need) {
-                // Agent has memory of this type of store
-                float random_choice <- rnd(1.0);
+            // Check if guest has brain AND has visited a WATER store before
+            if (has_brain) {
+                list<Store> known_water_stores <- visited_stores where (each.store_type = "WATER");
                 
-                if (random_choice < memory_use_probability) {
-                    // Use memory - go directly to remembered store
-                    target_store <- memory_stores[current_need];
+                if (!empty(known_water_stores)) {
+                    // Guest remembers a water store! Go directly there
+                    target_store <- first(known_water_stores);
                     target_location <- target_store.location;
                     state <- "going_to_store";
                     memory_uses <- memory_uses + 1;
-                    write "🧠 " + guest_name + " is THIRSTY! Using MEMORY - Going directly to remembered WATER store";
+                    write "🧠 " + guest_name + " is THIRSTY! I remember the WATER store location - going directly there!";
                 } else {
-                    // Discover new place - go to info center
+                    // First time needing water, must ask info center
+                    state <- "seeking_info";
                     target_location <- info_center.location;
-                    discovery_uses <- discovery_uses + 1;
-                    write "💧🔍 " + guest_name + " is THIRSTY! Wants to DISCOVER new WATER store - Going to Information Center";
+                    info_center_visits <- info_center_visits + 1;
+                    write "💧 " + guest_name + " is THIRSTY! First time - going to Information Center";
                 }
             } else {
-                // No memory, must go to info center
+                // No brain - always ask info center
+                state <- "seeking_info";
                 target_location <- info_center.location;
-                write "💧 " + guest_name + " is THIRSTY! [Thirst: " + thirst + "] - Going to Information Center (No memory)";
+                info_center_visits <- info_center_visits + 1;
+                write "💧 " + guest_name + " is THIRSTY! No brain - must go to Information Center";
             }
         }
     }
@@ -186,9 +209,8 @@ species Guest skills: [moving] {
         total_distance_traveled <- total_distance_traveled + (location distance_to old_location);
         
         if (location distance_to target_location < 2) {
-            write "ℹ️  " + guest_name + " arrived at Information Center - Asking for " + current_need + " store";
+            write "ℹ️  " + guest_name + " arrived at Information Center - asking for " + current_need + " store";
             
-            // Ask information center for nearest store
             ask info_center {
                 myself.target_store <- self.find_nearest_store(myself.current_need);
             }
@@ -198,7 +220,6 @@ species Guest skills: [moving] {
                 state <- "going_to_store";
                 write "📍 " + guest_name + " received directions to " + target_store.store_type + " store at " + target_location;
             } else {
-                // No store available, go back to idle
                 state <- "idle";
                 current_need <- nil;
                 target_location <- nil;
@@ -219,32 +240,29 @@ species Guest skills: [moving] {
     }
     
     reflex replenish_at_store when: state = "at_store" {
-        // SAVE TO MEMORY - Remember this store
-        if (enable_memory) {
-            memory_stores[current_need] <- target_store;
-            write "💾 " + guest_name + " saved " + current_need + " store to memory!";
+        // If guest has brain, add this store to visited list (if not already there)
+        if (has_brain and !(visited_stores contains target_store)) {
+            add target_store to: visited_stores;
+            write "💾 " + guest_name + " SAVED this " + target_store.store_type + " store location to memory! (Total stored: " + length(visited_stores) + ")";
         }
         
         if (current_need = "FOOD") {
             hunger <- 100.0;
-            write "✅ " + guest_name + " replenished HUNGER at store [New Hunger: 100.0]";
+            write "✅ " + guest_name + " replenished HUNGER [Total distance: " + total_distance_traveled + "]";
         } else if (current_need = "WATER") {
             thirst <- 100.0;
-            write "✅ " + guest_name + " replenished THIRST at store [New Thirst: 100.0]";
+            write "✅ " + guest_name + " replenished THIRST [Total distance: " + total_distance_traveled + "]";
         }
         
-        // Reset state and go back to idle
         state <- "idle";
         current_need <- nil;
         target_store <- nil;
         target_location <- nil;
-        write "🎉 " + guest_name + " is satisfied [Distance traveled: " + total_distance_traveled + "]";
     }
     
     aspect default {
         rgb display_color <- color;
         
-        // Change color based on state
         if (state = "seeking_info") {
             display_color <- #yellow;
         } else if (state = "going_to_store") {
@@ -259,12 +277,11 @@ species Guest skills: [moving] {
     }
 }
 
-experiment Challange1 type: gui {
-    parameter "Number of Guests" var: nb_guests min: 10 max: 50;
+experiment FestivalSimulation type: gui {
+    parameter "Total Number of Guests" var: nb_guests min: 10 max: 50;
+    parameter "Guests WITH Brain (Memory)" var: nb_guests_with_brain min: 0 max: 50;
     parameter "Number of Food Stores" var: nb_food_stores min: 1 max: 10;
     parameter "Number of Water Stores" var: nb_water_stores min: 1 max: 10;
-    parameter "Enable Memory (Challenge 1)" var: enable_memory <- false;
-    parameter "Memory Use Probability" var: memory_use_probability <- 0.7 min: 0.0 max: 1.0;
     
     output {
         display main_display {
@@ -277,20 +294,34 @@ experiment Challange1 type: gui {
             species Guest;
         }
         
-        monitor "Number of Guests" value: length(Guest);
+        // CHALLENGE 1: Distance Comparison Graph Over Time
+        display "Distance Comparison Over Time" {
+            chart "Average Distance Traveled: WITH Brain vs WITHOUT Brain" type: series {
+                data "WITH BRAIN" value: length(avg_distance_with_brain) > 0 ? last(avg_distance_with_brain) : 0.0 color: #green marker: false;
+                data "WITHOUT BRAIN" value: length(avg_distance_without_brain) > 0 ? last(avg_distance_without_brain) : 0.0 color: #red marker: false;
+            }
+        }
+        
+        monitor "=== GUEST TYPES ===" value: "";
+        monitor "Guests WITH Brain" value: length(Guest where (each.has_brain = true));
+        monitor "Guests WITHOUT Brain" value: length(Guest where (each.has_brain = false));
+        
+        monitor "=== DISTANCE COMPARISON ===" value: "";
+        monitor "Avg Distance WITH Brain" value: length(Guest where (each.has_brain = true)) > 0 ? mean((Guest where (each.has_brain = true)) collect each.total_distance_traveled) : 0;
+        monitor "Avg Distance WITHOUT Brain" value: length(Guest where (each.has_brain = false)) > 0 ? mean((Guest where (each.has_brain = false)) collect each.total_distance_traveled) : 0;
+        monitor "Distance Saved (units)" value: length(Guest where (each.has_brain = false)) > 0 and length(Guest where (each.has_brain = true)) > 0 ? 
+            mean((Guest where (each.has_brain = false)) collect each.total_distance_traveled) - mean((Guest where (each.has_brain = true)) collect each.total_distance_traveled) : 0;
+        
+        monitor "=== BRAIN USAGE STATS ===" value: "";
+        monitor "Times Brain Used Memory" value: sum((Guest where (each.has_brain = true)) collect each.memory_uses);
+        monitor "Times Visited Info Center" value: sum(Guest collect each.info_center_visits);
+        monitor "Brains with Food Memory" value: length(Guest where (each.has_brain = true and !empty(each.visited_stores where (each.store_type = "FOOD"))));
+        monitor "Brains with Water Memory" value: length(Guest where (each.has_brain = true and !empty(each.visited_stores where (each.store_type = "WATER"))));
+        
+        monitor "=== BASIC STATS ===" value: "";
         monitor "Guests Seeking Help" value: length(Guest where (each.state = "seeking_info"));
         monitor "Guests at Stores" value: length(Guest where (each.state = "at_store"));
         monitor "Average Hunger" value: mean(Guest collect each.hunger);
         monitor "Average Thirst" value: mean(Guest collect each.thirst);
-        
-        // CHALLENGE 1 MONITORS
-        monitor "--- MEMORY STATS ---" value: "";
-        monitor "Memory Enabled?" value: enable_memory;
-        monitor "Total Memory Uses" value: sum(Guest collect each.memory_uses);
-        monitor "Total Discovery Uses" value: sum(Guest collect each.discovery_uses);
-        monitor "Average Distance Traveled" value: mean(Guest collect each.total_distance_traveled);
-        monitor "Total Distance All Guests" value: sum(Guest collect each.total_distance_traveled);
-        monitor "Guests with Food Memory" value: length(Guest where (each.memory_stores contains_key "FOOD"));
-        monitor "Guests with Water Memory" value: length(Guest where (each.memory_stores contains_key "WATER"));
     }
 }
