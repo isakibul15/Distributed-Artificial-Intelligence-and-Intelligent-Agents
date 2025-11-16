@@ -1,16 +1,7 @@
 /**
-* Name: old
-* Based on the internal empty template. 
-* Author: singv
-* Tags: 
-*/
-
-
-/**
-* Name: Festival
-* Based on the internal empty template. 
-* Author: singv
-* Tags: 
+* Name: BasicModel_challenge2
+* Author: Adele, Kat
+* Tags: Group-13
 */
 
 model Festival
@@ -18,14 +9,17 @@ model Festival
 global {
     geometry shape <- square(100);  // Define world bounds
     
+    // Global variables for tracking
+    int totalMemoryStores <- 0;
+    int totalNoMemoryStores <- 0;
+    float totalDistanceTraveled <- 0.0;
+    
     init {
-
-
-        create FoodStore number: 1 {
-            location <- {20, 20};
+        create FoodStore number: 2 {
+            location <- (index = 0) ? {20, 20} : {80, 70};
         }
-        create DrinkStore number: 1 {
-            location <- {50, 80};
+        create DrinkStore number: 2 {
+            location <- (index = 0) ? {50, 80} : {30, 70};
         }
         create BothStore number: 1 {
             location <- {70, 20};
@@ -33,11 +27,16 @@ global {
         create InformationCenter number: 1 {
             location <- {50, 50};  
         }
-                create Guest number: 20 {
+        create Guest number: 20 {
             location <- any_location_in(shape);  // Random locations
         }
-                create Security number:1 ;
-        
+        create Security number:1 ;
+    }
+    
+    reflex updateStats {
+        totalMemoryStores <- Guest sum_of (each.memoryUsedCount);
+        totalNoMemoryStores <- Guest sum_of (each.noMemoryUsedCount);
+        totalDistanceTraveled <- Guest sum_of (each.totalDistance);
     }
 }
 
@@ -48,19 +47,19 @@ species Store {
 
 species FoodStore parent: Store {
     aspect base {
-        draw square(8) color: #black;
+        draw square(8) color: #orange;
     }
 }
 
 species DrinkStore parent: Store {
     aspect base {
-        draw square(5) color: #black;
+        draw square(5) color: #cyan;
     }
 }
 
 species BothStore parent: Store {
     aspect base {
-        draw square(9) color: #black;
+        draw square(9) color: #green;
     }
 }
 
@@ -91,6 +90,11 @@ species Guest skills: [moving] {
     bool shouldReport <- false;
     Guest guestToBeReported <- nil;
     
+    // Tracking variables
+    int memoryUsedCount <- 0;
+    int noMemoryUsedCount <- 0;
+    float totalDistance <- 0.0;
+    point lastLocation <- location;
     
     string getNeedType {
         if (isHungry and isThirsty) {
@@ -143,6 +147,7 @@ species Guest skills: [moving] {
         if (!empty(evil_guests)) {
            guestToBeReported <- evil_guests closest_to(self);
            shouldReport <- true;
+           write "Bad guest detected" + guestToBeReported;
         }
 
     }
@@ -159,16 +164,19 @@ species Guest skills: [moving] {
 			if (randomValue < 0.1 or length(visited) <= 0 or shouldReport) { // discover new place
 				write "Want to visit new store or going to report";
 				 isMovingToInfo <- true;
+				 noMemoryUsedCount <- noMemoryUsedCount + 1;
 				}
 			else{
 				Store s <- getStore(getNeedType());
 				if(s != nil){
-					write "Got store in memory";
+					write "Got store in memory for" + getNeedType() + s;
 					targetStore <- s;
+					memoryUsedCount <- memoryUsedCount + 1;
 				}
 				else{
-					write "Needed store not in memory";
+					write "Needed store not in memory for" + getNeedType();
 					isMovingToInfo <- true;
+					noMemoryUsedCount <- noMemoryUsedCount + 1;
 				}
 			}
 			write "stores visited is" + visited;
@@ -202,6 +210,7 @@ species Guest skills: [moving] {
    		
         if (isHungry and isThirsty) {
             ask center {
+            	            	write "Guest is both hungry and thirsty!";
             	
              myself.targetStore <- one_of(bothStores);
              	
@@ -212,17 +221,20 @@ species Guest skills: [moving] {
  
         else if (isHungry) {
             ask center {
+            	write "Guest is hungry!";
              myself.targetStore <- one_of(foodStores);          
               }
         }
         else if (isThirsty) {
             ask center {
+            	            	write "Guest is thirsty!";
+         
              myself.targetStore <- one_of(drinkStores);          
               }
         }
         
         if (targetStore != nil) {
-            write "location is " + targetStore.location;
+            write "going to store on location  " + targetStore.location;
             
             
         } else {
@@ -242,6 +254,7 @@ species Guest skills: [moving] {
     		  if (location distance_to targetStore.location < 1.0) {
 				do addToStore(targetStore,getNeedType());
 			  	write "Guest arrived at store!";
+			  	write "Added store in memory!";
                 isHungry <- false;
                 isThirsty <- false;
                 targetStore <- nil;
@@ -250,7 +263,10 @@ species Guest skills: [moving] {
     	}
     }
     
-    
+    reflex trackDistance {
+        totalDistance <- totalDistance + (location distance_to lastLocation);
+        lastLocation <- location;
+    }
 
     aspect base {
         draw circle(3) color: evil ? #red : #yellow;
@@ -282,8 +298,9 @@ species Security skills:[moving]{
     	if(AssignedGuest != nil){
     		if(!(killed contains AssignedGuest)){
     			write "kill list " + killed;
+    			write "Guard moving towards bad guest to kill";
     		if (location distance_to AssignedGuest.location < 1.0 ) {
-    			write "killing guest ";
+    			write "Guard killing guest " + AssignedGuest;
     			do addToKillList(AssignedGuest);
     			ask AssignedGuest{
     				do die;
@@ -299,7 +316,7 @@ species Security skills:[moving]{
     }
 }
 
-experiment festival type: gui {
+experiment Festival_Simulation type: gui {
     output {
         display main_display {
             species Guest aspect: base;
@@ -307,8 +324,20 @@ experiment festival type: gui {
             species FoodStore aspect: base;
             species DrinkStore aspect: base;
             species BothStore aspect: base;
-                        species Security aspect: base ;
-            
+            species Security aspect: base ;
+        }
+        
+        display "Memory vs No Memory Usage" {
+            chart "Store Finding Strategy" type: series {
+                data "Used Memory" value: totalMemoryStores color: #green;
+                data "Asked Info Center" value: totalNoMemoryStores color: #red;
+            }
+        }
+        
+        display "Distance Traveled Over Time" {
+            chart "Total Distance" type: series {
+                data "Distance" value: totalDistanceTraveled color: #blue;
+            }
         }
     }
 }
