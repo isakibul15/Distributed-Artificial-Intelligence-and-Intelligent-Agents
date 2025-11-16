@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_-o1lsb27EfC2bc_X1vyN-A" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-o1lsr27EfC2bc_X1vyN-A" bindingContexts="_-o1lu727EfC2bc_X1vyN-A">
-  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workbench>&#xA;&lt;mruList>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1_Test.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1_Test.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1_Test.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Main.gaml&quot; tooltip=&quot;Festival_Project/models/Main.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Main.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Festival_Simulation.gaml&quot; tooltip=&quot;Festival_Project/models/Festival_Simulation.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Festival_Simulation.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Variables.gaml&quot; tooltip=&quot;Festival_Project/models/Variables.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Variables.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Conditons.gaml&quot; tooltip=&quot;Festival_Project/models/Conditons.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Conditons.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Facet.gaml&quot; tooltip=&quot;Festival_Project/models/Facet.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Facet.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;/mruList>&#xA;&lt;/workbench>"/>
+  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workbench>&#xA;&lt;mruList>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Festival_Simulation.gaml&quot; tooltip=&quot;Festival_Project/models/Festival_Simulation.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Festival_Simulation.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Main.gaml&quot; tooltip=&quot;Festival_Project/models/Main.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Main.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1_Test.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1_Test.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1_Test.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Variables.gaml&quot; tooltip=&quot;Festival_Project/models/Variables.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Variables.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Conditons.gaml&quot; tooltip=&quot;Festival_Project/models/Conditons.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Conditons.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Facet.gaml&quot; tooltip=&quot;Festival_Project/models/Facet.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Facet.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;/mruList>&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_-o1lsr27EfC2bc_X1vyN-A" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-tUdEb27EfC2bc_X1vyN-A" x="80" y="88" width="1352" height="843">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_-o1lsr27EfC2bc_X1vyN-A" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-tUdEb27EfC2bc_X1vyN-A" x="80" y="88" width="1352" height="844">
     <persistedState key="coolBarVisible" value="true"/>
     <persistedState key="perspectiveBarVisible" value="true"/>
     <persistedState key="isRestored" value="true"/>
@@ -10,7 +10,6 @@
     <persistedState key="workingSets" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workingSets/>"/>
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1762727551747"/>
     <tags>topLevel</tags>
-    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_-tUdEb27EfC2bc_X1vyN-A" selectedElement="_-tUdEr27EfC2bc_X1vyN-A" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_-tUdEr27EfC2bc_X1vyN-A" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_-vKQIL27EfC2bc_X1vyN-A">
         <children xsi:type="advanced:Perspective" xmi:id="_-vKQIL27EfC2bc_X1vyN-A" elementId="gama.ui.application.perspectives.ModelingPerspective" selectedElement="_-vKQIb27EfC2bc_X1vyN-A" label="Modeling" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/perspective.modeling.png">
@@ -32,8 +31,8 @@
           <tags>persp.editorOnboardingCommand:Show Key Assist$$$&#x21e7;&#x2318;L</tags>
           <tags>persp.editorOnboardingCommand:New$$$&#x2318;N</tags>
           <tags>persp.editorOnboardingCommand:Documentation$$$&#x21e7;&#x2318;D</tags>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_-vKQIb27EfC2bc_X1vyN-A" selectedElement="_-vKQIr27EfC2bc_X1vyN-A" horizontal="true">
-            <children xsi:type="basic:PartSashContainer" xmi:id="_-vKQIr27EfC2bc_X1vyN-A" containerData="2966" selectedElement="_-vKQJb27EfC2bc_X1vyN-A">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_-vKQIb27EfC2bc_X1vyN-A" selectedElement="_-vKQKL27EfC2bc_X1vyN-A" horizontal="true">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_-vKQIr27EfC2bc_X1vyN-A" containerData="2966" selectedElement="_-vKQI727EfC2bc_X1vyN-A">
               <children xsi:type="basic:PartStack" xmi:id="_-vKQI727EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigatorMStack" containerData="6500" selectedElement="_-vKQJL27EfC2bc_X1vyN-A">
                 <tags>Standalone</tags>
                 <children xsi:type="advanced:Placeholder" xmi:id="_-vKQJL27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigator" ref="_-vIa8L27EfC2bc_X1vyN-A" closeable="true">
@@ -43,7 +42,6 @@
                 </children>
               </children>
               <children xsi:type="basic:PartStack" xmi:id="_-vKQJb27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.problemsMStack" containerData="3500" selectedElement="_-vKQJr27EfC2bc_X1vyN-A">
-                <tags>active</tags>
                 <children xsi:type="advanced:Placeholder" xmi:id="_-vKQJr27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.problems" ref="_-vJCAb27EfC2bc_X1vyN-A" closeable="true">
                   <tags>View</tags>
                   <tags>categoryTag:Gama</tags>
@@ -93,28 +91,24 @@
       <tags>categoryTag:General</tags>
     </sharedElements>
     <sharedElements xsi:type="advanced:Area" xmi:id="_-vHM0L27EfC2bc_X1vyN-A" elementId="org.eclipse.ui.editorss" selectedElement="_-vHM0b27EfC2bc_X1vyN-A">
-      <children xsi:type="basic:PartStack" xmi:id="_-vHM0b27EfC2bc_X1vyN-A" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_gcB-QME8EfCuGbKpFENIdQ">
+      <children xsi:type="basic:PartStack" xmi:id="_-vHM0b27EfC2bc_X1vyN-A" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_hlhLUME7EfCuGbKpFENIdQ">
         <tags>EditorStack</tags>
         <tags>org.eclipse.e4.primaryDataStack</tags>
-        <tags>noFocus</tags>
+        <tags>active</tags>
         <children xsi:type="basic:Part" xmi:id="_hlhLUME7EfCuGbKpFENIdQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Main.gaml" iconURI="platform:/plugin/gama.ui.shared/icons/light/navigator/files/file.model.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;gaml.compiler.Gaml&quot; name=&quot;Main.gaml&quot; partName=&quot;Main.gaml&quot; title=&quot;Main.gaml&quot; tooltip=&quot;Festival_Project/models/Main.gaml&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Festival_Project/models/Main.gaml&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;6947&quot; selectionOffset=&quot;0&quot; selectionTopPixel=&quot;0&quot;/>&#xA;&lt;/editor>"/>
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;gaml.compiler.Gaml&quot; name=&quot;Main.gaml&quot; partName=&quot;Main.gaml&quot; title=&quot;Main.gaml&quot; tooltip=&quot;Festival_Project/models/Main.gaml&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Festival_Project/models/Main.gaml&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;6478&quot; selectionTopPixel=&quot;3245&quot;/>&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>removeOnHide</tags>
           <tags>gaml.compiler.Gaml</tags>
-        </children>
-        <children xsi:type="basic:Part" xmi:id="_gcB-QME8EfCuGbKpFENIdQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Challange-1_Test.gaml" iconURI="platform:/plugin/gama.ui.shared/icons/light/navigator/files/file.model.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1_Test.gaml&quot; partName=&quot;Challange-1_Test.gaml&quot; title=&quot;Challange-1_Test.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1_Test.gaml&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Festival_Project/models/Challange-1_Test.gaml&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;528&quot; selectionTopPixel=&quot;98&quot;/>&#xA;&lt;/editor>"/>
-          <tags>Editor</tags>
-          <tags>removeOnHide</tags>
-          <tags>gaml.compiler.Gaml</tags>
+          <tags>active</tags>
+          <tags>activeOnClose</tags>
         </children>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_-vIa8L27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigator" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Models" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.navigator.png" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="gama.ui.navigator.view.GamaNavigator"/>
       <persistedState key="originalCompatibilityViewBundle" value="gama.ui.navigator"/>
-      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;User models@@/Festival_Project@@/Festival_Project/models&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;User models@@/Festival_Project&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Gama</tags>
       <menus xmi:id="_-vp_YL27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigator">
@@ -141,8 +135,6 @@
       <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view PRIMARY_SORT_FIELD=&quot;org.eclipse.ui.ide.severityAndDescriptionField&quot; categoryGroup=&quot;org.eclipse.ui.ide.severity&quot; markerContentGenerator=&quot;org.eclipse.ui.ide.problemsGenerator&quot;>&#xA;&lt;columnWidths org.eclipse.ui.ide.locationField=&quot;90&quot; org.eclipse.ui.ide.markerType=&quot;90&quot; org.eclipse.ui.ide.pathField=&quot;120&quot; org.eclipse.ui.ide.resourceField=&quot;90&quot; org.eclipse.ui.ide.severityAndDescriptionField=&quot;300&quot;/>&#xA;&lt;visible IMemento.internal.id=&quot;org.eclipse.ui.ide.severityAndDescriptionField&quot;/>&#xA;&lt;visible IMemento.internal.id=&quot;org.eclipse.ui.ide.resourceField&quot;/>&#xA;&lt;visible IMemento.internal.id=&quot;org.eclipse.ui.ide.pathField&quot;/>&#xA;&lt;visible IMemento.internal.id=&quot;org.eclipse.ui.ide.locationField&quot;/>&#xA;&lt;visible IMemento.internal.id=&quot;org.eclipse.ui.ide.markerType&quot;/>&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Gama</tags>
-      <tags>active</tags>
-      <tags>activeOnClose</tags>
       <menus xmi:id="_-w3gUL27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.problems">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
@@ -2611,6 +2603,710 @@
       </menus>
       <toolbar xmi:id="_BavlkcE-EfCuGbKpFENIdQ" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
     </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_KkcvgMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_KkcvgcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_KkdWkMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_KsVgMMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763122339249" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_Ksa_wMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_Ksa_wcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_NIcWQMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_NIc9UMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_NIc9UcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_NKUlkMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763122355815" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_NKVzsMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_NKVzscFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_O3_BQMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_O3_BQcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_O3_BQsFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_O5zmMMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763122367506" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_O51bYMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_O51bYcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_PEiPgMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763122368631" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_PEkEsMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_PEkEscFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_PE0jYMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763122368662" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_PE1KcMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_PE1KccFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d19ccMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d19cccFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d19ccsFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d30doMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763122467960" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_d31EsMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_d31EscFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d4J00MFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763122467996" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_d4Kb4MFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_d4Kb4cFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_d4a6kMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763122468024" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_d4bhoMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_d4bhocFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_np8fAMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_np8fAcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_np8fAsFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_nrvOwMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763122533801" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_nrwc4MFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_nrwc4cFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_nsEl8MFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763122533839" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_nsFNAMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_nsFNAcFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_nsVEoMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763122533866" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_nsVrsMFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_nsVrscFTEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zi3YUMFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zi3YUcFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zi3YUsFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zkuZgMFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763123043096" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_zkw1wMFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_zkw1wcFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zlFl4MFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763123043133" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_zlGM8MFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_zlGM8cFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_zlWEkMFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763123043161" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_zlWroMFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_zlWrocFUEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_GgxscMFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763124458679" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_GgzhoMFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_GgzhocFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_GhJf4MFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763124458718" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_GhKG8MFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_GhKG8cFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_GhbMsMFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763124458747" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_GhbzwMFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_GhbzwcFYEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_TcfqEMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_TcfqEcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_TcgRIMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_TeZukMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763125404663" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_Tea8sMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_Tea8scFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_Tevs0MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763125404701" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_TewT4MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_TewT4cFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_TfALgMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763125404728" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_TfAykMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_TfAykcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_U8fdMMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763125414531" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_U8grUMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_U8grUcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_U81bcMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763125414567" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_U82CgMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_U82CgcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_U9IWYMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763125414597" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_U9I9cMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_U9I9ccFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_WBO3sMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763125421739" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_WBQF0MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_WBQF0cFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_WBk18MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763125421775" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_WBldAMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_WBldAcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_WB3w4MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763125421805" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_WB4X8MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_WB4X8cFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_aTjBcMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763125450502" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_aTk2oMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_aTk2ocFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_aT5mwMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763125450540" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_aT6N0MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_aT6N0cFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_aUL6oMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763125450570" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_aUMhsMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_aUMhscFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_6xwZMMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_6xwZMcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_6xwZMsFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_6zgssMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763125668602" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_6zhTwMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_6zhTwcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_6z2q8MFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763125668638" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_6z3SAMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_6z3SAcFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_60HJoMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763125668665" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_60HwsMFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_60HwscFaEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8EQtcMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8EQtccFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8EQtcsFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8GGggMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763126106759" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_8GHuoMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_8GHuocFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8GcewMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763126106795" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_8GdF0MFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_8GdF0cFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_8Gs9cMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763126106822" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_8GtkgMFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_8GtkgcFbEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_Cxu1kMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.LayeredDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.java2d"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.java2d.AWTDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_Cxu1kcFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="3D" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_Cxu1ksFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.TableAgentInspectView:*" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Browser" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.browser.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.experiment"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.experiment.views.inspectors.PopulationInspectView"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_CzqvQMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:main_display@@@1763126581296" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="main_display" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_CzskcMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_CzskccFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_C0AtgMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Memory vs No Memory Usage@@@1763126581335" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Memory vs No Memory Usage" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_C0BUkMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_C0BUkcFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
+    <sharedElements xsi:type="basic:Part" xmi:id="_C0RzQMFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView:Distance Traveled Over Time@@@1763126581364" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Distance Traveled Over Time" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.display.png" tooltip="" closeable="true">
+      <persistedState key="originalCompatibilityViewBundle" value="gama.ui.display.opengl"/>
+      <persistedState key="originalCompatibilityViewClass" value="gama.ui.display.opengl.view.OpenGLDisplayView"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
+      <tags>View</tags>
+      <tags>categoryTag:Gama</tags>
+      <tags>NoRestore</tags>
+      <menus xmi:id="_C0SaUcFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView">
+        <tags>ViewMenu</tags>
+        <tags>menuContribution:menu</tags>
+      </menus>
+      <toolbar xmi:id="_C0SaUsFdEfCjkcG9zuNPTw" elementId="gama.ui.application.view.OpenGLDisplayView" visible="false"/>
+    </sharedElements>
     <trimBars xmi:id="_-o1ls727EfC2bc_X1vyN-A" elementId="org.eclipse.ui.main.toolbar" contributorURI="platform:/plugin/org.eclipse.ui.workbench">
       <children xsi:type="menu:ToolBar" xmi:id="_-uuyUL27EfC2bc_X1vyN-A" elementId="additions">
         <tags>toolbarSeparator</tags>
@@ -2971,7 +3667,7 @@
     <bindings xmi:id="_-pJHvr27EfC2bc_X1vyN-A" keySequence="COMMAND+INSERT" command="_-o_-Ur27EfC2bc_X1vyN-A"/>
   </bindingTables>
   <bindingTables xmi:id="_-pnByb27EfC2bc_X1vyN-A" contributorURI="platform:/fragment/org.eclipse.e4.ui.workbench.renderers.swt.cocoa" bindingContext="_-o1lvr27EfC2bc_X1vyN-A">
-    <bindings xmi:id="_RA9z4cE7EfCuGbKpFENIdQ" keySequence="M1+W" command="_-pnBx727EfC2bc_X1vyN-A"/>
+    <bindings xmi:id="_2ASJwMLEEfC03Onztf5A_Q" keySequence="M1+W" command="_-pnBx727EfC2bc_X1vyN-A"/>
   </bindingTables>
   <bindingTables xmi:id="_-vHM0727EfC2bc_X1vyN-A" bindingContext="_-vHM0r27EfC2bc_X1vyN-A"/>
   <bindingTables xmi:id="_-vHM1b27EfC2bc_X1vyN-A" bindingContext="_-vHM1L27EfC2bc_X1vyN-A"/>
