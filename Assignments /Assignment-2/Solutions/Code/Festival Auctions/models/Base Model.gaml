@@ -148,7 +148,7 @@ species guest skills: [moving, fipa] {
     aspect default {
         draw circle(2.0) color: my_color border: #black;
         if participating_in_auction {
-            draw circle(3.5) color: my_color border: #red empty: true;
+            draw circle(3.5) color: #transparent border: #red width: 2;
         }
     }
 }
@@ -304,7 +304,7 @@ species auctioneer skills: [fipa] {
     aspect default {
         draw square(6.0) color: my_color border: #black;
         if auction_active {
-            draw circle(10.0) color: #red empty: true width: 2;
+            draw circle(10.0) color: #transparent border: #red width: 3;
             draw "AUCTION" color: #red size: 12 at: location + {0, -10};
         }
     }
