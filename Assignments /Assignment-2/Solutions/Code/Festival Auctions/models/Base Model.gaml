@@ -99,7 +99,7 @@ species guest skills: [moving, fipa] {
                     write name + " is interested in " + item_name + " (genre: " + item_genre + "). Max willing to pay: $" + max_willing_to_pay;
                 } else {
                     // Send REFUSE - not interested
-                    do refuse message: cfp_message contents: ["participant_id"::name, "interested"::false];
+                    do refuse message: cfp_message contents: ["participant_id", name, "interested", false];
                 }
             } else if msg_type = "price_update" and participating_in_auction {
                 string auction_id <- string(auction_data["auction_id"]);
@@ -111,8 +111,8 @@ species guest skills: [moving, fipa] {
                     if current_price <= max_willing_to_pay and current_price <= budget {
                         // Send PROPOSE to buy at current price (Dutch auction bid)
                         do propose message: cfp_message contents: [
-                            "participant_id"::name, 
-                            "bid_price"::current_price
+                            "participant_id", name, 
+                            "bid_price", current_price
                         ];
                         write name + " BIDS at price: $" + current_price;
                     }
@@ -211,12 +211,12 @@ species auctioneer skills: [fipa] {
             
             // Send CFP to all guests using FIPA protocol
             do start_conversation to: list(guest) protocol: 'fipa-contract-net' performative: 'cfp' contents: [
-                "auction_id"::current_auction_id,
-                "item_name"::item_name,
-                "item_genre"::item_genre,
-                "starting_price"::starting_price,
-                "current_price"::current_price,
-                "message_type"::"auction_start"
+                "auction_id", current_auction_id,
+                "item_name", item_name,
+                "item_genre", item_genre,
+                "starting_price", starting_price,
+                "current_price", current_price,
+                "message_type", "auction_start"
             ];
         }
     }
@@ -242,17 +242,17 @@ species auctioneer skills: [fipa] {
         
         // Inform winner using FIPA INFORM
         do inform message: first_bid contents: [
-            "message_type"::"winner",
-            "item_name"::item_name,
-            "final_price"::bid_price
+            "message_type", "winner",
+            "item_name", item_name,
+            "final_price", bid_price
         ];
         
         // Inform all other interested buyers that auction has ended
         list<agent> other_buyers <- list(guest) where (each.participating_in_auction and each != winner);
         if !empty(other_buyers) {
             do start_conversation to: other_buyers protocol: 'fipa-contract-net' performative: 'inform' contents: [
-                "message_type"::"auction_ended",
-                "reason"::"Item sold to another buyer"
+                "message_type", "auction_ended",
+                "reason", "Item sold to another buyer"
             ];
         }
         
@@ -276,8 +276,8 @@ species auctioneer skills: [fipa] {
             list<agent> participants <- list(guest) where each.participating_in_auction;
             if !empty(participants) {
                 do start_conversation to: participants protocol: 'fipa-contract-net' performative: 'inform' contents: [
-                    "message_type"::"auction_ended",
-                    "reason"::"No buyer at minimum price - auction cancelled"
+                    "message_type", "auction_ended",
+                    "reason", "No buyer at minimum price - auction cancelled"
                 ];
             }
             
@@ -291,9 +291,9 @@ species auctioneer skills: [fipa] {
             list<agent> participants <- list(guest) where each.participating_in_auction;
             if !empty(participants) {
                 do start_conversation to: participants protocol: 'fipa-contract-net' performative: 'cfp' contents: [
-                    "auction_id"::current_auction_id,
-                    "current_price"::current_price,
-                    "message_type"::"price_update"
+                    "auction_id", current_auction_id,
+                    "current_price", current_price,
+                    "message_type", "price_update"
                 ];
             }
             
