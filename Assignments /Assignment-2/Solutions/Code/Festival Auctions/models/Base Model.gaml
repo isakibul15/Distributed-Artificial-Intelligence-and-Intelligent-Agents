@@ -47,7 +47,7 @@ global {
         }
     }
     
-    reflex trigger_auction when: (time >= next_auction_time) {
+    reflex trigger_auction when: time >= next_auction_time {
         ask one_of(auctioneer where (!each.auction_active)) {
             do start_auction;
         }
@@ -70,7 +70,7 @@ species guest skills: [moving, fipa] {
     
     reflex move when: target != nil {
         do goto target: target speed: 2.0;
-        if (location distance_to target < 2.0) {
+        if location distance_to target < 2.0 {
             target <- nil;
         }
     }
@@ -99,7 +99,7 @@ species guest skills: [moving, fipa] {
                     write name + " is interested in " + item_name + " (genre: " + item_genre + "). Max willing to pay: $" + max_willing_to_pay;
                 } else {
                     // Send REFUSE - not interested
-                    do refuse with: [message::cfp_message, contents::["participant_id"::name, "interested"::false]];
+                    do refuse message: cfp_message contents: ["participant_id"::name, "interested"::false];
                 }
             } else if msg_type = "price_update" and participating_in_auction {
                 string auction_id <- string(auction_data["auction_id"]);
@@ -110,10 +110,10 @@ species guest skills: [moving, fipa] {
                     // Dutch auction: Accept immediately if price is acceptable
                     if current_price <= max_willing_to_pay and current_price <= budget {
                         // Send PROPOSE to buy at current price (Dutch auction bid)
-                        do propose with: [message::cfp_message, contents::[
+                        do propose message: cfp_message contents: [
                             "participant_id"::name, 
                             "bid_price"::current_price
-                        ]];
+                        ];
                         write name + " BIDS at price: $" + current_price;
                     }
                 }
@@ -241,11 +241,11 @@ species auctioneer skills: [fipa] {
         write "**************\n";
         
         // Inform winner using FIPA INFORM
-        do inform with: [message::first_bid, contents::[
+        do inform message: first_bid contents: [
             "message_type"::"winner",
             "item_name"::item_name,
             "final_price"::bid_price
-        ]];
+        ];
         
         // Inform all other interested buyers that auction has ended
         list<agent> other_buyers <- list(guest) where (each.participating_in_auction and each != winner);
