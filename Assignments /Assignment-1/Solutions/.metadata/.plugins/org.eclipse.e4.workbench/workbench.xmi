@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_-o1lsb27EfC2bc_X1vyN-A" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-o1lsr27EfC2bc_X1vyN-A" bindingContexts="_-o1lu727EfC2bc_X1vyN-A">
   <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workbench>&#xA;&lt;mruList>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Festival_Simulation.gaml&quot; tooltip=&quot;Festival_Project/models/Festival_Simulation.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Festival_Simulation.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Main.gaml&quot; tooltip=&quot;Festival_Project/models/Main.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Main.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Challange-1_Test.gaml&quot; tooltip=&quot;Festival_Project/models/Challange-1_Test.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Challange-1_Test.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Variables.gaml&quot; tooltip=&quot;Festival_Project/models/Variables.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Variables.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Conditons.gaml&quot; tooltip=&quot;Festival_Project/models/Conditons.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Conditons.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Facet.gaml&quot; tooltip=&quot;Festival_Project/models/Facet.gaml&quot;>&#xA;&lt;persistable path=&quot;/Festival_Project/models/Facet.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;/mruList>&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_-o1lsr27EfC2bc_X1vyN-A" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-tUdEb27EfC2bc_X1vyN-A" x="80" y="88" width="1352" height="844">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_-o1lsr27EfC2bc_X1vyN-A" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_-tUdEb27EfC2bc_X1vyN-A" x="80" y="88" width="1352" height="843">
     <persistedState key="coolBarVisible" value="true"/>
     <persistedState key="perspectiveBarVisible" value="true"/>
     <persistedState key="isRestored" value="true"/>
@@ -10,6 +10,7 @@
     <persistedState key="workingSets" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workingSets/>"/>
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1762727551747"/>
     <tags>topLevel</tags>
+    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_-tUdEb27EfC2bc_X1vyN-A" selectedElement="_-tUdEr27EfC2bc_X1vyN-A" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_-tUdEr27EfC2bc_X1vyN-A" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_-vKQIL27EfC2bc_X1vyN-A">
         <children xsi:type="advanced:Perspective" xmi:id="_-vKQIL27EfC2bc_X1vyN-A" elementId="gama.ui.application.perspectives.ModelingPerspective" selectedElement="_-vKQIb27EfC2bc_X1vyN-A" label="Modeling" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/perspective.modeling.png">
@@ -108,7 +109,7 @@
     <sharedElements xsi:type="basic:Part" xmi:id="_-vIa8L27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigator" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Models" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.navigator.png" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="gama.ui.navigator.view.GamaNavigator"/>
       <persistedState key="originalCompatibilityViewBundle" value="gama.ui.navigator"/>
-      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;User models@@/Festival_Project&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;User models&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Gama</tags>
       <menus xmi:id="_-vp_YL27EfC2bc_X1vyN-A" elementId="gama.ui.application.view.GamaNavigator">
@@ -3667,7 +3668,7 @@
     <bindings xmi:id="_-pJHvr27EfC2bc_X1vyN-A" keySequence="COMMAND+INSERT" command="_-o_-Ur27EfC2bc_X1vyN-A"/>
   </bindingTables>
   <bindingTables xmi:id="_-pnByb27EfC2bc_X1vyN-A" contributorURI="platform:/fragment/org.eclipse.e4.ui.workbench.renderers.swt.cocoa" bindingContext="_-o1lvr27EfC2bc_X1vyN-A">
-    <bindings xmi:id="_2ASJwMLEEfC03Onztf5A_Q" keySequence="M1+W" command="_-pnBx727EfC2bc_X1vyN-A"/>
+    <bindings xmi:id="_R4C48MPEEfCoRsZyqwV5wQ" keySequence="M1+W" command="_-pnBx727EfC2bc_X1vyN-A"/>
   </bindingTables>
   <bindingTables xmi:id="_-vHM0727EfC2bc_X1vyN-A" bindingContext="_-vHM0r27EfC2bc_X1vyN-A"/>
   <bindingTables xmi:id="_-vHM1b27EfC2bc_X1vyN-A" bindingContext="_-vHM1L27EfC2bc_X1vyN-A"/>
@@ -4309,7 +4310,7 @@
   <addons xmi:id="_-o1lx727EfC2bc_X1vyN-A" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_-o1lyL27EfC2bc_X1vyN-A" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_-o4B8L27EfC2bc_X1vyN-A" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_R3-ngcPEEfCoRsZyqwV5wQ" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <addons xmi:id="_-pnBwL27EfC2bc_X1vyN-A" elementId="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler"/>
   <categories xmi:id="_-o_WsL27EfC2bc_X1vyN-A" elementId="org.eclipse.team.ui.category.team" name="Version control (Team)" description="Actions that apply when working with a version control system"/>

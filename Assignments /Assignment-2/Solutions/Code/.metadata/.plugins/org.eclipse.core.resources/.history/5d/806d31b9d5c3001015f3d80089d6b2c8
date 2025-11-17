@@ -1,0 +1,18 @@
+/**
+* Name: BaseModel
+* Based on the internal skeleton template. 
+* Author: md.sakibulislam
+* Tags: 
+*/
+
+model BaseModel
+
+global {
+	/** Insert the global definitions, variables and actions here */
+}
+
+experiment BaseModel type: gui {
+	/** Insert here the definition of the input and output of the model */
+	output {
+	}
+}
