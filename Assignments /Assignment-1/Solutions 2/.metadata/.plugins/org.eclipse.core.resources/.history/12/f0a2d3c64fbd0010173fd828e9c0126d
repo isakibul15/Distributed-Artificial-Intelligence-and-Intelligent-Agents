@@ -1,0 +1,18 @@
+/**
+* Name: Variables
+* Based on the internal skeleton template. 
+* Author: md.sakibulislam
+* Tags: 
+*/
+
+model Variables
+
+global {
+	/** Insert the global definitions, variables and actions here */
+}
+
+experiment Variables type: gui {
+	/** Insert here the definition of the input and output of the model */
+	output {
+	}
+}

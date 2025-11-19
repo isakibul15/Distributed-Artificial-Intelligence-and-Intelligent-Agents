@@ -1,7 +1,7 @@
 /**
-* Name: BasicModel_challenge2
-* Author: Adele, Kat
-* Tags: Group-13
+* Name: Festival Simulation
+* Author: Based on Assignment 1 Requirements
+* Description: A festival simulation where guests get hungry/thirsty and visit stores
 */
 
 model Festival

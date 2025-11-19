@@ -1,0 +1,60 @@
+/**
+* Name: FestivalSimulation
+* Based on the internal skeleton template. 
+* Author: md.sakibulislam
+* Tags: 
+*/
+
+model festival_simulation
+
+global {
+	init {
+		create store number: 4;
+		create information_center number: 1;
+		create guest number: 10;
+	}
+}
+
+species store {
+	bool serves_food <- false;
+	bool serves_water <- false;
+	aspect default {
+		draw circle(2) color: rgb("green");
+	}
+}
+
+species information_center {
+	aspect default {
+		draw square(3) color: rgb("blue");
+	}
+}
+
+species guest {
+	float hunger <- rnd(1.0);
+	float thirst <- rnd(1.0);
+
+reflex roam {
+	point new_loc <- location + point(rnd(-0.8, 0.8), rnd(-0.8, 0.8));
+
+	// Keep within world boundaries
+	if (new_loc.x > 0 and new_loc.x < world.shape.width and
+	    new_loc.y > 0 and new_loc.y < world.shape.height) {
+		location <- new_loc;
+	}
+}
+
+	aspect default {
+		draw circle(1.5) color: rgb("red");
+	}
+}
+
+experiment main type: gui {
+	output {
+		display map_display {
+			species guest;
+			species store;
+			species information_center;
+		}
+	}
+}
+
