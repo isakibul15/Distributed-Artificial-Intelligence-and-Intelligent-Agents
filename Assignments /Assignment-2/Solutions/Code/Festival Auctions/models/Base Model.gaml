@@ -124,7 +124,7 @@ species Guest skills: [moving, fipa] {
     bool participating_in_auction <- false;
     string current_auction_id;
     float auction_budget <- rnd(30.0, 150.0);
-    float max_willing_to_pay;
+    float max_willing_to_pay <- 0.0;
     list<string> preferred_genres <- [];
     list<string> owned_merch <- [];
     
@@ -291,9 +291,10 @@ species Guest skills: [moving, fipa] {
                 if item_genre in preferred_genres and auction_budget > starting_price * 0.3 {
                     participating_in_auction <- true;
                     current_auction_id <- string(auction_data["auction_id"]);
-                    max_willing_to_pay <- min(auction_budget * rnd(0.5, 0.8), starting_price * 0.9);
+                    // FIXED: Calculate ONCE and store - never recalculate!
+                    max_willing_to_pay <- min(auction_budget * rnd(0.6, 0.85), starting_price * rnd(0.7, 0.95));
                     
-                    write name + " interested in " + item_name + " (" + item_genre + "). Max: $" + max_willing_to_pay;
+                    write name + " interested in " + item_name + " (" + item_genre + "). Max willing: $" + max_willing_to_pay + " (budget: $" + auction_budget + ")";
                 } else {
                     // Send REFUSE - not interested
                     do refuse message: cfp_message contents: ["participant_id", name, "interested", false];
@@ -305,12 +306,15 @@ species Guest skills: [moving, fipa] {
                     float current_price <- float(auction_data["current_price"]);
                     
                     // Dutch auction: Bid if price is acceptable
+                    // max_willing_to_pay is FIXED - calculated once at auction start
                     if current_price <= max_willing_to_pay and current_price <= auction_budget {
                         do propose message: cfp_message contents: [
                             "participant_id", name,
                             "bid_price", current_price
                         ];
-                        write name + " BIDS at price: $" + current_price;
+                        write name + " BIDS at price: $" + current_price + " (max was: $" + max_willing_to_pay + ")";
+                    } else {
+                        write name + " waiting... price $" + current_price + " > max $" + max_willing_to_pay;
                     }
                 }
             }
@@ -329,10 +333,12 @@ species Guest skills: [moving, fipa] {
                 add item_name to: owned_merch;
                 auction_budget <- auction_budget - final_price;
                 participating_in_auction <- false;
+                max_willing_to_pay <- 0.0; // Reset for next auction
                 
                 write name + " WON AUCTION! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + auction_budget;
             } else if msg_type = "auction_ended" {
                 participating_in_auction <- false;
+                max_willing_to_pay <- 0.0; // Reset for next auction
                 string reason <- string(data["reason"]);
                 write name + " - Auction ended: " + reason;
             }
