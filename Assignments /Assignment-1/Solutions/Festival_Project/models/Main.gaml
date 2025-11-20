@@ -1,6 +1,6 @@
 /**
-* Name: BasicModel_challenge2
-* Author: Adele, Kat
+* Name: Main
+* Author: Sakib, Ahsan, Sing
 * Tags: 
 */
 
