@@ -1,85 +1,282 @@
 /**
-* Name: Festival Dutch Auction
-* Description: Implementation of Dutch auction at a music festival using FIPA protocol
-* Based on FIPA Auction-Dutch Protocol specification
-* Author: Assignment 2 - DAIIA
+* Name: Festival with Dutch Auction
+* Author: Sakib, Ahsan, Sing - Extended with Auction System
+* Description: Festival simulation with merchandise auctions using FIPA protocol
 */
 
-model FestivalDutchAuction
+model Festival
 
 global {
-    // Festival parameters
-    int nb_guests <- 20;
-    int nb_stores <- 5;
-    int nb_auctioneers <- 2;
+    geometry shape <- square(100);
+    
+    // Global variables for tracking
+    int totalMemoryStores <- 0;
+    int totalNoMemoryStores <- 0;
+    float totalDistanceTraveled <- 0.0;
     
     // Auction timing
-    float auction_interval <- 100.0;
-    float next_auction_time <- 50.0;
+    float auction_interval <- 150.0;
+    float next_auction_time <- 100.0;
     
-    // Item types and genres for auction
-    list<string> item_types <- ["T-Shirt", "CD", "Poster", "Hat", "Mug"];
-    list<string> genres <- ["Rock", "Pop", "Jazz", "Electronic", "Metal"];
+    // Auction items
+    list<string> merch_items <- ["T-Shirt", "CD", "Poster", "Hat", "Hoodie"];
+    list<string> merch_genres <- ["Rock", "Pop", "Jazz", "Electronic", "Metal"];
+    
+    // Auction statistics
+    int total_auctions <- 0;
+    int successful_auctions <- 0;
+    float total_auction_revenue <- 0.0;
     
     init {
-        // Create festival guests (potential buyers)
-        create guest number: nb_guests {
-            location <- {rnd(100.0), rnd(100.0)};
-            my_color <- rnd_color(255);
-            budget <- rnd(50.0, 300.0);
-            
-            // Assign random genre preferences
-            int num_preferences <- rnd(1, 3);
-            loop times: num_preferences {
-                add one_of(genres) to: preferred_genres;
-            }
+        create FoodStore number: 2 {
+            location <- (index = 0) ? {20, 20} : {80, 70};
         }
-        
-        // Create stores
-        create store number: nb_stores {
-            location <- {rnd(100.0), rnd(100.0)};
+        create DrinkStore number: 2 {
+            location <- (index = 0) ? {50, 80} : {30, 70};
         }
+        create BothStore number: 1 {
+            location <- {70, 20};
+        }
+        create InformationCenter number: 1 {
+            location <- {50, 50};
+        }
+        create Guest number: 20 {
+            location <- any_location_in(shape);
+        }
+        create Security number: 1;
         
-        // Create auctioneers
-        create auctioneer number: nb_auctioneers {
-            location <- {rnd(100.0), rnd(100.0)};
-            my_color <- #gold;
+        // Create auctioneers for merchandise
+        create Auctioneer number: 2 {
+            location <- any_location_in(shape);
         }
     }
     
+    reflex updateStats {
+        totalMemoryStores <- Guest sum_of (each.memoryUsedCount);
+        totalNoMemoryStores <- Guest sum_of (each.noMemoryUsedCount);
+        totalDistanceTraveled <- Guest sum_of (each.totalDistance);
+    }
+    
     reflex trigger_auction when: time >= next_auction_time {
-        ask one_of(auctioneer where (!each.auction_active)) {
+        ask one_of(Auctioneer where (!each.auction_active)) {
             do start_auction;
         }
         next_auction_time <- time + auction_interval;
     }
 }
 
-// Guest species - potential buyers
-species guest skills: [moving, fipa] {
-    rgb my_color;
-    float budget;
-    list<string> preferred_genres <- [];
-    list<string> owned_items <- [];
-    point target;
+species Store {
+    int capacity <- 20;
+    int currentCapacity <- 0;
+}
+
+species FoodStore parent: Store {
+    aspect base {
+        draw square(8) color: #orange;
+    }
+}
+
+species DrinkStore parent: Store {
+    aspect base {
+        draw square(5) color: #cyan;
+    }
+}
+
+species BothStore parent: Store {
+    aspect base {
+        draw square(9) color: #green;
+    }
+}
+
+species InformationCenter {
+    list<FoodStore> foodStores <- list(FoodStore);
+    list<DrinkStore> drinkStores <- list(DrinkStore);
+    list<BothStore> bothStores <- list(BothStore);
+
+    aspect base {
+        draw square(10) color: #blue;
+    }
+}
+
+species StoreInfo {
+    Store store;
+    string type;
+}
+
+species Guest skills: [moving, fipa] {
+    bool isHungry <- false;
+    bool isThirsty <- false;
+    InformationCenter center <- first(InformationCenter);
+    Store targetStore;
+    bool isMovingToInfo <- false;
+    bool evil <- false;
+    list<StoreInfo> visited <- [];
+    bool shouldReport <- false;
+    Guest guestToBeReported <- nil;
+    
+    // Tracking variables
+    int memoryUsedCount <- 0;
+    int noMemoryUsedCount <- 0;
+    float totalDistance <- 0.0;
+    point lastLocation <- location;
     
     // Auction participation
     bool participating_in_auction <- false;
     string current_auction_id;
+    float auction_budget <- rnd(30.0, 150.0);
     float max_willing_to_pay;
+    list<string> preferred_genres <- [];
+    list<string> owned_merch <- [];
     
-    reflex move when: target != nil {
-        do goto target: target speed: 2.0;
-        if location distance_to target < 2.0 {
-            target <- nil;
+    init {
+        // Assign random genre preferences
+        int num_preferences <- rnd(1, 3);
+        loop times: num_preferences {
+            add one_of(merch_genres) to: preferred_genres;
         }
     }
     
-    reflex wander when: target = nil and !participating_in_auction {
-        do wander amplitude: 90.0 speed: 1.0;
+    string getNeedType {
+        if (isHungry and isThirsty) {
+            return "both";
+        } else if (isHungry) {
+            return "food";
+        } else if (isThirsty) {
+            return "drink";
+        }
+        return "none";
     }
     
-    // Handle CFP (Call for Proposal) - auction announcement
+    action addToStore(Store s, string t) {
+        create StoreInfo {
+            store <- s;
+            type <- t;
+        }
+        add item: last(StoreInfo) to: visited;
+    }
+    
+    action getStore(string t) {
+        StoreInfo match <- visited first_with (each.type = t);
+        if match != nil {
+            return match.store;
+        }
+        return nil;
+    }
+    
+    reflex changeState {
+        if !isHungry {
+            isHungry <- flip(0.02);
+        }
+        if !isThirsty {
+            isThirsty <- flip(0.01);
+        }
+        if !isHungry and !isThirsty and !evil {
+            evil <- flip(0.0005);
+            if evil {
+//                write "turned evil";
+            }
+        }
+    }
+    
+    reflex checkForBadGuests {
+        list<Guest> evil_guests <- (Guest - self) where (each.evil);
+        if !empty(evil_guests) {
+            guestToBeReported <- evil_guests closest_to (self);
+            shouldReport <- true;
+//            write "Bad guest detected" + guestToBeReported;
+        }
+    }
+    
+    reflex MovingToInfo when: isMovingToInfo {
+        do goto target: center.location;
+    }
+    
+    reflex CheckForHungerOrThirst {
+        if (isHungry or isThirsty) and targetStore = nil and !isMovingToInfo and !participating_in_auction {
+            float randomValue <- rnd(1.0);
+            if randomValue < 0.1 or length(visited) <= 0 or shouldReport {
+//                write "Want to visit new store or going to report";
+                isMovingToInfo <- true;
+                noMemoryUsedCount <- noMemoryUsedCount + 1;
+            } else {
+                Store s <- getStore(getNeedType());
+                if s != nil {
+//                    write "Got store in memory for" + getNeedType() + s;
+                    targetStore <- s;
+                    memoryUsedCount <- memoryUsedCount + 1;
+                } else {
+//                    write "Needed store not in memory for" + getNeedType();
+                    isMovingToInfo <- true;
+                    noMemoryUsedCount <- noMemoryUsedCount + 1;
+                }
+            }
+//            write "stores visited is" + visited;
+        } else if !isHungry and !isThirsty and targetStore = nil and !participating_in_auction {
+            do wander;
+        }
+    }
+    
+    reflex askInfo {
+        if location distance_to center.location < 1.0 and targetStore = nil and (isHungry or isThirsty) {
+            isMovingToInfo <- false;
+            
+            if shouldReport {
+                ask Security {
+                    if killed contains myself.guestToBeReported {
+                        // nothing
+                    } else {
+//                        write " reporting guest " + myself.guestToBeReported;
+                        AssignedGuest <- myself.guestToBeReported;
+                    }
+                }
+                guestToBeReported <- nil;
+                shouldReport <- false;
+            }
+            
+            if isHungry and isThirsty {
+                ask center {
+//                    write "Guest is both hungry and thirsty!";
+                    myself.targetStore <- one_of(bothStores);
+                }
+            } else if isHungry {
+                ask center {
+//                    write "Guest is hungry!";
+                    myself.targetStore <- one_of(foodStores);
+                }
+            } else if isThirsty {
+                ask center {
+//                    write "Guest is thirsty!";
+                    myself.targetStore <- one_of(drinkStores);
+                }
+            }
+            
+            if targetStore != nil {
+//                write "going to store on location  " + targetStore.location;
+            } else {
+//                write "No store found!";
+            }
+        }
+    }
+    
+    reflex goToStore when: targetStore != nil and !participating_in_auction {
+        do goto target: targetStore.location;
+    }
+    
+    reflex checkArrivalAtStore {
+        if targetStore != nil {
+            if location distance_to targetStore.location < 1.0 {
+                do addToStore(targetStore, getNeedType());
+//                write "Guest arrived at store!";
+//                write "Added store in memory!";
+                isHungry <- false;
+                isThirsty <- false;
+                targetStore <- nil;
+            }
+        }
+    }
+    
+    // AUCTION REFLEXES - FIPA Protocol Communication
+    
     reflex receive_cfp when: !empty(cfps) {
         loop cfp_message over: cfps {
             map auction_data <- cfp_message.contents;
@@ -91,12 +288,12 @@ species guest skills: [moving, fipa] {
                 float starting_price <- float(auction_data["starting_price"]);
                 
                 // Decide if interested based on genre and budget
-                if item_genre in preferred_genres and budget > starting_price * 0.3 {
+                if item_genre in preferred_genres and auction_budget > starting_price * 0.3 {
                     participating_in_auction <- true;
                     current_auction_id <- string(auction_data["auction_id"]);
-                    max_willing_to_pay <- min(budget * rnd(0.6, 0.9), starting_price);
+                    max_willing_to_pay <- min(auction_budget * rnd(0.5, 0.8), starting_price * 0.9);
                     
-                    write name + " is interested in " + item_name + " (genre: " + item_genre + "). Max willing to pay: $" + max_willing_to_pay;
+                    write name + " interested in " + item_name + " (" + item_genre + "). Max: $" + max_willing_to_pay;
                 } else {
                     // Send REFUSE - not interested
                     do refuse message: cfp_message contents: ["participant_id", name, "interested", false];
@@ -107,11 +304,10 @@ species guest skills: [moving, fipa] {
                 if auction_id = current_auction_id {
                     float current_price <- float(auction_data["current_price"]);
                     
-                    // Dutch auction: Accept immediately if price is acceptable
-                    if current_price <= max_willing_to_pay and current_price <= budget {
-                        // Send PROPOSE to buy at current price (Dutch auction bid)
+                    // Dutch auction: Bid if price is acceptable
+                    if current_price <= max_willing_to_pay and current_price <= auction_budget {
                         do propose message: cfp_message contents: [
-                            "participant_id", name, 
+                            "participant_id", name,
                             "bid_price", current_price
                         ];
                         write name + " BIDS at price: $" + current_price;
@@ -121,7 +317,6 @@ species guest skills: [moving, fipa] {
         }
     }
     
-    // Handle auction result - INFORM messages
     reflex receive_inform when: !empty(informs) {
         loop inform_msg over: informs {
             map data <- inform_msg.contents;
@@ -131,12 +326,11 @@ species guest skills: [moving, fipa] {
                 string item_name <- string(data["item_name"]);
                 float final_price <- float(data["final_price"]);
                 
-                add item_name to: owned_items;
-                budget <- budget - final_price;
+                add item_name to: owned_merch;
+                auction_budget <- auction_budget - final_price;
                 participating_in_auction <- false;
-                my_color <- #green;
                 
-                write name + " WON! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + budget;
+                write name + " WON AUCTION! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + auction_budget;
             } else if msg_type = "auction_ended" {
                 participating_in_auction <- false;
                 string reason <- string(data["reason"]);
@@ -145,26 +339,59 @@ species guest skills: [moving, fipa] {
         }
     }
     
-    aspect default {
-        draw circle(2.0) color: my_color border: #black;
+    reflex trackDistance {
+        totalDistance <- totalDistance + (location distance_to lastLocation);
+        lastLocation <- location;
+    }
+    
+    aspect base {
+        rgb display_color <- evil ? #red : #yellow;
         if participating_in_auction {
-            draw circle(3.5) color: #transparent border: #red width: 2;
+            display_color <- #pink;
+        }
+        draw circle(3) color: display_color;
+    }
+}
+
+species Security skills: [moving] {
+    Guest AssignedGuest <- nil;
+    list<Guest> killed <- [];
+    
+    aspect base {
+        draw circle(3) color: #purple;
+    }
+    
+    reflex GotoGuest when: AssignedGuest != nil {
+        do goto target: AssignedGuest.location;
+    }
+    
+    action addToKillList(Guest g) {
+        add item: g to: killed;
+    }
+    
+    reflex checkForProblem {
+        if AssignedGuest != nil {
+            if !(killed contains AssignedGuest) {
+//                write "kill list " + killed;
+//                write "Guard moving towards bad guest to kill";
+                if location distance_to AssignedGuest.location < 1.0 {
+//                    write "Guard killing guest " + AssignedGuest;
+                    do addToKillList(AssignedGuest);
+                    ask AssignedGuest {
+                        do die;
+                    }
+                    AssignedGuest <- nil;
+                }
+            }
+        } else {
+            do wander;
         }
     }
 }
 
-// Store species
-species store {
-    rgb my_color <- #blue;
-    
-    aspect default {
-        draw square(5.0) color: my_color border: #black;
-    }
-}
-
-// Auctioneer species - conducts Dutch auctions using FIPA protocol
-species auctioneer skills: [fipa] {
-    rgb my_color;
+// AUCTIONEER SPECIES - Dutch Auction Implementation using FIPA Protocol
+species Auctioneer skills: [fipa] {
+    rgb my_color <- #gold;
     
     // Auction state
     bool auction_active <- false;
@@ -178,7 +405,7 @@ species auctioneer skills: [fipa] {
     float reduction_interval <- 5.0;
     float last_reduction_time;
     
-    list<agent> interested_buyers <- [];
+    list<agent> participants <- [];
     agent winner <- nil;
     bool waiting_for_bids <- false;
     
@@ -187,30 +414,32 @@ species auctioneer skills: [fipa] {
             auction_active <- true;
             current_auction_id <- name + "_" + string(time);
             
-            // Generate random item
-            item_name <- one_of(item_types);
-            item_genre <- one_of(genres);
-            starting_price <- rnd(50.0, 150.0);
+            // Generate random merchandise item
+            item_name <- one_of(merch_items);
+            item_genre <- one_of(merch_genres);
+            starting_price <- rnd(50.0, 120.0);
             current_price <- starting_price;
             minimum_price <- starting_price * 0.3;
-            price_reduction <- starting_price * rnd(0.05, 0.15);
+            price_reduction <- starting_price * rnd(0.08, 0.15);
             last_reduction_time <- time;
             
-            interested_buyers <- [];
+            participants <- [];
             winner <- nil;
             waiting_for_bids <- true;
             my_color <- #orange;
             
+            total_auctions <- total_auctions + 1;
+            
             write "\n========================================";
-            write name + " STARTING DUTCH AUCTION!";
+            write name + " STARTING DUTCH AUCTION FOR MERCH!";
             write "Item: " + item_name + " (" + item_genre + ")";
             write "Starting price: $" + starting_price;
             write "Minimum price: $" + minimum_price;
             write "Price reduction: $" + price_reduction + " per round";
             write "========================================";
             
-            // Send CFP to all guests using FIPA protocol
-            do start_conversation to: list(guest) protocol: 'fipa-contract-net' performative: 'cfp' contents: [
+            // Send CFP to all guests using FIPA protocol (NO ASK!)
+            do start_conversation to: list(Guest) protocol: 'fipa-contract-net' performative: 'cfp' contents: [
                 "auction_id", current_auction_id,
                 "item_name", item_name,
                 "item_genre", item_genre,
@@ -221,14 +450,10 @@ species auctioneer skills: [fipa] {
         }
     }
     
-    // Collect REFUSE messages from uninterested buyers
     reflex receive_refuses when: auction_active and !empty(refuses) {
-        loop refuse_msg over: refuses {
-            // Just acknowledge - these buyers are not interested
-        }
+        // Acknowledge uninterested buyers
     }
     
-    // Handle PROPOSE messages (bids) - In Dutch auction, first bidder wins
     reflex receive_bids when: auction_active and waiting_for_bids and !empty(proposes) {
         // First bidder wins in Dutch auction!
         message first_bid <- first(proposes);
@@ -236,19 +461,22 @@ species auctioneer skills: [fipa] {
         float bid_price <- float(bid_data["bid_price"]);
         winner <- first_bid.sender;
         
-        write "\n*** SOLD! ***";
+        write "\n*** MERCH SOLD! ***";
         write name + " - " + winner.name + " bought " + item_name + " for $" + bid_price;
         write "**************\n";
         
-        // Inform winner using FIPA INFORM
+        successful_auctions <- successful_auctions + 1;
+        total_auction_revenue <- total_auction_revenue + bid_price;
+        
+        // Inform winner using FIPA INFORM (NO ASK!)
         do inform message: first_bid contents: [
             "message_type", "winner",
             "item_name", item_name,
             "final_price", bid_price
         ];
         
-        // Inform all other interested buyers that auction has ended
-        list<agent> other_buyers <- list(guest) where (each.participating_in_auction and each != winner);
+        // Inform all other interested buyers
+        list<agent> other_buyers <- list(Guest) where (each.participating_in_auction and each != winner);
         if !empty(other_buyers) {
             do start_conversation to: other_buyers protocol: 'fipa-contract-net' performative: 'inform' contents: [
                 "message_type", "auction_ended",
@@ -261,7 +489,6 @@ species auctioneer skills: [fipa] {
         my_color <- #gold;
     }
     
-    // Handle price reduction - reduce price at intervals
     reflex reduce_price when: auction_active and waiting_for_bids and empty(proposes) and (time - last_reduction_time >= reduction_interval) {
         // No bids received yet, reduce price
         current_price <- current_price - price_reduction;
@@ -272,10 +499,10 @@ species auctioneer skills: [fipa] {
             write name + " - Price fell below minimum threshold ($" + minimum_price + ")";
             write "*************************\n";
             
-            // Inform all interested participants using FIPA INFORM
-            list<agent> participants <- list(guest) where each.participating_in_auction;
-            if !empty(participants) {
-                do start_conversation to: participants protocol: 'fipa-contract-net' performative: 'inform' contents: [
+            // Inform all interested participants using FIPA INFORM (NO ASK!)
+            list<agent> interested <- list(Guest) where each.participating_in_auction;
+            if !empty(interested) {
+                do start_conversation to: interested protocol: 'fipa-contract-net' performative: 'inform' contents: [
                     "message_type", "auction_ended",
                     "reason", "No buyer at minimum price - auction cancelled"
                 ];
@@ -285,12 +512,12 @@ species auctioneer skills: [fipa] {
             waiting_for_bids <- false;
             my_color <- #gold;
         } else {
-            // Send price update to all interested buyers using FIPA CFP
+            // Send price update to all interested buyers using FIPA CFP (NO ASK!)
             write name + " - Price reduced to: $" + current_price;
             
-            list<agent> participants <- list(guest) where each.participating_in_auction;
-            if !empty(participants) {
-                do start_conversation to: participants protocol: 'fipa-contract-net' performative: 'cfp' contents: [
+            list<agent> interested <- list(Guest) where each.participating_in_auction;
+            if !empty(interested) {
+                do start_conversation to: interested protocol: 'fipa-contract-net' performative: 'cfp' contents: [
                     "auction_id", current_auction_id,
                     "current_price", current_price,
                     "message_type", "price_update"
@@ -301,35 +528,52 @@ species auctioneer skills: [fipa] {
         }
     }
     
-    aspect default {
-        draw square(6.0) color: my_color border: #black;
+    aspect base {
+        draw square(8) color: my_color border: #black;
         if auction_active {
-            draw circle(10.0) color: #transparent border: #red width: 3;
-            draw "AUCTION" color: #red size: 12 at: location + {0, -10};
+            draw circle(12.0) color: #transparent border: #red width: 3;
+            draw "MERCH AUCTION" color: #red size: 8 at: location + {0, -10};
         }
     }
 }
 
-experiment FestivalAuction type: gui {
-    parameter "Number of guests" var: nb_guests min: 5 max: 50;
-    parameter "Number of stores" var: nb_stores min: 2 max: 10;
-    parameter "Number of auctioneers" var: nb_auctioneers min: 1 max: 5;
-    parameter "Auction interval" var: auction_interval min: 50.0 max: 300.0;
-    
+experiment Festival_Simulation type: gui {
     output {
-        display main_display type: 2d {
-            graphics "background" {
-                draw rectangle(100, 100) color: #lightgreen;
-            }
-            
-            species store aspect: default;
-            species auctioneer aspect: default;
-            species guest aspect: default;
+        display main_display {
+            species Guest aspect: base;
+            species InformationCenter aspect: base;
+            species FoodStore aspect: base;
+            species DrinkStore aspect: base;
+            species BothStore aspect: base;
+            species Security aspect: base;
+            species Auctioneer aspect: base;
         }
         
-        monitor "Current time" value: time;
-        monitor "Active auctions" value: length(auctioneer where each.auction_active);
-        monitor "Guests in auctions" value: length(guest where each.participating_in_auction);
-        monitor "Total items sold" value: sum(guest collect length(each.owned_items));
+//        display "Memory vs No Memory Usage" {
+//            chart "Store Finding Strategy" type: series {
+//                data "Used Memory" value: totalMemoryStores color: #green;
+//                data "Asked Info Center" value: totalNoMemoryStores color: #red;
+//            }
+//        }
+//        
+//        display "Distance Traveled Over Time" {
+//            chart "Total Distance" type: series {
+//                data "Distance" value: totalDistanceTraveled color: #blue;
+//            }
+//        }
+        
+        display "Auction Statistics" {
+            chart "Auction Performance" type: series {
+                data "Total Auctions" value: total_auctions color: #orange;
+                data "Successful Auctions" value: successful_auctions color: #green;
+                data "Revenue ($)" value: total_auction_revenue / 10 color: #purple;
+            }
+        }
+        
+        monitor "Total Auctions" value: total_auctions;
+        monitor "Successful Auctions" value: successful_auctions;
+        monitor "Success Rate (%)" value: (total_auctions > 0) ? (successful_auctions / total_auctions * 100.0) : 0.0;
+        monitor "Total Revenue ($)" value: total_auction_revenue;
+        monitor "Avg Sale Price ($)" value: (successful_auctions > 0) ? (total_auction_revenue / successful_auctions) : 0.0;
     }
 }
