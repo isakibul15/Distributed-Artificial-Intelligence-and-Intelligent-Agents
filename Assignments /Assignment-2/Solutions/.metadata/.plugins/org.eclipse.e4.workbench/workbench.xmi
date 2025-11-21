@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_E_w3scSwEfCvypRYa83n3w" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_E_w3ssSwEfCvypRYa83n3w" bindingContexts="_E_w3u8SwEfCvypRYa83n3w">
   <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workbench>&#xA;&lt;mruList/>&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_E_w3ssSwEfCvypRYa83n3w" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_FD04UcSwEfCvypRYa83n3w" x="87" y="139" width="1024" height="768">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_E_w3ssSwEfCvypRYa83n3w" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_FD04UcSwEfCvypRYa83n3w" x="87" y="110" width="1352" height="844">
     <persistedState key="coolBarVisible" value="true"/>
     <persistedState key="perspectiveBarVisible" value="true"/>
     <persistedState key="isRestored" value="true"/>
@@ -21,16 +21,16 @@
           <tags>persp.actionSet:org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo</tags>
           <tags>persp.actionSet:org.eclipse.ui.actionSet.keyBindings</tags>
           <tags>persp.actionSet:org.eclipse.ui.actionSet.openFiles</tags>
-          <tags>persp.editorOnboardingText:Select a model in the navigator, create a new model file or consult the documentation to get started !</tags>
           <tags>persp.perspSC:gama.ui.application.perspectives.SimulationPerspective</tags>
           <tags>persp.viewSC:gama.ui.application.view.InteractiveConsoleView</tags>
           <tags>persp.viewSC:gama.ui.application.view.problems</tags>
-          <tags>persp.editorOnboardingCommand:Show Key Assist$$$&#x21e7;&#x2318;L</tags>
-          <tags>persp.editorOnboardingCommand:New$$$&#x2318;N</tags>
-          <tags>persp.editorOnboardingCommand:Documentation$$$&#x21e7;&#x2318;D</tags>
           <tags>persp.viewSC:gama.ui.application.view.minimap</tags>
           <tags>persp.viewSC:gama.ui.application.view.outline</tags>
           <tags>persp.viewSC:gama.ui.application.view.GamaNavigator</tags>
+          <tags>persp.editorOnboardingText:Select a model in the navigator, create a new model file or consult the documentation to get started !</tags>
+          <tags>persp.editorOnboardingCommand:Show Key Assist$$$&#x21e7;&#x2318;L</tags>
+          <tags>persp.editorOnboardingCommand:New$$$&#x2318;N</tags>
+          <tags>persp.editorOnboardingCommand:Documentation$$$&#x21e7;&#x2318;D</tags>
           <children xsi:type="basic:PartSashContainer" xmi:id="_FFcB4cSwEfCvypRYa83n3w" selectedElement="_FFcB4sSwEfCvypRYa83n3w" horizontal="true">
             <children xsi:type="basic:PartSashContainer" xmi:id="_FFcB4sSwEfCvypRYa83n3w" containerData="2500" selectedElement="_FFcB48SwEfCvypRYa83n3w">
               <children xsi:type="basic:PartStack" xmi:id="_FFcB48SwEfCvypRYa83n3w" elementId="gama.ui.application.view.GamaNavigatorMStack" containerData="6500" selectedElement="_FFcB5MSwEfCvypRYa83n3w">
@@ -95,7 +95,7 @@
     <sharedElements xsi:type="basic:Part" xmi:id="_FFazwMSwEfCvypRYa83n3w" elementId="gama.ui.application.view.GamaNavigator" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Models" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.navigator.png" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="gama.ui.navigator.view.GamaNavigator"/>
       <persistedState key="originalCompatibilityViewBundle" value="gama.ui.navigator"/>
-      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;Library models@@/Case Studies&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;Library models&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Gama</tags>
       <tags>active</tags>
@@ -503,7 +503,7 @@
     <bindings xmi:id="_FAEZ5sSwEfCvypRYa83n3w" keySequence="COMMAND+INSERT" command="_E_7QRMSwEfCvypRYa83n3w"/>
   </bindingTables>
   <bindingTables xmi:id="_FAhFp8SwEfCvypRYa83n3w" contributorURI="platform:/fragment/org.eclipse.e4.ui.workbench.renderers.swt.cocoa" bindingContext="_E_w3vsSwEfCvypRYa83n3w">
-    <bindings xmi:id="_FAhFqMSwEfCvypRYa83n3w" keySequence="M1+W" command="_FAhFpcSwEfCvypRYa83n3w"/>
+    <bindings xmi:id="_NUqT4MZiEfCrl4tg9yoVPw" keySequence="M1+W" command="_FAhFpcSwEfCvypRYa83n3w"/>
   </bindingTables>
   <bindingTables xmi:id="_FFZlocSwEfCvypRYa83n3w" bindingContext="_FFZloMSwEfCvypRYa83n3w"/>
   <bindingTables xmi:id="_FFZlo8SwEfCvypRYa83n3w" bindingContext="_FFZlosSwEfCvypRYa83n3w"/>
@@ -1145,7 +1145,7 @@
   <addons xmi:id="_E_w3x8SwEfCvypRYa83n3w" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_E_w3yMSwEfCvypRYa83n3w" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_E_zT8MSwEfCvypRYa83n3w" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_NUmpgcZiEfCrl4tg9yoVPw" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <addons xmi:id="_FAgekMSwEfCvypRYa83n3w" elementId="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler"/>
   <categories xmi:id="_E_6osMSwEfCvypRYa83n3w" elementId="org.eclipse.team.ui.category.team" name="Version control (Team)" description="Actions that apply when working with a version control system"/>
