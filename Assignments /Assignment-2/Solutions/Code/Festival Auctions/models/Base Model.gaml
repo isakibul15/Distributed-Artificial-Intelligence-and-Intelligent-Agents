@@ -123,21 +123,20 @@ species Guest skills: [moving, fipa] {
     // Auction participation
     bool participating_in_auction <- false;
     string current_auction_id;
-    float auction_budget <- rnd(80.0, 200.0);  // Increased budget range
+    float auction_budget <- rnd(80.0, 200.0);
     float max_willing_to_pay <- 0.0;
     list<string> preferred_genres <- [];
     list<string> owned_merch <- [];
     
     init {
         // Assign random genre preferences (more genres = more interest)
-        int num_preferences <- rnd(2, 4);  // Each guest likes 2-4 genres
+        int num_preferences <- rnd(2, 4);
         loop times: num_preferences {
             string genre <- one_of(merch_genres);
             if !(genre in preferred_genres) {
                 add genre to: preferred_genres;
             }
         }
-        write name + " likes genres: " + preferred_genres + " (budget: $" + auction_budget + ")";
     }
     
     string getNeedType {
@@ -176,9 +175,6 @@ species Guest skills: [moving, fipa] {
         }
         if !isHungry and !isThirsty and !evil {
             evil <- flip(0.0005);
-            if evil {
-//                write "turned evil";
-            }
         }
     }
     
@@ -187,7 +183,6 @@ species Guest skills: [moving, fipa] {
         if !empty(evil_guests) {
             guestToBeReported <- evil_guests closest_to (self);
             shouldReport <- true;
-//            write "Bad guest detected" + guestToBeReported;
         }
     }
     
@@ -199,22 +194,18 @@ species Guest skills: [moving, fipa] {
         if (isHungry or isThirsty) and targetStore = nil and !isMovingToInfo and !participating_in_auction {
             float randomValue <- rnd(1.0);
             if randomValue < 0.1 or length(visited) <= 0 or shouldReport {
-//                write "Want to visit new store or going to report";
                 isMovingToInfo <- true;
                 noMemoryUsedCount <- noMemoryUsedCount + 1;
             } else {
                 Store s <- getStore(getNeedType());
                 if s != nil {
-//                    write "Got store in memory for" + getNeedType() + s;
                     targetStore <- s;
                     memoryUsedCount <- memoryUsedCount + 1;
                 } else {
-//                    write "Needed store not in memory for" + getNeedType();
                     isMovingToInfo <- true;
                     noMemoryUsedCount <- noMemoryUsedCount + 1;
                 }
             }
-//            write "stores visited is" + visited;
         } else if !isHungry and !isThirsty and targetStore = nil and !participating_in_auction {
             do wander;
         }
@@ -229,7 +220,6 @@ species Guest skills: [moving, fipa] {
                     if killed contains myself.guestToBeReported {
                         // nothing
                     } else {
-//                        write " reporting guest " + myself.guestToBeReported;
                         AssignedGuest <- myself.guestToBeReported;
                     }
                 }
@@ -239,25 +229,16 @@ species Guest skills: [moving, fipa] {
             
             if isHungry and isThirsty {
                 ask center {
-//                    write "Guest is both hungry and thirsty!";
                     myself.targetStore <- one_of(bothStores);
                 }
             } else if isHungry {
                 ask center {
-//                    write "Guest is hungry!";
                     myself.targetStore <- one_of(foodStores);
                 }
             } else if isThirsty {
                 ask center {
-//                    write "Guest is thirsty!";
                     myself.targetStore <- one_of(drinkStores);
                 }
-            }
-            
-            if targetStore != nil {
-//                write "going to store on location  " + targetStore.location;
-            } else {
-//                write "No store found!";
             }
         }
     }
@@ -270,8 +251,6 @@ species Guest skills: [moving, fipa] {
         if targetStore != nil {
             if location distance_to targetStore.location < 1.0 {
                 do addToStore(targetStore, getNeedType());
-//                write "Guest arrived at store!";
-//                write "Added store in memory!";
                 isHungry <- false;
                 isThirsty <- false;
                 targetStore <- nil;
@@ -281,42 +260,11 @@ species Guest skills: [moving, fipa] {
     
     // AUCTION REFLEXES - FIPA Protocol Communication
     
-    
-   reflex receive_inform when: !empty(informs) {
-        loop inform_msg over: informs {
-        	write"yessss";
-            list data <- inform_msg.contents;
-           
-            string msg_type <- string(data[0]);
-            write data;
-            write msg_type;
-            
-            if msg_type = "winner" {
-                string item_name <- string(data[1]);
-                float final_price <- float(data[2]);
-                
-                	                
-                add item_name to: owned_merch;
-                auction_budget <- auction_budget - final_price;
-                participating_in_auction <- false;
-                max_willing_to_pay <- 0.0; // Reset for next auction
-                
-                write name + " WON AUCTION! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + auction_budget;
-                	
-               
-            } else if msg_type = "auction_ended" {
-                participating_in_auction <- false;
-                max_willing_to_pay <- 0.0; // Reset for next auction
-            }
-        }
-    }
-    
     reflex receive_cfp when: !empty(cfps) {
         loop cfp_message over: cfps {
-            // FIPA contents come as a simple list [value1, value2, value3...]
             list contents_list <- list(cfp_message.contents);
             
-            // Parse based on expected order: [auction_id, item_name, item_genre, starting_price, current_price, message_type]
+            // Parse: [auction_id, item_name, item_genre, starting_price, current_price, message_type]
             if length(contents_list) >= 6 {
                 string auction_id <- string(contents_list[0]);
                 string item_name <- string(contents_list[1]);
@@ -332,7 +280,7 @@ species Guest skills: [moving, fipa] {
                         current_auction_id <- auction_id;
                         max_willing_to_pay <- min(auction_budget * rnd(0.7, 0.95), starting_price * rnd(0.8, 1.1));
                         
-                        write ">>> " + name + " INTERESTED in " + item_name + " (" + item_genre + "). Max willing: $" + max_willing_to_pay;
+                        write ">>> " + name + " INTERESTED in " + item_name + " (" + item_genre + "). Max: $" + max_willing_to_pay;
                     } else {
                         // Send REFUSE - not interested
                         do refuse message: cfp_message contents: [name, false];
@@ -342,7 +290,7 @@ species Guest skills: [moving, fipa] {
                         // Dutch auction: Bid if price is acceptable
                         if current_price <= max_willing_to_pay and current_price <= auction_budget {
                             do propose message: cfp_message contents: [name, current_price];
-                            write name + " BIDS at price: $" + current_price;
+                            write name + " BIDS at $" + current_price;
                         }
                     }
                 }
@@ -350,7 +298,30 @@ species Guest skills: [moving, fipa] {
         }
     }
     
-
+    reflex receive_inform when: !empty(informs) {
+        loop inform_msg over: informs {
+            list data <- list(inform_msg.contents);
+            
+            if length(data) >= 1 {
+                string msg_type <- string(data[0]);
+                
+                if msg_type = "winner" and length(data) >= 3 {
+                    string item_name <- string(data[1]);
+                    float final_price <- float(data[2]);
+                    
+                    add item_name to: owned_merch;
+                    auction_budget <- auction_budget - final_price;
+                    participating_in_auction <- false;
+                    max_willing_to_pay <- 0.0;
+                    
+                    write name + " WON! Bought " + item_name + " for $" + final_price + ". Budget left: $" + auction_budget;
+                } else if msg_type = "auction_ended" {
+                    participating_in_auction <- false;
+                    max_willing_to_pay <- 0.0;
+                }
+            }
+        }
+    }
     
     reflex trackDistance {
         totalDistance <- totalDistance + (location distance_to lastLocation);
@@ -374,7 +345,7 @@ species Security skills: [moving] {
         draw circle(3) color: #purple;
     }
     
-    reflex GotoGuest when: AssignedGuest != nil {
+    reflex GotoGuest when: AssignedGuest != nil and !AssignedGuest.participating_in_auction {
         do goto target: AssignedGuest.location;
     }
     
@@ -385,16 +356,20 @@ species Security skills: [moving] {
     reflex checkForProblem {
         if AssignedGuest != nil {
             if !(killed contains AssignedGuest) {
-//                write "kill list " + killed;
-//                write "Guard moving towards bad guest to kill";
-                if location distance_to AssignedGuest.location < 1.0 {
-//                    write "Guard killing guest " + AssignedGuest;
+                // Don't kill guests who are in auctions - wait until they finish
+                if AssignedGuest.participating_in_auction {
+                    write "Security waiting - " + AssignedGuest.name + " is in an auction";
+                } else if location distance_to AssignedGuest.location < 1.0 {
                     do addToKillList(AssignedGuest);
                     ask AssignedGuest {
                         do die;
                     }
                     AssignedGuest <- nil;
+                } else {
+                    do goto target: AssignedGuest.location;
                 }
+            } else {
+                AssignedGuest <- nil;
             }
         } else {
             do wander;
@@ -430,10 +405,10 @@ species Auctioneer skills: [fipa] {
             // Generate random merchandise item
             item_name <- one_of(merch_items);
             item_genre <- one_of(merch_genres);
-            starting_price <- rnd(40.0, 100.0);  // Lower starting prices
+            starting_price <- rnd(40.0, 100.0);
             current_price <- starting_price;
-            minimum_price <- starting_price * 0.25;  // Lower minimum (25% instead of 30%)
-            price_reduction <- starting_price * rnd(0.06, 0.12);  // Slower price reduction
+            minimum_price <- starting_price * 0.25;
+            price_reduction <- starting_price * rnd(0.06, 0.12);
             last_reduction_time <- time;
             
             participants <- [];
@@ -444,14 +419,13 @@ species Auctioneer skills: [fipa] {
             total_auctions <- total_auctions + 1;
             
             write "\n========================================";
-            write name + " STARTING DUTCH AUCTION FOR MERCH!";
+            write name + " STARTING DUTCH AUCTION!";
             write "Item: " + item_name + " (" + item_genre + ")";
             write "Starting price: $" + starting_price;
-            write "Minimum price: $" + minimum_price;
-            write "Price reduction: $" + price_reduction + " per round";
+            write "Minimum: $" + minimum_price;
             write "========================================";
             
-            // Send CFP to all guests using FIPA protocol (NO ASK!)
+            // Send CFP to all guests using FIPA protocol
             do start_conversation to: list(Guest) protocol: 'fipa-propose' performative: 'cfp' contents: [
                 current_auction_id,
                 item_name,
@@ -476,33 +450,38 @@ species Auctioneer skills: [fipa] {
             float bid_price <- float(bid_data_list[1]);
             winner <- first_bid.sender;
             
-            write "\n*** MERCH SOLD! ***";
+            // Check if winner is still alive
+            if winner = nil or dead(winner) {
+                write "Winner died before completing purchase!";
+                auction_active <- false;
+                waiting_for_bids <- false;
+                my_color <- #gold;
+                return;
+            }
+            
+            write "\n*** SOLD! ***";
             write name + " - " + winner.name + " bought " + item_name + " for $" + bid_price;
             write "**************\n";
             
             successful_auctions <- successful_auctions + 1;
             total_auction_revenue <- total_auction_revenue + bid_price;
-             list<agent> other_buyers <- list(Guest) where (each.participating_in_auction and each != winner);
             
-            // Inform winner using FIPA INFORM (NO ASK!)
-            // In Auctioneer - when someone wins
-
-                do start_conversation to: [winner] protocol: 'fipa-propose' performative: 'inform' 
-                contents: [
-			        "winner",
-			         item_name,
-			         bid_price
-                ];
+            // Get all other participants (filter out dead agents)
+            list<agent> other_buyers <- list(Guest) where (each.participating_in_auction and each != winner and !dead(each));
             
-            // Inform all other interested buyers
-            //loop through all other buyers
+            // Inform winner using FIPA INFORM
+            do start_conversation to: [winner] protocol: 'fipa-propose' performative: 'inform' contents: [
+                "winner",
+                item_name,
+                bid_price
+            ];
+            
+            // Inform all other interested buyers that auction ended
             if !empty(other_buyers) {
-            do start_conversation to: other_buyers protocol: 'fipa-propose' performative: 'inform' 
-                contents: [
-			        "auction_ended"
+                do start_conversation to: other_buyers protocol: 'fipa-propose' performative: 'inform' contents: [
+                    "auction_ended"
                 ];
-	    
-			  }
+            }
             
             auction_active <- false;
             waiting_for_bids <- false;
@@ -517,15 +496,14 @@ species Auctioneer skills: [fipa] {
         if current_price < minimum_price {
             // Cancel auction - price fell below minimum threshold
             write "\n*** AUCTION CANCELLED ***";
-            write name + " - Price fell below minimum threshold ($" + minimum_price + ")";
+            write name + " - Price below minimum ($" + minimum_price + ")";
             write "*************************\n";
             
-            // Inform all interested participants using FIPA INFORM (NO ASK!)
-            list<agent> interested <- list(Guest) where each.participating_in_auction;
+            // Inform all interested participants (filter out dead agents)
+            list<agent> interested <- list(Guest) where (each.participating_in_auction and !dead(each));
             if !empty(interested) {
                 do start_conversation to: interested protocol: 'fipa-propose' performative: 'inform' contents: [
-                    "auction_ended",
-                    "No buyer at minimum price - auction cancelled"
+                    "auction_ended"
                 ];
             }
             
@@ -533,10 +511,10 @@ species Auctioneer skills: [fipa] {
             waiting_for_bids <- false;
             my_color <- #gold;
         } else {
-            // Send price update to all interested buyers using FIPA CFP (NO ASK!)
+            // Send price update to all interested buyers (filter out dead agents)
             write name + " - Price reduced to: $" + current_price;
             
-            list<agent> interested <- list(Guest) where each.participating_in_auction;
+            list<agent> interested <- list(Guest) where (each.participating_in_auction and !dead(each));
             if !empty(interested) {
                 do start_conversation to: interested protocol: 'fipa-propose' performative: 'cfp' contents: [
                     current_auction_id,
@@ -556,7 +534,7 @@ species Auctioneer skills: [fipa] {
         draw square(8) color: my_color border: #black;
         if auction_active {
             draw circle(12.0) color: #transparent border: #red width: 3;
-            draw "MERCH AUCTION" color: #red size: 8 at: location + {0, -10};
+            draw "AUCTION" color: #red size: 10 at: location + {0, -10};
         }
     }
 }
@@ -573,31 +551,19 @@ experiment Festival_Simulation type: gui {
             species Auctioneer aspect: base;
         }
         
-//        display "Memory vs No Memory Usage" {
-//            chart "Store Finding Strategy" type: series {
-//                data "Used Memory" value: totalMemoryStores color: #green;
-//                data "Asked Info Center" value: totalNoMemoryStores color: #red;
-//            }
-//        }
-//        
-//        display "Distance Traveled Over Time" {
-//            chart "Total Distance" type: series {
-//                data "Distance" value: totalDistanceTraveled color: #blue;
-//            }
-//        }
-        
         display "Auction Statistics" {
             chart "Auction Performance" type: series {
                 data "Total Auctions" value: total_auctions color: #orange;
-                data "Successful Auctions" value: successful_auctions color: #green;
-                data "Revenue ($)" value: total_auction_revenue / 10 color: #purple;
+                data "Successful" value: successful_auctions color: #green;
+                data "Revenue ÷10" value: total_auction_revenue / 10 color: #purple;
             }
         }
         
         monitor "Total Auctions" value: total_auctions;
-        monitor "Successful Auctions" value: successful_auctions;
-        monitor "Success Rate (%)" value: (total_auctions > 0) ? (successful_auctions / total_auctions * 100.0) : 0.0;
-        monitor "Total Revenue ($)" value: total_auction_revenue;
-        monitor "Avg Sale Price ($)" value: (successful_auctions > 0) ? (total_auction_revenue / successful_auctions) : 0.0;
+        monitor "Successful" value: successful_auctions;
+        monitor "Success Rate" value: (total_auctions > 0) ? (successful_auctions / total_auctions * 100.0) : 0.0;
+        monitor "Revenue" value: total_auction_revenue;
+        monitor "Avg Price" value: (successful_auctions > 0) ? (total_auction_revenue / successful_auctions) : 0.0;
+        monitor "Items Sold" value: sum(Guest collect length(each.owned_merch));
     }
 }
