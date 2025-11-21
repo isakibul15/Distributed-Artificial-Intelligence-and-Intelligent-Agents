@@ -1,0 +1,18 @@
+/**
+* Name: Challange1
+* Based on the internal skeleton template. 
+* Author: md.sakibulislam
+* Tags: 
+*/
+
+model Challange1
+
+global {
+	/** Insert the global definitions, variables and actions here */
+}
+
+experiment Challange1 type: gui {
+	/** Insert here the definition of the input and output of the model */
+	output {
+	}
+}
