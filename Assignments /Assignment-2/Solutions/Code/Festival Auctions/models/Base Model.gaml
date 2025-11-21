@@ -46,7 +46,7 @@ global {
         create Security number: 1;
         
         // Create auctioneers for merchandise
-        create Auctioneer number: 2 {
+        create Auctioneer number: 1 {
             location <- any_location_in(shape);
         }
     }
@@ -281,6 +281,36 @@ species Guest skills: [moving, fipa] {
     
     // AUCTION REFLEXES - FIPA Protocol Communication
     
+    
+   reflex receive_inform when: !empty(informs) {
+        loop inform_msg over: informs {
+        	write"yessss";
+            list data <- inform_msg.contents;
+           
+            string msg_type <- string(data[0]);
+            write data;
+            write msg_type;
+            
+            if msg_type = "winner" {
+                string item_name <- string(data[1]);
+                float final_price <- float(data[2]);
+                
+                	                
+                add item_name to: owned_merch;
+                auction_budget <- auction_budget - final_price;
+                participating_in_auction <- false;
+                max_willing_to_pay <- 0.0; // Reset for next auction
+                
+                write name + " WON AUCTION! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + auction_budget;
+                	
+               
+            } else if msg_type = "auction_ended" {
+                participating_in_auction <- false;
+                max_willing_to_pay <- 0.0; // Reset for next auction
+            }
+        }
+    }
+    
     reflex receive_cfp when: !empty(cfps) {
         loop cfp_message over: cfps {
             // FIPA contents come as a simple list [value1, value2, value3...]
@@ -320,29 +350,7 @@ species Guest skills: [moving, fipa] {
         }
     }
     
-    reflex receive_inform when: !empty(informs) {
-        loop inform_msg over: informs {
-            map data <- inform_msg.contents;
-            string msg_type <- string(data["message_type"]);
-            
-            if msg_type = "winner" {
-                string item_name <- string(data["item_name"]);
-                float final_price <- float(data["final_price"]);
-                
-                add item_name to: owned_merch;
-                auction_budget <- auction_budget - final_price;
-                participating_in_auction <- false;
-                max_willing_to_pay <- 0.0; // Reset for next auction
-                
-                write name + " WON AUCTION! Bought " + item_name + " for $" + final_price + ". Remaining budget: $" + auction_budget;
-            } else if msg_type = "auction_ended" {
-                participating_in_auction <- false;
-                max_willing_to_pay <- 0.0; // Reset for next auction
-                string reason <- string(data["reason"]);
-                write name + " - Auction ended: " + reason;
-            }
-        }
-    }
+
     
     reflex trackDistance {
         totalDistance <- totalDistance + (location distance_to lastLocation);
@@ -444,7 +452,7 @@ species Auctioneer skills: [fipa] {
             write "========================================";
             
             // Send CFP to all guests using FIPA protocol (NO ASK!)
-            do start_conversation to: list(Guest) protocol: 'fipa-contract-net' performative: 'cfp' contents: [
+            do start_conversation to: list(Guest) protocol: 'fipa-propose' performative: 'cfp' contents: [
                 current_auction_id,
                 item_name,
                 item_genre,
@@ -474,25 +482,27 @@ species Auctioneer skills: [fipa] {
             
             successful_auctions <- successful_auctions + 1;
             total_auction_revenue <- total_auction_revenue + bid_price;
+             list<agent> other_buyers <- list(Guest) where (each.participating_in_auction and each != winner);
             
             // Inform winner using FIPA INFORM (NO ASK!)
             // In Auctioneer - when someone wins
-			do inform 
-			    message: first_bid 
-			    contents: [
-			        "message_type", "winner",
-			        "item_name", item_name,
-			        "final_price", bid_price
-			    ];
+
+                do start_conversation to: [winner] protocol: 'fipa-propose' performative: 'inform' 
+                contents: [
+			        "winner",
+			         item_name,
+			         bid_price
+                ];
             
             // Inform all other interested buyers
-            list<agent> other_buyers <- list(Guest) where (each.participating_in_auction and each != winner);
+            //loop through all other buyers
             if !empty(other_buyers) {
-                do start_conversation to: other_buyers protocol: 'fipa-contract-net' performative: 'inform' contents: [
-                    "auction_ended",
-                    "Item sold to another buyer"
+            do start_conversation to: other_buyers protocol: 'fipa-propose' performative: 'inform' 
+                contents: [
+			        "auction_ended"
                 ];
-            }
+	    
+			  }
             
             auction_active <- false;
             waiting_for_bids <- false;
@@ -513,7 +523,7 @@ species Auctioneer skills: [fipa] {
             // Inform all interested participants using FIPA INFORM (NO ASK!)
             list<agent> interested <- list(Guest) where each.participating_in_auction;
             if !empty(interested) {
-                do start_conversation to: interested protocol: 'fipa-contract-net' performative: 'inform' contents: [
+                do start_conversation to: interested protocol: 'fipa-propose' performative: 'inform' contents: [
                     "auction_ended",
                     "No buyer at minimum price - auction cancelled"
                 ];
@@ -528,7 +538,7 @@ species Auctioneer skills: [fipa] {
             
             list<agent> interested <- list(Guest) where each.participating_in_auction;
             if !empty(interested) {
-                do start_conversation to: interested protocol: 'fipa-contract-net' performative: 'cfp' contents: [
+                do start_conversation to: interested protocol: 'fipa-propose' performative: 'cfp' contents: [
                     current_auction_id,
                     item_name,
                     item_genre,
