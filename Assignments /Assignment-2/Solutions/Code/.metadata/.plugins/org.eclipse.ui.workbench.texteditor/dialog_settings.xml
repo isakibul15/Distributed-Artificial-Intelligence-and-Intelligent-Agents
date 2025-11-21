@@ -4,9 +4,11 @@
 	<section name="java.lang.Class">
 		<item key="replaceBarOpen" value="false"/>
 		<list key="findhistory">
+			<item value="do star"/>
+			<item value="auction"/>
+			<item value="species"/>
 			<item value="CLOSE"/>
 			<item value="close"/>
-			<item value="auction"/>
 			<item value="auctioner"/>
 			<item value="do in"/>
 			<item value="fi"/>
@@ -17,7 +19,6 @@
 			<item value="guard "/>
 			<item value="kill"/>
 			<item value="going to s"/>
-			<item value="win"/>
 		</list>
 	</section>
 </section>
