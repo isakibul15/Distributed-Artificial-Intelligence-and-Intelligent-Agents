@@ -4,6 +4,8 @@
 	<section name="java.lang.Class">
 		<item key="replaceBarOpen" value="false"/>
 		<list key="findhistory">
+			<item value="trigger"/>
+			<item value="active"/>
 			<item value="do star"/>
 			<item value="auction"/>
 			<item value="species"/>
@@ -17,8 +19,6 @@
 			<item value="willn"/>
 			<item value="write"/>
 			<item value="guard "/>
-			<item value="kill"/>
-			<item value="going to s"/>
 		</list>
 	</section>
 </section>
