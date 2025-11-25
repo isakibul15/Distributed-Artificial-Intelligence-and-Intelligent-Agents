@@ -2,7 +2,7 @@
 * Name: Festival with Multiple Dutch Auctions + Stage Selection (Task 2)
 * Author: Sakib, Ahsan, Sing - Extended with Stage Selection via Utility
 * Description: Festival with auctions AND stage selection using FIPA protocol
-* Challenge 1: Multiple auctions (comments hidden for Task 2 focus)
+* Challenge 1: Multiple auctions (console output minimized)
 * Task 2: Guests select stages based on utility calculation from preferences
 */
 
@@ -61,7 +61,6 @@ global {
         }
         
         write "\n=== FESTIVAL SIMULATION ===";
-        write "Challenge 1: Multiple simultaneous auctions";
         write "Task 2: Stage selection via utility calculation";
         write "Stages: " + length(Stage);
         write "Guests: " + length(Guest);
@@ -109,10 +108,9 @@ species InformationCenter {
 }
 
 // ============================================================================
-// TASK 2: STAGE SPECIES - Responds to FIPA queries with attributes
+// TASK 2: STAGE SPECIES
 // ============================================================================
 species Stage skills: [fipa] {
-    // Stage attributes (values between 0 and 1)
     float lightShow <- rnd(0.2, 1.0);
     float speaker <- rnd(0.2, 1.0);
     float musicStyle <- rnd(0.2, 1.0);
@@ -122,16 +120,18 @@ species Stage skills: [fipa] {
     
     init {
         stage_visit_counts[name] <- 0;
-        write "[TASK 2] " + name + " created - Light:" + lightShow with_precision 2 + 
+        write "[TASK 2] " + name + " - Light:" + lightShow with_precision 2 + 
               " Speaker:" + speaker with_precision 2 + 
               " Music:" + musicStyle with_precision 2;
     }
     
-    // FIPA Protocol: Respond to queries with stage attributes
     reflex respond_to_queries when: !empty(queries) {
         loop query_msg over: queries {
-            // Reply with stage attributes using proper FIPA inform-result
-            do inform message: query_msg contents: [
+            do start_conversation to: [query_msg.sender] 
+               protocol: 'fipa-query' 
+               performative: 'inform' 
+               contents: [
+                "stage_info",
                 name,
                 lightShow,
                 speaker,
@@ -169,7 +169,7 @@ species Guest skills: [moving, fipa] {
     float totalDistance <- 0.0;
     point lastLocation <- location;
     
-    // Challenge 1: Auction-related variables
+   
     list<string> active_auction_ids <- [];
     map<string, float> auction_max_prices <- map([]);
     float auction_budget <- rnd(100.0, 250.0);
@@ -325,10 +325,9 @@ species Guest skills: [moving, fipa] {
     }
     
     // ========================================================================
-    // TASK 2: STAGE SELECTION REFLEXES - Using FIPA Query Protocol
+    // TASK 2: STAGE SELECTION REFLEXES
     // ========================================================================
     
-    // Initiate stage selection when guest is free
     reflex initiate_stage_selection when: !isSelectingStage and 
                                           targetStage = nil and 
                                           time >= next_stage_selection_time and
@@ -341,9 +340,9 @@ species Guest skills: [moving, fipa] {
         stage_utilities <- map([]);
         stage_responses_received <- 0;
         
-        write "[TASK 2] " + name + " is selecting a stage to visit...";
+        write "[TASK 2] " + name + " is selecting a stage...";
         
-        // FIPA Query: Request attributes from all stages
+        // Query all stages - SAME PATTERN AS CHALLENGE 1
         do start_conversation to: list(Stage) 
            protocol: 'fipa-query' 
            performative: 'query' 
@@ -352,66 +351,13 @@ species Guest skills: [moving, fipa] {
         hasQueriedStages <- true;
     }
     
-    // Receive stage information and calculate utility
-    reflex receive_stage_info when: isSelectingStage and hasQueriedStages and !empty(informs) {
-        loop info_msg over: informs {
-            // Only process messages from stages
-            if info_msg.sender is Stage {
-                list data <- list(info_msg.contents);
-                
-                if length(data) >= 4 {
-                    string stage_name <- string(data[0]);
-                    float s_light <- float(data[1]);
-                    float s_speaker <- float(data[2]);
-                    float s_music <- float(data[3]);
-                    
-                    // TASK 2: Calculate utility using preference × stage_attribute
-                    float utility <- (pref_lightShow * s_light) + 
-                                    (pref_speaker * s_speaker) + 
-                                    (pref_musicStyle * s_music);
-                    
-                    stage_utilities[stage_name] <- utility;
-                    stage_responses_received <- stage_responses_received + 1;
-                    
-                    write "[TASK 2] " + name + " evaluated " + stage_name + 
-                          " - Utility: " + utility with_precision 3 +
-                          " (L:" + s_light with_precision 2 + 
-                          " S:" + s_speaker with_precision 2 + 
-                          " M:" + s_music with_precision 2 + ")";
-                }
-            }
-        }
-        
-        // Once all stages responded, pick the one with highest utility
-        if stage_responses_received >= length(Stage) and !empty(stage_utilities) {
-            string best_stage_name <- stage_utilities.keys with_max_of (stage_utilities[each]);
-            float best_utility <- stage_utilities[best_stage_name];
-            
-            Stage chosen_stage <- Stage first_with (each.name = best_stage_name);
-            if chosen_stage != nil {
-                targetStage <- chosen_stage;
-                stage_visit_duration <- rnd(50.0, 100.0);
-                time_at_stage <- 0.0;
-                
-                write "[TASK 2] >>> " + name + " CHOSE " + best_stage_name + 
-                      " (utility: " + best_utility with_precision 3 + ") <<<";
-            }
-            
-            isSelectingStage <- false;
-            hasQueriedStages <- false;
-        }
-    }
-    
-    // Travel to selected stage
     reflex go_to_stage when: targetStage != nil and time_at_stage = 0.0 {
         do goto target: targetStage.location speed: 2.0;
     }
     
-    // Check arrival at stage
     reflex check_arrival_at_stage when: targetStage != nil and time_at_stage = 0.0 {
         if location distance_to targetStage.location < 3.0 {
-            write "[TASK 2] " + name + " ARRIVED at " + targetStage.name + "! Staying for " + 
-                  stage_visit_duration with_precision 0 + " cycles";
+            write "[TASK 2] " + name + " ARRIVED at " + targetStage.name + "!";
             
             ask targetStage {
                 visitor_count <- visitor_count + 1;
@@ -424,7 +370,6 @@ species Guest skills: [moving, fipa] {
         }
     }
     
-    // Stay at stage for duration, then leave
     reflex stay_at_stage when: targetStage != nil and 
                                 time_at_stage > 0.0 and 
                                 (time - time_at_stage) >= stage_visit_duration {
@@ -439,11 +384,7 @@ species Guest skills: [moving, fipa] {
         time_at_stage <- 0.0;
         next_stage_selection_time <- time + rnd(150.0, 300.0);
     }
-    
-    // ========================================================================
-    // CHALLENGE 1: AUCTION REFLEXES (Hidden console output for Task 2 focus)
-    // ========================================================================
-    
+
     reflex receive_cfp when: !empty(cfps) {
         loop cfp_message over: cfps {
             list contents_list <- list(cfp_message.contents);
@@ -459,10 +400,10 @@ species Guest skills: [moving, fipa] {
                 if msg_type = "auction_start" {
                     if item_genre in preferred_genres and auction_budget > starting_price * 0.2 and 
                        !(auction_id in active_auction_ids) and !(auction_id in ended_auction_ids) {
+                        
                         add auction_id to: active_auction_ids;
                         float max_willing <- min(auction_budget * rnd(0.6, 0.9), starting_price * rnd(0.7, 1.0));
                         auction_max_prices[auction_id] <- max_willing;
-                        // Hidden: write ">>> " + name + " JOINS " + item_genre + " auction: " + item_name;
                     } else {
                         do refuse message: cfp_message contents: [name, false];
                     }
@@ -472,40 +413,75 @@ species Guest skills: [moving, fipa] {
                     
                     if current_price <= max_willing and current_price <= auction_budget {
                         do propose message: cfp_message contents: [name, current_price];
-                        // Hidden: write name + " BIDS on " + item_genre + " " + item_name;
                     }
                 }
             }
         }
     }
     
-    reflex receive_auction_results when: !empty(informs) {
+    // CRITICAL: SINGLE receive_inform reflex handles BOTH auctions AND stages
+
+    reflex receive_inform when: !empty(informs) {
         loop inform_msg over: informs {
-            // Only process auction-related informs (not from stages)
-            if !(inform_msg.sender is Stage) {
-                list data <- list(inform_msg.contents);
+            list data <- list(inform_msg.contents);
+            
+            if length(data) >= 1 {
+                string msg_type <- string(data[0]);
                 
-                if length(data) >= 1 {
-                    string msg_type <- string(data[0]);
+                // TASK 2: Handle stage information
+                if msg_type = "stage_info" and length(data) >= 5 and isSelectingStage and hasQueriedStages {
+                    string stage_name <- string(data[1]);
+                    float s_light <- float(data[2]);
+                    float s_speaker <- float(data[3]);
+                    float s_music <- float(data[4]);
                     
-                    if msg_type = "winner" and length(data) >= 4 {
-                        string auction_id <- string(data[1]);
-                        string item_name <- string(data[2]);
-                        float final_price <- float(data[3]);
-                        
-                        add item_name to: owned_merch;
-                        auction_budget <- auction_budget - final_price;
-                        
-                        remove auction_id from: active_auction_ids;
-                        remove key: auction_id from: auction_max_prices;
-                        
-                        // Hidden: write name + " WON! " + item_name + " for $" + final_price;
+                    // Calculate utility
+                    float utility <- (pref_lightShow * s_light) + 
+                                    (pref_speaker * s_speaker) + 
+                                    (pref_musicStyle * s_music);
                     
-                    } else if msg_type = "auction_ended" and length(data) >= 2 {
-                        string auction_id <- string(data[1]);
-                        remove auction_id from: active_auction_ids;
-                        remove key: auction_id from: auction_max_prices;
+                    stage_utilities[stage_name] <- utility;
+                    stage_responses_received <- stage_responses_received + 1;
+                    
+                    write "[TASK 2] " + name + " evaluated " + stage_name + 
+                          " - Utility: " + utility with_precision 3;
+                    
+                    // Once all stages responded, pick best one
+                    if stage_responses_received >= length(Stage) and !empty(stage_utilities) {
+                        string best_stage_name <- stage_utilities.keys with_max_of (stage_utilities[each]);
+                        float best_utility <- stage_utilities[best_stage_name];
+                        
+                        Stage chosen_stage <- Stage first_with (each.name = best_stage_name);
+                        if chosen_stage != nil {
+                            targetStage <- chosen_stage;
+                            stage_visit_duration <- rnd(50.0, 100.0);
+                            time_at_stage <- 0.0;
+                            
+                            write "[TASK 2] >>> " + name + " CHOSE " + best_stage_name + 
+                                  " (utility: " + best_utility with_precision 3 + ") <<<";
+                        }
+                        
+                        isSelectingStage <- false;
+                        hasQueriedStages <- false;
                     }
+                }
+                // Challenge 1: Handle auction winner
+                else if msg_type = "winner" and length(data) >= 4 {
+                    string auction_id <- string(data[1]);
+                    string item_name <- string(data[2]);
+                    float final_price <- float(data[3]);
+                    
+                    add item_name to: owned_merch;
+                    auction_budget <- auction_budget - final_price;
+                    
+                    remove auction_id from: active_auction_ids;
+                    remove key: auction_id from: auction_max_prices;
+                } 
+                // Challenge 1: Handle auction ended
+                else if msg_type = "auction_ended" and length(data) >= 2 {
+                    string auction_id <- string(data[1]);
+                    remove auction_id from: active_auction_ids;
+                    remove key: auction_id from: auction_max_prices;
                 }
             }
         }
@@ -519,7 +495,6 @@ species Guest skills: [moving, fipa] {
     aspect base {
         rgb display_color <- evil ? #red : #yellow;
         
-        // Color coding based on activity
         if targetStage != nil and time_at_stage > 0.0 {
             display_color <- #gold;  // At stage
         } else if targetStage != nil {
@@ -527,14 +502,13 @@ species Guest skills: [moving, fipa] {
         } else if isSelectingStage {
             display_color <- #lime;  // Selecting stage
         } else if length(active_auction_ids) >= 2 {
-            display_color <- #purple;  // In multiple auctions
+            display_color <- #purple;
         } else if length(active_auction_ids) = 1 {
-            display_color <- #pink;  // In one auction
+            display_color <- #pink;
         }
         
         draw circle(3) color: display_color;
         
-        // Show number of active auctions
         if length(active_auction_ids) > 0 {
             draw string(length(active_auction_ids)) color: #white size: 8 at: location + {0, 4};
         }
@@ -561,7 +535,7 @@ species Security skills: [moving] {
         if AssignedGuest != nil {
             if !(killed contains AssignedGuest) {
                 if !empty(AssignedGuest.active_auction_ids) {
-                    // Wait for auctions to finish
+                    // Wait
                 } else if location distance_to AssignedGuest.location < 1.0 {
                     do addToKillList(AssignedGuest);
                     ask AssignedGuest {
@@ -580,9 +554,7 @@ species Security skills: [moving] {
     }
 }
 
-// ============================================================================
-// CHALLENGE 1: AUCTIONEER SPECIES (Console output hidden for Task 2 focus)
-// ============================================================================
+
 species Auctioneer skills: [fipa] {
     rgb my_color <- #gold;
     
@@ -632,8 +604,6 @@ species Auctioneer skills: [fipa] {
             
             total_auctions <- total_auctions + 1;
             
-            // Hidden: write "\n" + name + " AUCTION: " + item_name + " (" + item_genre + ")";
-            
             do start_conversation to: list(Guest) protocol: 'fipa-propose' performative: 'cfp' contents: [
                 current_auction_id,
                 item_name,
@@ -667,8 +637,6 @@ species Auctioneer skills: [fipa] {
                 total_auction_revenue <- total_auction_revenue + bid_price;
                 genre_sales[item_genre] <- genre_sales[item_genre] + 1;
                 add current_auction_id to: ended_auction_ids;
-                
-                // Hidden: write name + " SOLD to " + winner.name + " for $" + bid_price;
                 
                 do start_conversation to: [winner] protocol: 'fipa-propose' performative: 'inform' contents: [
                     "winner",
@@ -748,7 +716,6 @@ experiment Festival_Simulation type: gui {
             species Stage aspect: base;
         }
         
-
         
         display "Stage Visits" {
             chart "Stage Popularity" type: histogram {
@@ -758,7 +725,7 @@ experiment Festival_Simulation type: gui {
             }
         }
         
-        monitor "=== TASK 2 STATISTICS ===" value: "";
+        monitor "=== TASK 2: STAGE STATISTICS ===" value: "";
         monitor "Total Stage Visits" value: total_stage_visits;
         monitor "Guests Selecting Stages" value: length(Guest where each.isSelectingStage);
         monitor "Guests at Stages" value: length(Guest where (each.targetStage != nil and each.time_at_stage > 0));
