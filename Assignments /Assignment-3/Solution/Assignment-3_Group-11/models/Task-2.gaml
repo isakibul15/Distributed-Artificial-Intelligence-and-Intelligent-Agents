@@ -1,8 +1,7 @@
 /**
-* Name: Festival with Multiple Dutch Auctions + Stage Selection (Task 2)
+* Name: Festival - Stage Selection (Task 2)
 * Author: Sakib, Ahsan, Sing - Extended with Stage Selection via Utility
-* Description: Festival with auctions AND stage selection using FIPA protocol
-* Challenge 1: Multiple auctions (console output minimized)
+* Description: Festival with stage selection
 * Task 2: Guests select stages based on utility calculation from preferences
 */
 
