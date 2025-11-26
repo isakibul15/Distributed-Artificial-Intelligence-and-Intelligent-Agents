@@ -1,7 +1,7 @@
 /**
-* Name: NewModel
+* Name: Task-1 Queen
 * Based on the internal empty template. 
-* Author: ahsankarim
+* Author: ahsankarim, sakib, sing
 * Tags: 
 */
 model NewModel
