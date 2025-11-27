@@ -1,20 +1,25 @@
 /**
 * Name: Task-1 Queen
 * Based on the internal empty template. 
-* Author: ahsankarim, sakib, sing
+Author: Sakib, Ahsan, Sing - Extended with Stage Selection via Utility
 * Tags: 
 */
 model NewModel
 
 global {
-    int N <- 8;
+    int N <- 12;
     list<map> solutions <- [];
     bool searching <- true;
     int max_solutions <- 1;
     bool algorithm_started <- false;
+    float cell_size <- 100.0 / N;
     
     init {
-        create queen number: N;
+        loop i from: 0 to: N-1  {
+    		create queen{
+    			indexInArray <- i;
+    		}
+    			}
     }
     
     reflex start_algorithm when: !algorithm_started and length(queen) = N {
@@ -30,183 +35,298 @@ global {
 }
 
 species queen skills: [fipa] {
-    int id <- (index + 1);
-    int row <- id;
+    int indexInArray;
+    int myRow;
     list<int> possible_columns <- [];
     int col_index <- 0;
-    int my_col <- 0;
-    map<int, int> current_config <- [];
+    int my_col <- -1;
     
     bool placed <- false;
-    bool waiting <- false;
     bool initialized <- false;
     bool should_start <- false;
+    bool waiting_for_validation <- false;
+    int pending_column <- -1;
     
     rgb color <- #blue;
-    point location <- {0, 0};
     
     // Initialize columns on first step
     reflex init_columns when: !initialized {
-        loop i from: 1 to: N {
+        loop i from: 0 to: N - 1 {
             add i to: possible_columns;
         }
         initialized <- true;
-        write "Queen " + id + " initialized with columns: " + possible_columns;
+        write "Queen " + indexInArray + " initialized with columns: " + possible_columns;
     }
     
     // Start algorithm when triggered
     reflex start when: should_start and initialized {
         should_start <- false;
-        write "Queen " + id + " starting placement";
+        write "Queen " + indexInArray + " starting placement";
         do try_place;
     }
 
-    bool conflicts_with_predecessors(int test_col) {
-        loop q_id over: current_config.keys {
-            int col_q <- current_config[q_id];
-            
-            if (col_q = test_col) {
-                return true;
-            }
-            
-            if (abs(row - q_id) = abs(test_col - col_q)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	action checkForPredecessor(int test_col) {
+		// Send validate message to my predecessor
+		waiting_for_validation <- true;
+		pending_column <- test_col;
+		
+		if(indexInArray = 0){
+			// Queen 0 validates herself - always true
+			do start_conversation(
+				to :: [self],
+				protocol :: 'fipa-request',
+				performative :: 'inform',
+				contents :: ['result', true]
+			);
+			return;
+		}
+		write "queen" + indexInArray + "sending validate request";
+		do start_conversation(
+			to :: [queen[indexInArray - 1]],
+			protocol :: 'fipa-request',
+			performative :: 'request',
+			contents :: ['validate', test_col, indexInArray]
+		);
+	}
     
-   reflex handle_fipa_messages when: (!empty(requests) or !empty(informs)) {
-    
-    loop m over: requests {
-        list data <- list(m.contents);
-        string msg_type <- string(data[0]);
-        
-        if (msg_type = "TRY") {
-            current_config <- map(data[1]);
-            col_index <- 0;
-            placed <- false;
-            waiting <- false;
-            color <- #blue;
-            write "Queen " + id + " received TRY with config: " + current_config;
-            do try_place;
-        }
-        else if (msg_type = "BACKTRACK") {
-            write "Queen " + id + " received BACKTRACK";
-            col_index <- col_index + 1;
-            placed <- false;
-            color <- #orange;
-            do try_place;
-        }
-    }
-    
-    loop m over: informs {
-        list data <- list(m.contents);
-        string msg_type <- string(data[0]);
-        
-        if (msg_type = "SUCCESS") {
-            map<int, int> solution <- map(data[1]);
-            write "Queen " + id + " received SUCCESS: " + solution;
-            
-            bool already_exists <- false;
-            loop existing_sol over: solutions {
-                if (existing_sol = solution) {
-                    already_exists <- true;
-                    break;
-                }
-            }
-            
-            if (!already_exists) {
-                add solution to: solutions;
-                write "========================================";
-                write "=== Solution #" + length(solutions) + " found ===";
-                write solution;
-                write "========================================";
-            }
-            
-            if (id > 1) {
-                do start_conversation (
-                    to :: [queen(id - 2)],
-                    protocol :: 'fipa-request',  // ✅ FIXED
-                    performative :: 'inform',
-                    contents :: ['SUCCESS', solution]
-                );
-            }
-        }
-    }
+	reflex handle_fipa_messages when: (!empty(requests) or !empty(informs)) {
+		
+		loop m over: requests {
+			list data <- list(m.contents);
+			string msg_type <- string(data[0]);
+			
+			if (msg_type = "TRY") {
+				col_index <- 0;
+				placed <- false;
+				color <- #blue;
+				my_col <- -1;
+				write "Queen " + indexInArray + " received TRY with config: " ;
+				do try_place;
+			}
+			else if (msg_type = "BACKTRACK") {
+				write "Queen " + indexInArray + " received BACKTRACK";
+				col_index <- col_index + 1;
+				placed <- false;
+				my_col <- -1;
+				color <- #orange;
+				do try_place;
+			}
+			else if(msg_type = 'validate') {
+				int test_col <- int(data[1]);
+				int asker_row <- int(data[2]);
+				
+				// Check if it conflicts with my position
+				bool conflicts <- false;
+				if(my_col >= 0) {
+					if(my_col = test_col) {
+						conflicts <- true;
+					}
+					if(abs(indexInArray - asker_row) = abs(my_col - test_col)) {
+						conflicts <- true;
+					}
+				}
+				
+				if(indexInArray = 0) {
+					// Queen 0 gives final decision
+					write "answer from final queen is " + conflicts;
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+
+				} else {
+					if(conflicts) {
+						// Immediate conflict - reject
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+					} else {
+						// No conflict with me, forward to my predecessor
+						do start_conversation(
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['validate_forward', test_col, asker_row, m]
+						);
+					}
+				}
+			}
+			else if(msg_type = 'validate_forward') {
+				int test_col <- int(data[1]);
+				int asker_row <- int(data[2]);
+				message original_req <- message(data[3]);
+				
+				// Check if it conflicts with my position
+				bool conflicts <- false;
+				if(my_col >= 0) {
+					if(my_col = test_col) {
+						conflicts <- true;
+					}
+					if(abs(indexInArray - asker_row) = abs(my_col - test_col)) {
+						conflicts <- true;
+					}
+				}
+				
+				if(indexInArray = 0) {
+					// Queen 0 - send final result
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+				} else {
+					if(conflicts) {
+						// Immediate conflict - reject
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+					} else {
+						// No conflict, keep forwarding
+						do start_conversation(
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['validate_forward', test_col, asker_row, original_req]
+						);
+					}
+				}
+			}
+		}
+		
+		
+		loop m over: informs {
+			list data <- list(m.contents);
+			string msg_type <- string(data[0]);
+			
+			if (msg_type = "SUCCESS") {
+				map<int, int> solution <- map(data[1]);
+				write "Queen " + indexInArray + " received SUCCESS: " + solution;
+				
+				bool already_exists <- false;
+				loop existing_sol over: solutions {
+					if (existing_sol = solution) {
+						already_exists <- true;
+						break;
+					}
+				}
+				
+				if (!already_exists) {
+					add solution to: solutions;
+					write "========================================";
+					write "=== Solution #" + length(solutions) + " found ===";
+					write solution;
+					write "========================================";
+				}
+				
+				if (indexInArray > 0) {
+					do start_conversation (
+						to :: [queen[indexInArray - 1]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['SUCCESS', solution]
+					);
+				}
+			}
+			else if(msg_type = "result" and waiting_for_validation){
+				bool is_valid <- bool(data[1]);
+				waiting_for_validation <- false;
+				
+				write "Queen " + indexInArray + " received validation result: " + is_valid + " for column " + pending_column;
+				
+				if(is_valid) {
+					my_col <- pending_column;
+					placed <- true;
+					color <- #green;
+					
+					location <- {(my_col+1) * cell_size, (indexInArray+1) * cell_size};
+					write "  ✓ Queen " + indexInArray + " placed in column " + my_col;
+					write "  ✓ Queen " + indexInArray + " placed at Row " + indexInArray + ", Col " + my_col + " location: " + location;
+					write "  Grid bounds: 0 to " + (N-1);
+					
+					
+					if (indexInArray < N - 1 ) {
+						write "  → Sending TRY to Queen " + (indexInArray + 1);
+						do start_conversation (
+							to :: [queen[indexInArray + 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['TRY']
+						);
+					} 
+					else {
+						write "*** SOLUTION FOUND BY LAST QUEEN ***";
+						color <- #gold;
+						do start_conversation (
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'inform',
+							contents :: ['SUCCESS']
+						);
+					}
+				}
+				else{
+					write "  ✗ Queen " + indexInArray + " rejected for column " + pending_column;
+					col_index <- col_index + 1;
+					pending_column <- -1;
+					do try_place;
+				}
+			}
+		}
+	}
+
+	action try_place {
+		write "Queen " + indexInArray + " trying to place (col_index=" + col_index + ")";
+		
+		if (length(possible_columns) = 0) {
+			write "ERROR: Queen " + indexInArray + " has empty possible_columns list!";
+			return;
+		}
+		
+		if(col_index < length(possible_columns) and !waiting_for_validation){
+			int test_col <- possible_columns[col_index];
+			write "  Testing column " + test_col;
+			
+			do checkForPredecessor(test_col);
+			return; // Wait for validation response
+		}
+		
+		if(col_index >= length(possible_columns)){
+			write "  ✗ Queen " + indexInArray + " failed to place, backtracking";
+			color <- #red;
+			
+			if (indexInArray > 0) {
+				write "  ← Sending BACKTRACK to Queen " + (indexInArray - 1);
+				do start_conversation (
+					to :: [queen[indexInArray - 1]],
+					protocol :: 'fipa-request',
+					performative :: 'request',
+					contents :: ['BACKTRACK']
+				);
+			} else {
+				write "========================================";
+				write "=== Search complete. Total solutions: " + length(solutions) + " ===";
+				write "========================================";
+				searching <- false;
+			}
+		}
+	}
+	
+	aspect default {
+			draw circle(cell_size*0.4) color: color border: #black;
+			draw string(indexInArray) color: #white size: 8 at: location;
+		
+	}
 }
 
-action try_place {
-    write "Queen " + id + " trying to place (col_index=" + col_index + ")";
-    
-    if (length(possible_columns) = 0) {
-        write "ERROR: Queen " + id + " has empty possible_columns list!";
-        return;
-    }
-    
-    loop while: col_index < length(possible_columns) {
-        int test_col <- possible_columns[col_index];
-        write "  Testing column " + test_col;
-        
-        if (not conflicts_with_predecessors(test_col)) {
-            my_col <- test_col;
-            placed <- true;
-            color <- #green;
-            
-            location <- {my_col * 10.0, row * 10.0};
-            current_config[id] <- my_col;
-            write "  ✓ Queen " + id + " placed in column " + my_col;
-            
-            if (id < N) {
-                write "  → Sending TRY to Queen " + (id + 1);
-                do start_conversation (
-                    to :: [queen(id)],
-                    protocol :: 'fipa-request',
-                    performative :: 'request',
-                    contents :: ['TRY', current_config]
-                );
-            } else {
-                write "*** SOLUTION FOUND BY LAST QUEEN ***";
-                color <- #gold;
-                do start_conversation (
-                    to :: [queen(id - 2)],
-                    protocol :: 'fipa-request',  // ✅ FIXED
-                    performative :: 'inform',
-                    contents :: ['SUCCESS', current_config]
-                );
-            }
-            
-            return;
-        }
-        
-        col_index <- col_index + 1;
-    }
-    
-    write "  ✗ Queen " + id + " failed to place, backtracking";
-    color <- #red;
-    
-    if (id > 1) {
-        write "  ← Sending BACKTRACK to Queen " + (id - 1);
-        do start_conversation (
-            to :: [queen(id - 2)],
-            protocol :: 'fipa-request',
-            performative :: 'request',
-            contents :: ['BACKTRACK']
-        );
-    } else {
-        write "========================================";
-        write "=== Search complete. Total solutions: " + length(solutions) + " ===";
-        write "========================================";
-        searching <- false;
-    }
-}    
-    aspect default {
-        if (placed) {
-            draw circle(5) color: color border: #black;
-            draw string(id) color: #white size: 8 at: location;
-        }
-    }
-}
 
 experiment NQueens type: gui {
     parameter "Board Size (N)" var: N min: 4 max: 20 category: "Board";
@@ -215,20 +335,20 @@ experiment NQueens type: gui {
     output {
         display "N-Queens Board" type: 2d {
             graphics "Chessboard" {
-                loop i from: 1 to: N {
-                    loop j from: 1 to: N {
-                        rgb cell_color <- ((i + j) mod 2 = 0) ? #white : #lightgray;
-                        draw square(10) at: {j * 10.0, i * 10.0} color: cell_color border: #black;
-                    }
-                }
-                
-                loop i from: 1 to: N {
-                    draw string(i) at: {i * 10.0, 5.0} color: #black size: 10;
-                }
-                
-                loop i from: 1 to: N {
-                    draw string(i) at: {5.0, i * 10.0} color: #black size: 10;
-                }
+    loop i from: 1 to: N {
+        loop j from: 1 to: N {
+            rgb cell_color <- ((i + j) mod 2 = 0) ? #white : #lightgray;
+            draw square(cell_size) at: {j * cell_size, i * cell_size} color: cell_color border: #black;
+        }
+    }
+    
+   	 loop i from: 1 to: N {
+        draw string(i) at: {i * cell_size, cell_size * 0.5} color: #black size: cell_size * 0.8;
+    }
+    
+    loop i from: 1 to: N {
+        draw string(i) at: {cell_size * 0.5, i * cell_size} color: #black size: cell_size * 0.8;
+    }
             }
             
             species queen aspect: default;
