@@ -1,10 +1,10 @@
 /**
 * Name: Task-1 Queen
 * Based on the internal empty template. 
-Author: Sakib, Ahsan, Sing - Extended with Stage Selection via Utility
+Author: Sakib, Ahsan, Sing
 * Tags: 
 */
-model NewModel
+model NQueen
 
 global {
     int N <- 12;
