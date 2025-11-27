@@ -54,7 +54,7 @@ global {
         }
         create Security number: 1;
         
-        // Challenge 1: Multiple auctioneers
+       
         create Auctioneer number: 4 {
             location <- any_location_in(shape);
         }
@@ -190,7 +190,7 @@ species Guest skills: [moving, fipa] {
     float time_at_stage <- 0.0;
     
     init {
-        // Challenge 1: Assign random genre preferences for auctions
+        
         int num_preferences <- rnd(2, 4);
         loop times: num_preferences {
             string genre <- one_of(merch_genres);
@@ -341,7 +341,7 @@ species Guest skills: [moving, fipa] {
         
         write "[TASK 2] " + name + " is selecting a stage...";
         
-        // Query all stages - SAME PATTERN AS CHALLENGE 1
+        // Query all stages
         do start_conversation to: list(Stage) 
            protocol: 'fipa-query' 
            performative: 'query' 
@@ -464,7 +464,7 @@ species Guest skills: [moving, fipa] {
                         hasQueriedStages <- false;
                     }
                 }
-                // Challenge 1: Handle auction winner
+                
                 else if msg_type = "winner" and length(data) >= 4 {
                     string auction_id <- string(data[1]);
                     string item_name <- string(data[2]);
@@ -476,7 +476,7 @@ species Guest skills: [moving, fipa] {
                     remove auction_id from: active_auction_ids;
                     remove key: auction_id from: auction_max_prices;
                 } 
-                // Challenge 1: Handle auction ended
+                
                 else if msg_type = "auction_ended" and length(data) >= 2 {
                     string auction_id <- string(data[1]);
                     remove auction_id from: active_auction_ids;
