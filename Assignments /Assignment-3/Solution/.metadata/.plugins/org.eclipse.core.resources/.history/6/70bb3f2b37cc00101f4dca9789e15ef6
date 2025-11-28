@@ -81,15 +81,12 @@ global {
         if leader = nil or dead(leader) {
             list<Guest> alive_guests <- list(Guest);
             if !empty(alive_guests) {
-                string old_leader_name <- (leader != nil and !dead(leader)) ? leader.name : "Unknown";
-                bool had_old_leader <- leader != nil;
-                
+                Guest old_leader <- leader;
                 leader <- one_of(alive_guests);
                 ask leader {
                     is_leader <- true;
                 }
-                
-                write "\n[LEADER CHANGE] " + (had_old_leader ? old_leader_name + " died. " : "") + 
+                write "\n[LEADER CHANGE] " + (old_leader != nil ? old_leader.name + " died. " : "") + 
                       "New leader: " + leader.name + "\n";
                 
                 // Reset optimization if in progress
