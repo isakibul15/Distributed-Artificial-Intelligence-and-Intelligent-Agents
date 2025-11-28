@@ -1,7 +1,7 @@
 /**
-* Name: Festival - Global Utility Function (Challenge 1) - FULLY FIXED
+* Name: Festival - Global Utility Function (Challenge 1) - FIXED
 * Author: Sakib, Ahsan, Sing
-* Description: Complete working version with all corner cases handled
+* Description: Fixed version with dynamic leader, death handling, and proper optimization
 */
 
 model Festival
@@ -26,7 +26,7 @@ global {
     float max_global_utility <- 0.0;
     bool max_utility_reached <- false;
     int optimization_iterations <- 0;
-    int max_optimization_iterations <- 10;
+    int max_optimization_iterations <- 15;
     list<float> utility_history <- [];
     int no_improvement_count <- 0;
     float last_utility <- 0.0;
@@ -54,7 +54,7 @@ global {
             location <- any_location_in(shape);
         }
         
-        // Random leader selection
+        // FIX 1: Random leader selection
         leader <- one_of(Guest);
         ask leader {
             is_leader <- true;
@@ -76,27 +76,27 @@ global {
         totalDistanceTraveled <- Guest sum_of (each.totalDistance);
     }
     
-    // Check if leader is alive and elect new one if needed
+    // FIX 2: Check if leader is alive and elect new one if needed
     reflex check_leader_alive {
         if leader = nil or dead(leader) {
             list<Guest> alive_guests <- list(Guest);
             if !empty(alive_guests) {
-                string old_leader_name <- "Unknown";
-                if leader != nil and !dead(leader) {
-                    old_leader_name <- leader.name;
-                }
+                string old_leader_name <- (leader != nil and !dead(leader)) ? leader.name : "Unknown";
+                bool had_old_leader <- leader != nil;
                 
                 leader <- one_of(alive_guests);
                 ask leader {
                     is_leader <- true;
                 }
                 
-                write "\n[LEADER CHANGE] " + old_leader_name + " died. New leader: " + leader.name + "\n";
+                write "\n[LEADER CHANGE] " + (had_old_leader ? old_leader_name + " died. " : "") + 
+                      "New leader: " + leader.name + "\n";
                 
                 // Reset optimization if in progress
                 if optimization_phase and !max_utility_reached {
                     optimization_phase <- false;
                     optimization_iterations <- 0;
+                    write "[OPTIMIZATION] Restarting due to leader change...";
                 }
             }
         }
@@ -131,13 +131,13 @@ global {
         float crowd_factor <- 1.0;
         
         if g.pref_crowd_mass > 0.7 {
-            // Prefers large crowds
+            // Prefers large crowds - utility increases with crowd size
             crowd_factor <- 1.0 + (crowd_size / 15.0);
         } else if g.pref_crowd_mass < 0.3 {
-            // Prefers small crowds
+            // Prefers small crowds - utility decreases with crowd size
             crowd_factor <- max(0.3, 1.5 - (crowd_size / 10.0));
         } else {
-            // Moderate preference
+            // Moderate preference - slight curve
             crowd_factor <- 1.0 + (0.2 - abs(crowd_size - 8.0) / 20.0);
         }
         
@@ -242,6 +242,8 @@ species Guest skills: [moving, fipa] {
     float pref_lightShow <- rnd(0.1, 1.0);
     float pref_speaker <- rnd(0.1, 1.0);
     float pref_musicStyle <- rnd(0.1, 1.0);
+    
+    // CHALLENGE 1: Crowd mass preference
     float pref_crowd_mass <- rnd(0.0, 1.0);
     
     Stage targetStage <- nil;
@@ -250,11 +252,13 @@ species Guest skills: [moving, fipa] {
     bool hasQueriedStages <- false;
     bool has_made_initial_choice <- false;
     map<string, float> stage_utilities <- map([]);
+    map<string, int> stage_crowds <- map([]);
     int stage_responses_received <- 0;
     float next_stage_selection_time <- rnd(50.0, 100.0);
+    float stage_visit_duration <- 0.0;
     float time_at_stage <- 0.0;
     
-    // Leader and optimization
+    // CHALLENGE 1: Leader and optimization
     bool is_leader <- false;
     bool ready_for_optimization <- false;
     float my_current_utility <- 0.0;
@@ -296,19 +300,19 @@ species Guest skills: [moving, fipa] {
         return nil;
     }
     
-    reflex changeState when: !max_utility_reached {
+    reflex changeState {
         if !isHungry {
             isHungry <- flip(0.015);
         }
         if !isThirsty {
             isThirsty <- flip(0.008);
         }
-        if !isHungry and !isThirsty and !evil {
+        if !isHungry and !isThirsty and !evil and !max_utility_reached {
             evil <- flip(0.0005);
         }
     }
     
-    reflex checkForBadGuests when: !optimization_phase and !max_utility_reached {
+    reflex checkForBadGuests when: !optimization_phase {
         list<Guest> evil_guests <- (Guest - self) where (each.evil);
         if !empty(evil_guests) {
             guestToBeReported <- evil_guests closest_to (self);
@@ -336,7 +340,7 @@ species Guest skills: [moving, fipa] {
                     noMemoryUsedCount <- noMemoryUsedCount + 1;
                 }
             }
-        } else if !isHungry and !isThirsty and targetStore = nil and targetStage = nil and !isSelectingStage and !max_utility_reached {
+        } else if !isHungry and !isThirsty and targetStore = nil and targetStage = nil and !isSelectingStage {
             do wander;
         }
     }
@@ -388,7 +392,6 @@ species Guest skills: [moving, fipa] {
         }
     }
     
-    // Initial stage selection
     reflex initiate_stage_selection when: !isSelectingStage and 
                                           targetStage = nil and 
                                           time >= next_stage_selection_time and
@@ -400,6 +403,7 @@ species Guest skills: [moving, fipa] {
         isSelectingStage <- true;
         hasQueriedStages <- false;
         stage_utilities <- map([]);
+        stage_crowds <- map([]);
         stage_responses_received <- 0;
         
         write "[SELECTION] " + name + " is selecting a stage...";
@@ -412,66 +416,27 @@ species Guest skills: [moving, fipa] {
         hasQueriedStages <- true;
     }
     
-    // Process stage information responses
-    reflex receive_stage_info when: !empty(informs) and isSelectingStage and hasQueriedStages {
-        loop inform_msg over: informs {
-            list data <- list(inform_msg.contents);
-            
-            if length(data) >= 6 and string(data[0]) = "stage_info" {
-                string stage_name <- string(data[1]);
-                float s_light <- float(data[2]);
-                float s_speaker <- float(data[3]);
-                float s_music <- float(data[4]);
-                int s_crowd <- int(data[5]);
-                
-                // Calculate utility
-                float base_utility <- (pref_lightShow * s_light) + 
-                                    (pref_speaker * s_speaker) + 
-                                    (pref_musicStyle * s_music);
-                
-                float crowd_factor <- 1.0;
-                if pref_crowd_mass > 0.7 {
-                    crowd_factor <- 1.0 + (s_crowd / 15.0);
-                } else if pref_crowd_mass < 0.3 {
-                    crowd_factor <- max(0.3, 1.5 - (s_crowd / 10.0));
-                }
-                
-                float utility <- base_utility * crowd_factor;
-                
-                stage_utilities[stage_name] <- utility;
-                stage_responses_received <- stage_responses_received + 1;
-                
-                write "[EVALUATION] " + name + " evaluated " + stage_name + 
-                      " - Utility: " + utility with_precision 3 + 
-                      " (Crowd: " + s_crowd + ")";
-                
-                // Once all stages responded, pick best one
-                if stage_responses_received >= length(Stage) {
-                    string best_stage_name <- stage_utilities.keys with_max_of (stage_utilities[each]);
-                    float best_utility <- stage_utilities[best_stage_name];
-                    
-                    Stage chosen_stage <- Stage first_with (each.name = best_stage_name);
-                    if chosen_stage != nil {
-                        targetStage <- chosen_stage;
-                        time_at_stage <- 0.0;
-                        
-                        write "[CHOICE] >>> " + name + " CHOSE " + best_stage_name + 
-                              " (utility: " + best_utility with_precision 3 + ") <<<";
-                    }
-                    
-                    isSelectingStage <- false;
-                    hasQueriedStages <- false;
-                }
-            }
+    // FIX 3: Execute pending switches
+    reflex execute_pending_switch when: pending_switch_stage != nil and targetStage != nil and time_at_stage > 0.0 {
+        write "[SWITCHING] " + name + " executing switch from " + targetStage.name + " to " + pending_switch_stage.name;
+        
+        // Leave current stage
+        ask targetStage {
+            visitor_count <- visitor_count - 1;
         }
-        informs <- [];
+        
+        // Reset state for move
+        targetStage <- pending_switch_stage;
+        time_at_stage <- 0.0;
+        pending_switch_stage <- nil;
+        received_switch_command <- false;
     }
     
-    reflex go_to_stage when: targetStage != nil and time_at_stage = 0.0 and !isSelectingStage {
+    reflex go_to_stage when: targetStage != nil and time_at_stage = 0.0 {
         do goto target: targetStage.location speed: 2.0;
     }
     
-    reflex check_arrival_at_stage when: targetStage != nil and time_at_stage = 0.0 and !isSelectingStage {
+    reflex check_arrival_at_stage when: targetStage != nil and time_at_stage = 0.0 {
         if location distance_to targetStage.location < 3.0 {
             write "[ARRIVAL] " + name + " ARRIVED at " + targetStage.name + "!";
             
@@ -488,13 +453,11 @@ species Guest skills: [moving, fipa] {
                 has_made_initial_choice <- true;
                 initial_choice <- targetStage;
                 ready_for_optimization <- true;
-                
-                write "[READY] " + name + " is ready for optimization";
             }
         }
     }
     
-    // Leader initiates optimization
+    // FIX 4: Improved leader optimization logic
     reflex leader_check_all_ready when: is_leader and 
                                         !optimization_phase and 
                                         length(Guest where each.ready_for_optimization) = length(Guest) {
@@ -511,109 +474,137 @@ species Guest skills: [moving, fipa] {
         write "[OPTIMIZATION] ALL GUESTS HAVE MADE INITIAL CHOICES";
         write "[OPTIMIZATION] Initial Global Utility: " + initial_global_utility with_precision 3;
         write "========================================\n";
+        
+        do start_conversation to: list(Guest) - self
+           protocol: 'fipa-contract-net'
+           performative: 'cfp'
+           contents: ["optimize_start", initial_global_utility];
     }
     
-    // Leader optimization algorithm
+    reflex receive_optimization_request when: !is_leader and !empty(cfps) {
+        loop cfp_msg over: cfps {
+            list data <- list(cfp_msg.contents);
+            if length(data) >= 1 and string(data[0]) = "optimize_start" {
+                do start_conversation to: [cfp_msg.sender]
+                   protocol: 'fipa-contract-net'
+                   performative: 'propose'
+                   contents: [name, targetStage.name, my_current_utility];
+            }
+        }
+        // FIX 5: Clear messages
+        cfps <- [];
+    }
+    
+    // FIX 6: Better optimization algorithm
     reflex leader_optimize when: is_leader and 
                                 optimization_phase and 
                                 !max_utility_reached and
                                 optimization_iterations < max_optimization_iterations and
-                                mod(cycle, 50) = 0 {
+                                mod(cycle, 30) = 0 {
         
         optimization_iterations <- optimization_iterations + 1;
-        write "\n[OPTIMIZATION] === Iteration " + optimization_iterations + " ===";
+        write "[OPTIMIZATION] Iteration " + optimization_iterations;
         
+        // Calculate current utility
         current_global_utility <- world.calculate_global_utility();
         add current_global_utility to: utility_history;
         
         write "[OPTIMIZATION] Current Global Utility: " + current_global_utility with_precision 3;
         
+        // FIX 7: Check for convergence or improvement
         float improvement <- current_global_utility - last_utility;
         
         if current_global_utility > max_global_utility {
             max_global_utility <- current_global_utility;
             no_improvement_count <- 0;
-        } else if abs(improvement) < 0.05 {
+        } else if abs(improvement) < 0.1 {
             no_improvement_count <- no_improvement_count + 1;
         }
         
-        if no_improvement_count >= 3 {
+        // Stop if no improvement for 3 iterations or if utility is decreasing
+        if no_improvement_count >= 3 or improvement < -0.5 {
             max_utility_reached <- true;
             
+            // Use the best utility we've seen
+            float final_utility <- max([max_global_utility, initial_global_utility]);
+            
             write "\n========================================";
-            write "[SUCCESS] MAXIMUM GLOBAL UTILITY REACHED!";
-            write "[SUCCESS] Initial Utility: " + initial_global_utility with_precision 3;
-            write "[SUCCESS] Final Utility: " + max_global_utility with_precision 3;
-            write "[SUCCESS] Improvement: " + (max_global_utility - initial_global_utility) with_precision 3;
-            write "[SUCCESS] Iterations: " + optimization_iterations;
-            write "[SUCCESS] All guests can now enjoy their shows!";
+            write "[OPTIMIZATION] CONVERGED - Maximum Global Utility Reached!";
+            write "[OPTIMIZATION] Initial Global Utility: " + initial_global_utility with_precision 3;
+            write "[OPTIMIZATION] Final Global Utility: " + final_utility with_precision 3;
+            write "[OPTIMIZATION] Improvement: " + (final_utility - initial_global_utility) with_precision 3;
+            write "[OPTIMIZATION] Total Iterations: " + optimization_iterations;
             write "========================================\n";
             
-            ask Guest {
-                if targetStage != nil and time_at_stage > 0.0 {
-                    write "[ENJOY] " + name + " is enjoying the show at " + targetStage.name + "!";
-                }
-            }
+            // Notify all guests
+            do start_conversation to: list(Guest) - self
+               protocol: 'fipa-contract-net'
+               performative: 'inform'
+               contents: ["optimization_complete"];
             
             return;
         }
         
         last_utility <- current_global_utility;
         
-        // Find beneficial switches
+        // Find beneficial switches using GLOBAL utility improvement
         map<Guest, Stage> proposed_switches <- map([]);
+        Guest leader_ref <- self;
         float baseline_global_utility <- current_global_utility;
         
-        list<Guest> guests_to_check <- Guest where (each.targetStage != nil and each.time_at_stage > 0.0 and each != self);
+        list<Guest> guests_to_check <- Guest where (each.targetStage != nil and each.time_at_stage > 0.0);
         
         loop guest_to_optimize over: guests_to_check {
-            Stage current_stage <- guest_to_optimize.targetStage;
-            Stage best_stage <- current_stage;
-            float best_global_utility <- baseline_global_utility;
-            
-            list<Stage> alternative_stages <- list(Stage) where (each != current_stage);
-            
-            loop test_stage over: alternative_stages {
-                // Simulate switch
-                int original_test_count <- test_stage.visitor_count;
-                int original_current_count <- current_stage.visitor_count;
+            if guest_to_optimize != leader_ref {
+                Stage current_stage <- guest_to_optimize.targetStage;
+                Stage best_stage <- current_stage;
+                float best_global_utility <- baseline_global_utility;
                 
-                test_stage.visitor_count <- test_stage.visitor_count + 1;
-                current_stage.visitor_count <- current_stage.visitor_count - 1;
+                list<Stage> alternative_stages <- list(Stage) where (each != current_stage);
                 
-                Stage temp_original <- guest_to_optimize.targetStage;
-                guest_to_optimize.targetStage <- test_stage;
-                
-                float test_global_utility <- world.calculate_global_utility();
-                
-                // Restore
-                test_stage.visitor_count <- original_test_count;
-                current_stage.visitor_count <- original_current_count;
-                guest_to_optimize.targetStage <- temp_original;
-                
-                if test_global_utility > best_global_utility + 0.3 {
-                    best_global_utility <- test_global_utility;
-                    best_stage <- test_stage;
+                loop test_stage over: alternative_stages {
+                    // Temporarily move guest to test stage
+                    int original_test_count <- test_stage.visitor_count;
+                    int original_current_count <- current_stage.visitor_count;
+                    
+                    test_stage.visitor_count <- test_stage.visitor_count + 1;
+                    current_stage.visitor_count <- current_stage.visitor_count - 1;
+                    
+                    Stage temp_original <- guest_to_optimize.targetStage;
+                    guest_to_optimize.targetStage <- test_stage;
+                    
+                    // Calculate NEW GLOBAL utility with this switch
+                    float test_global_utility <- world.calculate_global_utility();
+                    
+                    // Restore
+                    test_stage.visitor_count <- original_test_count;
+                    current_stage.visitor_count <- original_current_count;
+                    guest_to_optimize.targetStage <- temp_original;
+                    
+                    // Only switch if it improves GLOBAL utility
+                    if test_global_utility > best_global_utility + 0.2 {
+                        best_global_utility <- test_global_utility;
+                        best_stage <- test_stage;
+                    }
                 }
-            }
-            
-            if best_stage != current_stage {
-                proposed_switches[guest_to_optimize] <- best_stage;
-                write "[SWITCH] " + guest_to_optimize.name + " should switch to " + best_stage.name + 
-                      " (utility gain: " + (best_global_utility - baseline_global_utility) with_precision 3 + ")";
+                
+                if best_stage != current_stage {
+                    proposed_switches[guest_to_optimize] <- best_stage;
+                    write "[OPTIMIZATION] " + guest_to_optimize.name + " could switch to " + best_stage.name + 
+                          " for global utility: " + best_global_utility with_precision 3;
+                }
             }
         }
         
         if !empty(proposed_switches) {
-            write "[OPTIMIZATION] Executing " + length(proposed_switches) + " switches";
+            write "[OPTIMIZATION] Proposing " + length(proposed_switches) + " switches";
             
             loop g over: proposed_switches.keys {
                 Stage new_stage <- proposed_switches[g];
-                
-                ask g {
-                    pending_switch_stage <- new_stage;
-                    received_switch_command <- true;
-                }
+                do start_conversation to: [g]
+                   protocol: 'fipa-contract-net'
+                   performative: 'accept_proposal'
+                   contents: ["switch", new_stage.name];
             }
         } else {
             write "[OPTIMIZATION] No beneficial switches found";
@@ -621,22 +612,94 @@ species Guest skills: [moving, fipa] {
         }
     }
     
-    // Execute pending switch
-    reflex execute_switch when: pending_switch_stage != nil and targetStage != nil and time_at_stage > 0.0 {
-        write "[MOVING] " + name + " switching from " + targetStage.name + " to " + pending_switch_stage.name;
-        
-        ask targetStage {
-            visitor_count <- visitor_count - 1;
+    // FIX 8: Proper switch handling
+    reflex receive_switch_suggestion when: !empty(accept_proposals) and !max_utility_reached {
+        loop msg over: accept_proposals {
+            list data <- list(msg.contents);
+            if length(data) >= 2 and string(data[0]) = "switch" {
+                string new_stage_name <- string(data[1]);
+                Stage new_stage <- Stage first_with (each.name = new_stage_name);
+                
+                if new_stage != nil and new_stage != targetStage and targetStage != nil {
+                    write "[SWITCH ACCEPTED] " + name + " will switch from " + targetStage.name + " to " + new_stage_name;
+                    pending_switch_stage <- new_stage;
+                    received_switch_command <- true;
+                }
+            }
         }
-        
-        targetStage <- pending_switch_stage;
-        time_at_stage <- 0.0;
-        pending_switch_stage <- nil;
-        received_switch_command <- false;
+        accept_proposals <- [];
+    }
+    
+    reflex receive_optimization_complete when: !empty(informs) {
+        loop msg over: informs {
+            list data <- list(msg.contents);
+            if length(data) >= 1 and string(data[0]) = "optimization_complete" {
+                write "[ENJOY] " + name + " can now enjoy the show at " + (targetStage != nil ? targetStage.name : "unknown") + "!";
+            }
+        }
+        informs <- [];
     }
     
     reflex update_utility when: targetStage != nil and time_at_stage > 0.0 {
         my_current_utility <- world.calculate_guest_utility(self);
+    }
+    
+    reflex receive_inform when: !empty(informs) and isSelectingStage {
+        loop inform_msg over: informs {
+            list data <- list(inform_msg.contents);
+            
+            if length(data) >= 1 {
+                string msg_type <- string(data[0]);
+                
+                if msg_type = "stage_info" and length(data) >= 6 and isSelectingStage and hasQueriedStages {
+                    string stage_name <- string(data[1]);
+                    float s_light <- float(data[2]);
+                    float s_speaker <- float(data[3]);
+                    float s_music <- float(data[4]);
+                    int s_crowd <- int(data[5]);
+                    
+                    float base_utility <- (pref_lightShow * s_light) + 
+                                        (pref_speaker * s_speaker) + 
+                                        (pref_musicStyle * s_music);
+                    
+                    float crowd_factor <- 1.0;
+                    if pref_crowd_mass > 0.7 {
+                        crowd_factor <- 1.0 + (s_crowd / 15.0);
+                    } else if pref_crowd_mass < 0.3 {
+                        crowd_factor <- max(0.3, 1.5 - (s_crowd / 10.0));
+                    }
+                    
+                    float utility <- base_utility * crowd_factor;
+                    
+                    stage_utilities[stage_name] <- utility;
+                    stage_crowds[stage_name] <- s_crowd;
+                    stage_responses_received <- stage_responses_received + 1;
+                    
+                    write "[EVALUATION] " + name + " evaluated " + stage_name + 
+                          " - Utility: " + utility with_precision 3 + 
+                          " (Crowd: " + s_crowd + ", Pref: " + pref_crowd_mass with_precision 2 + ")";
+                    
+                    if stage_responses_received >= length(Stage) and !empty(stage_utilities) {
+                        string best_stage_name <- stage_utilities.keys with_max_of (stage_utilities[each]);
+                        float best_utility <- stage_utilities[best_stage_name];
+                        
+                        Stage chosen_stage <- Stage first_with (each.name = best_stage_name);
+                        if chosen_stage != nil {
+                            targetStage <- chosen_stage;
+                            stage_visit_duration <- rnd(200.0, 400.0);
+                            time_at_stage <- 0.0;
+                            
+                            write "[CHOICE] >>> " + name + " CHOSE " + best_stage_name + 
+                                  " (utility: " + best_utility with_precision 3 + ") <<<";
+                        }
+                        
+                        isSelectingStage <- false;
+                        hasQueriedStages <- false;
+                    }
+                }
+            }
+        }
+        informs <- [];
     }
     
     reflex trackDistance {
@@ -684,7 +747,7 @@ species Security skills: [moving] {
         add item: g to: killed;
     }
     
-    reflex checkForProblem when: !optimization_phase and !max_utility_reached {
+    reflex checkForProblem when: !optimization_phase {
         if AssignedGuest != nil {
             if !(killed contains AssignedGuest) {
                 if location distance_to AssignedGuest.location < 1.0 {
@@ -727,7 +790,7 @@ experiment Festival_Simulation type: gui {
         
         display "Global Utility Over Time" {
             chart "Utility Optimization" type: series {
-                data "Current Utility" value: current_global_utility color: #blue;
+                data "Global Utility" value: current_global_utility color: #blue;
                 data "Initial Utility" value: initial_global_utility color: #red;
                 data "Max Utility" value: max_global_utility color: #green;
             }
@@ -735,18 +798,20 @@ experiment Festival_Simulation type: gui {
         
         monitor "=== CHALLENGE 1: GLOBAL UTILITY ===" value: "";
         monitor "Leader" value: leader != nil ? leader.name : "None";
+        monitor "Leader Alive" value: leader != nil and !dead(leader);
         monitor "Optimization Phase" value: optimization_phase;
         monitor "Initial Global Utility" value: initial_global_utility with_precision 3;
         monitor "Current Global Utility" value: current_global_utility with_precision 3;
         monitor "Max Utility" value: max_global_utility with_precision 3;
         monitor "Improvement" value: (current_global_utility - initial_global_utility) with_precision 3;
-        monitor "Max Reached" value: max_utility_reached;
-        monitor "Iterations" value: optimization_iterations;
+        monitor "Max Utility Reached" value: max_utility_reached;
+        monitor "Optimization Iterations" value: optimization_iterations;
+        monitor "No Improvement Count" value: no_improvement_count;
         monitor "" value: "";
-        monitor "=== GUEST STATUS ===" value: "";
-        monitor "Guests Ready" value: length(Guest where each.ready_for_optimization);
+        monitor "=== STAGE STATISTICS ===" value: "";
+        monitor "Total Stage Visits" value: total_stage_visits;
         monitor "Guests at Stages" value: length(Guest where (each.targetStage != nil and each.time_at_stage > 0));
         monitor "Guests Selecting" value: length(Guest where each.isSelectingStage);
-        monitor "Total Guests" value: length(Guest);
+        monitor "Alive Guests" value: length(Guest);
     }
 }
