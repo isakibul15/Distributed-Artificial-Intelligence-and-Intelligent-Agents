@@ -1,5 +1,5 @@
 /**
-* Name: Festival - Global Utility Function (Challenge 1) - FULLY FIXED
+* Name: Festival - Global Utility Function (Challenge 1)
 * Author: Sakib, Ahsan, Sing
 * Description: Complete working version with all corner cases handled
 */
@@ -62,7 +62,7 @@ global {
         
         create Security number: 1;
         
-        write "\n=== FESTIVAL SIMULATION - CHALLENGE 1 (FIXED) ===";
+        write "\n=== FESTIVAL SIMULATION - CHALLENGE 1 ===";
         write "Global Utility Optimization with Crowd Mass Preferences";
         write "Stages: " + length(Stage);
         write "Guests: " + length(Guest);
