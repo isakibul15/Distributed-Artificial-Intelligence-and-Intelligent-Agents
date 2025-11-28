@@ -496,152 +496,138 @@ species Guest skills: [moving, fipa] {
     reflex leader_optimize when: is_leader and 
                                 optimization_phase and 
                                 !max_utility_reached and
-                                optimization_iterations < max_optimization_iterations and
-                                mod(cycle, 30) = 0 {
+                                optimization_iterations < max_optimization_iterations {
         
-        optimization_iterations <- optimization_iterations + 1;
-        write "[OPTIMIZATION] Iteration " + optimization_iterations;
-        
-        // Calculate current utility
-        current_global_utility <- world.calculate_global_utility();
-        add current_global_utility to: utility_history;
-        
-        write "[OPTIMIZATION] Current Global Utility: " + current_global_utility with_precision 3;
-        
-        // FIX 7: Check for convergence or improvement
-        float improvement <- current_global_utility - last_utility;
-        
-        if current_global_utility > max_global_utility {
-            max_global_utility <- current_global_utility;
-            no_improvement_count <- 0;
-        } else if abs(improvement) < 0.1 {
-            no_improvement_count <- no_improvement_count + 1;
-        }
-        
-        // Stop if no improvement for 3 iterations or if utility is decreasing
-        if no_improvement_count >= 3 or improvement < -0.5 {
-            max_utility_reached <- true;
+        // Wait for all proposals or timeout
+        int expected_responses <- length(Guest) - 1;
+        if length(proposes) >= expected_responses or mod(cycle, 20) = 0 {
             
-            // Use the best utility we've seen
-            float final_utility <- max([max_global_utility, initial_global_utility]);
+            optimization_iterations <- optimization_iterations + 1;
+            write "[OPTIMIZATION] Iteration " + optimization_iterations;
             
-            write "\n========================================";
-            write "[OPTIMIZATION] CONVERGED - Maximum Global Utility Reached!";
-            write "[OPTIMIZATION] Initial Global Utility: " + initial_global_utility with_precision 3;
-            write "[OPTIMIZATION] Final Global Utility: " + final_utility with_precision 3;
-            write "[OPTIMIZATION] Improvement: " + (final_utility - initial_global_utility) with_precision 3;
-            write "[OPTIMIZATION] Total Iterations: " + optimization_iterations;
-            write "========================================\n";
+            // Calculate current utility
+            current_global_utility <- world.calculate_global_utility();
+            add current_global_utility to: utility_history;
             
-            // Notify all guests
-            do start_conversation to: list(Guest) - self
-               protocol: 'fipa-contract-net'
-               performative: 'inform'
-               contents: ["optimization_complete"];
+            // FIX 7: Check for convergence
+            float improvement <- current_global_utility - last_utility;
+            if improvement < 0.1 {
+                no_improvement_count <- no_improvement_count + 1;
+            } else {
+                no_improvement_count <- 0;
+                max_global_utility <- current_global_utility;
+            }
             
-            return;
-        }
-        
-        last_utility <- current_global_utility;
-        
-        // Find beneficial switches using GLOBAL utility improvement
-        map<Guest, Stage> proposed_switches <- map([]);
-        Guest leader_ref <- self;
-        float baseline_global_utility <- current_global_utility;
-        
-        list<Guest> guests_to_check <- Guest where (each.targetStage != nil and each.time_at_stage > 0.0);
-        
-        loop guest_to_optimize over: guests_to_check {
-            if guest_to_optimize != leader_ref {
-                Stage current_stage <- guest_to_optimize.targetStage;
-                Stage best_stage <- current_stage;
-                float best_global_utility <- baseline_global_utility;
+            if no_improvement_count >= 3 {
+                max_utility_reached <- true;
+                write "\n========================================";
+                write "[OPTIMIZATION] CONVERGED - Maximum Global Utility Reached!";
+                write "[OPTIMIZATION] Final Global Utility: " + current_global_utility with_precision 3;
+                write "[OPTIMIZATION] Improvement: " + (current_global_utility - initial_global_utility) with_precision 3;
+                write "[OPTIMIZATION] Total Iterations: " + optimization_iterations;
+                write "========================================\n";
                 
-                list<Stage> alternative_stages <- list(Stage) where (each != current_stage);
+                // Notify all guests
+                do start_conversation to: list(Guest) - self
+                   protocol: 'fipa-contract-net'
+                   performative: 'inform'
+                   contents: ["optimization_complete"];
                 
-                loop test_stage over: alternative_stages {
-                    // Temporarily move guest to test stage
-                    int original_test_count <- test_stage.visitor_count;
-                    int original_current_count <- current_stage.visitor_count;
+                proposes <- [];
+                return;
+            }
+            
+            last_utility <- current_global_utility;
+            
+            // Find beneficial switches
+            map<Guest, Stage> proposed_switches <- map([]);
+            Guest leader_ref <- self;
+            
+            list<Guest> guests_to_check <- Guest where (each.targetStage != nil and each.time_at_stage > 0.0);
+            
+            loop guest_to_optimize over: guests_to_check {
+                if guest_to_optimize != leader_ref {
+                    float current_utility <- world.calculate_guest_utility(guest_to_optimize);
+                    float best_utility <- current_utility;
+                    Stage best_stage <- guest_to_optimize.targetStage;
+                    Stage current_stage <- guest_to_optimize.targetStage;
                     
-                    test_stage.visitor_count <- test_stage.visitor_count + 1;
-                    current_stage.visitor_count <- current_stage.visitor_count - 1;
+                    list<Stage> alternative_stages <- list(Stage) where (each != current_stage);
                     
-                    Stage temp_original <- guest_to_optimize.targetStage;
-                    guest_to_optimize.targetStage <- test_stage;
+                    loop test_stage over: alternative_stages {
+                        // Simulate guest at this stage
+                        int original_test_count <- test_stage.visitor_count;
+                        int original_current_count <- current_stage.visitor_count;
+                        
+                        // Temporarily adjust counts for simulation
+                        test_stage.visitor_count <- test_stage.visitor_count + 1;
+                        current_stage.visitor_count <- current_stage.visitor_count - 1;
+                        
+                        // Temporarily change guest's target for calculation
+                        Stage temp_original <- guest_to_optimize.targetStage;
+                        guest_to_optimize.targetStage <- test_stage;
+                        
+                        float potential_utility <- world.calculate_guest_utility(guest_to_optimize);
+                        
+                        // Restore original values
+                        test_stage.visitor_count <- original_test_count;
+                        current_stage.visitor_count <- original_current_count;
+                        guest_to_optimize.targetStage <- temp_original;
+                        
+                        // Check if significantly better
+                        if potential_utility > best_utility + 0.1 {
+                            best_utility <- potential_utility;
+                            best_stage <- test_stage;
+                        }
+                    }
                     
-                    // Calculate NEW GLOBAL utility with this switch
-                    float test_global_utility <- world.calculate_global_utility();
-                    
-                    // Restore
-                    test_stage.visitor_count <- original_test_count;
-                    current_stage.visitor_count <- original_current_count;
-                    guest_to_optimize.targetStage <- temp_original;
-                    
-                    // Only switch if it improves GLOBAL utility
-                    if test_global_utility > best_global_utility + 0.2 {
-                        best_global_utility <- test_global_utility;
-                        best_stage <- test_stage;
+                    if best_stage != current_stage {
+                        proposed_switches[guest_to_optimize] <- best_stage;
                     }
                 }
+            }
+            
+            if !empty(proposed_switches) {
+                write "[OPTIMIZATION] Proposing " + length(proposed_switches) + " switches";
                 
-                if best_stage != current_stage {
-                    proposed_switches[guest_to_optimize] <- best_stage;
-                    write "[OPTIMIZATION] " + guest_to_optimize.name + " could switch to " + best_stage.name + 
-                          " for global utility: " + best_global_utility with_precision 3;
+                loop g over: proposed_switches.keys {
+                    Stage new_stage <- proposed_switches[g];
+                    do start_conversation to: [g]
+                       protocol: 'fipa-contract-net'
+                       performative: 'accept_proposal'
+                       contents: ["switch", new_stage.name];
                 }
             }
-        }
-        
-        if !empty(proposed_switches) {
-            write "[OPTIMIZATION] Proposing " + length(proposed_switches) + " switches";
             
-            loop g over: proposed_switches.keys {
-                Stage new_stage <- proposed_switches[g];
-                do start_conversation to: [g]
-                   protocol: 'fipa-contract-net'
-                   performative: 'accept_proposal'
-                   contents: ["switch", new_stage.name];
-            }
-        } else {
-            write "[OPTIMIZATION] No beneficial switches found";
-            no_improvement_count <- no_improvement_count + 1;
+            // Clear proposals
+            proposes <- [];
         }
     }
     
     // FIX 8: Proper switch handling
-    reflex receive_switch_suggestion when: !empty(accept_proposals) and !max_utility_reached {
+    reflex receive_switch_suggestion when: !empty(accept_proposals) {
         loop msg over: accept_proposals {
             list data <- list(msg.contents);
             if length(data) >= 2 and string(data[0]) = "switch" {
                 string new_stage_name <- string(data[1]);
                 Stage new_stage <- Stage first_with (each.name = new_stage_name);
                 
-                if new_stage != nil and new_stage != targetStage and targetStage != nil {
-                    write "[SWITCH ACCEPTED] " + name + " will switch from " + targetStage.name + " to " + new_stage_name;
+                if new_stage != nil and new_stage != targetStage {
                     pending_switch_stage <- new_stage;
                     received_switch_command <- true;
                 }
+            } else if length(data) >= 1 and string(data[0]) = "optimization_complete" {
+                write "[ENJOY] " + name + " can now enjoy the show at " + targetStage.name + "!";
             }
         }
         accept_proposals <- [];
-    }
-    
-    reflex receive_optimization_complete when: !empty(informs) {
-        loop msg over: informs {
-            list data <- list(msg.contents);
-            if length(data) >= 1 and string(data[0]) = "optimization_complete" {
-                write "[ENJOY] " + name + " can now enjoy the show at " + (targetStage != nil ? targetStage.name : "unknown") + "!";
-            }
-        }
-        informs <- [];
     }
     
     reflex update_utility when: targetStage != nil and time_at_stage > 0.0 {
         my_current_utility <- world.calculate_guest_utility(self);
     }
     
-    reflex receive_inform when: !empty(informs) and isSelectingStage {
+    reflex receive_inform when: !empty(informs) {
         loop inform_msg over: informs {
             list data <- list(inform_msg.contents);
             
