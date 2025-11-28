@@ -269,7 +269,7 @@ species queen skills: [fipa] {
 							to :: [queen[indexInArray - 1]],
 							protocol :: 'fipa-request',
 							performative :: 'inform',
-							contents :: ['SUCCESS']
+							contents :: ['SUCCESS', []]
 						);
 					}
 				}
@@ -352,45 +352,6 @@ experiment NQueens type: gui {
             }
             
             species queen aspect: default;
-        }
-        
-        display "Statistics" type: 2d {
-            graphics "Info" {
-                draw "N-Queens Problem Solver" at: {10, 20} color: #black font: font("Arial", 16, #bold);
-                draw "Board Size: " + N at: {10, 50} color: #black font: font("Arial", 14, #plain);
-                draw "Solutions Found: " + length(solutions) at: {10, 80} color: #black font: font("Arial", 14, #plain);
-                draw "Status: " + (searching ? "Searching..." : "Complete") at: {10, 110} color: #black font: font("Arial", 14, #plain);
-                
-                draw "Legend:" at: {10, 150} color: #black font: font("Arial", 14, #bold);
-                draw circle(5) at: {30, 180} color: #blue;
-                draw "Trying" at: {50, 180} color: #black font: font("Arial", 12, #plain);
-                
-                draw circle(5) at: {30, 210} color: #green;
-                draw "Placed" at: {50, 210} color: #black font: font("Arial", 12, #plain);
-                
-                draw circle(5) at: {30, 240} color: #orange;
-                draw "Backtracking" at: {50, 240} color: #black font: font("Arial", 12, #plain);
-                
-                draw circle(5) at: {30, 270} color: #red;
-                draw "Failed" at: {50, 270} color: #black font: font("Arial", 12, #plain);
-                
-                draw circle(5) at: {30, 300} color: #gold;
-                draw "Solution!" at: {50, 300} color: #black font: font("Arial", 12, #plain);
-            }
-        }
-        
-        display "Solutions" type: 2d {
-            graphics "Solution List" {
-                draw "All Solutions Found:" at: {10, 20} color: #black font: font("Arial", 14, #bold);
-                
-                int y_pos <- 50;
-                loop i from: 0 to: length(solutions) - 1 {
-                    map sol <- solutions[i];
-                    string sol_text <- "Solution " + (i + 1) + ": " + sol;
-                    draw sol_text at: {10, y_pos} color: #black font: font("Arial", 12, #plain);
-                    y_pos <- y_pos + 30;
-                }
-            }
         }
         
         monitor "Board Size (N)" value: N;
