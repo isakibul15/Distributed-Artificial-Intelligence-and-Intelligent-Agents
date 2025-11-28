@@ -528,41 +528,24 @@ species Guest skills: [moving, fipa] {
         
         write "[OPTIMIZATION] Current Global Utility: " + current_global_utility with_precision 3;
         
-        // Check if utility is decreasing (oscillating)
         float improvement <- current_global_utility - last_utility;
         
         if current_global_utility > max_global_utility {
             max_global_utility <- current_global_utility;
             no_improvement_count <- 0;
-        } else if improvement < -0.1 {
-            // Utility is decreasing - we're oscillating
-            no_improvement_count <- no_improvement_count + 2;
-        } else if abs(improvement) < 0.1 {
+        } else if abs(improvement) < 0.05 {
             no_improvement_count <- no_improvement_count + 1;
-        } else {
-            no_improvement_count <- 0;
         }
         
-        // Stop if no improvement for 3 iterations OR reached max iterations
-        if no_improvement_count >= 3 or optimization_iterations >= max_optimization_iterations {
+        if no_improvement_count >= 3 {
             max_utility_reached <- true;
-            
-            // Use the best utility we've achieved
-            float final_utility <- max([max_global_utility, initial_global_utility]);
             
             write "\n========================================";
             write "[SUCCESS] MAXIMUM GLOBAL UTILITY REACHED!";
             write "[SUCCESS] Initial Utility: " + initial_global_utility with_precision 3;
-            write "[SUCCESS] Final Utility: " + final_utility with_precision 3;
-            write "[SUCCESS] Improvement: " + (final_utility - initial_global_utility) with_precision 3;
+            write "[SUCCESS] Final Utility: " + max_global_utility with_precision 3;
+            write "[SUCCESS] Improvement: " + (max_global_utility - initial_global_utility) with_precision 3;
             write "[SUCCESS] Iterations: " + optimization_iterations;
-            
-            if no_improvement_count >= 3 {
-                write "[SUCCESS] Converged - No more beneficial switches found";
-            } else {
-                write "[SUCCESS] Maximum iterations reached";
-            }
-            
             write "[SUCCESS] All guests can now enjoy their shows!";
             write "========================================\n";
             
@@ -577,10 +560,9 @@ species Guest skills: [moving, fipa] {
         
         last_utility <- current_global_utility;
         
-        // Find beneficial switches that IMPROVE from CURRENT state
+        // Find beneficial switches
         map<Guest, Stage> proposed_switches <- map([]);
         float baseline_global_utility <- current_global_utility;
-        float best_found_utility <- baseline_global_utility;
         
         list<Guest> guests_to_check <- Guest where (each.targetStage != nil and each.time_at_stage > 0.0 and each != self);
         
@@ -609,16 +591,14 @@ species Guest skills: [moving, fipa] {
                 current_stage.visitor_count <- original_current_count;
                 guest_to_optimize.targetStage <- temp_original;
                 
-                // Only accept if it improves SIGNIFICANTLY from baseline
-                if test_global_utility > best_global_utility + 0.5 {
+                if test_global_utility > best_global_utility + 0.3 {
                     best_global_utility <- test_global_utility;
                     best_stage <- test_stage;
                 }
             }
             
-            if best_stage != current_stage and best_global_utility > best_found_utility {
+            if best_stage != current_stage {
                 proposed_switches[guest_to_optimize] <- best_stage;
-                best_found_utility <- best_global_utility;
                 write "[SWITCH] " + guest_to_optimize.name + " should switch to " + best_stage.name + 
                       " (utility gain: " + (best_global_utility - baseline_global_utility) with_precision 3 + ")";
             }
