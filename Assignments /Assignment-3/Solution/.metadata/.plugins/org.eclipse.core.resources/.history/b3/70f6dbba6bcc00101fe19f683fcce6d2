@@ -1,0 +1,425 @@
+/**
+* Name: Task-1 Queen
+* Based on the internal empty template. 
+Author: Sakib, Ahsan, Sing
+* Tags: 
+*/
+model NQueen
+
+global {
+    int N <- 12;
+    list<map> solutions <- [];
+    bool searching <- true;
+    int max_solutions <- 1;
+    bool algorithm_started <- false;
+    float cell_size <- 100.0 / N;
+    
+    init {
+        loop i from: 0 to: N-1  {
+    		create queen{
+    			indexInArray <- i;
+    		}
+    			}
+    }
+    
+    reflex start_algorithm when: !algorithm_started and length(queen) = N {
+        algorithm_started <- true;
+        write "========================================";
+        write "Starting N-Queens algorithm";
+        write "========================================";
+        
+        // Trigger first queen to start
+        queen first_queen <- queen(0);
+        first_queen.should_start <- true;
+    }
+}
+
+species queen skills: [fipa] {
+    int indexInArray;
+    int myRow;
+    list<int> possible_columns <- [];
+    int col_index <- 0;
+    int my_col <- -1;
+    
+    bool placed <- false;
+    bool initialized <- false;
+    bool should_start <- false;
+    bool waiting_for_validation <- false;
+    int pending_column <- -1;
+    
+    rgb color <- #blue;
+    
+    // Initialize columns on first step
+    reflex init_columns when: !initialized {
+        loop i from: 0 to: N - 1 {
+            add i to: possible_columns;
+        }
+        initialized <- true;
+        write "Queen " + indexInArray + " initialized with columns: " + possible_columns;
+    }
+    
+    // Start algorithm when triggered
+    reflex start when: should_start and initialized {
+        should_start <- false;
+        write "Queen " + indexInArray + " starting placement";
+        do try_place;
+    }
+
+	action checkForPredecessor(int test_col) {
+		// Send validate message to my predecessor
+		waiting_for_validation <- true;
+		pending_column <- test_col;
+		
+		if(indexInArray = 0){
+			// Queen 0 validates herself - always true
+			do start_conversation(
+				to :: [self],
+				protocol :: 'fipa-request',
+				performative :: 'inform',
+				contents :: ['result', true]
+			);
+			return;
+		}
+		write "queen" + indexInArray + "sending validate request";
+		do start_conversation(
+			to :: [queen[indexInArray - 1]],
+			protocol :: 'fipa-request',
+			performative :: 'request',
+			contents :: ['validate', test_col, indexInArray]
+		);
+	}
+    
+	reflex handle_fipa_messages when: (!empty(requests) or !empty(informs)) {
+		
+		loop m over: requests {
+			list data <- list(m.contents);
+			string msg_type <- string(data[0]);
+			
+			if (msg_type = "TRY") {
+				col_index <- 0;
+				placed <- false;
+				color <- #blue;
+				my_col <- -1;
+				write "Queen " + indexInArray + " received TRY with config: " ;
+				do try_place;
+			}
+			else if (msg_type = "BACKTRACK") {
+				write "Queen " + indexInArray + " received BACKTRACK";
+				col_index <- col_index + 1;
+				placed <- false;
+				my_col <- -1;
+				color <- #orange;
+				do try_place;
+			}
+			else if(msg_type = 'validate') {
+				int test_col <- int(data[1]);
+				int asker_row <- int(data[2]);
+				
+				// Check if it conflicts with my position
+				bool conflicts <- false;
+				if(my_col >= 0) {
+					if(my_col = test_col) {
+						conflicts <- true;
+					}
+					if(abs(indexInArray - asker_row) = abs(my_col - test_col)) {
+						conflicts <- true;
+					}
+				}
+				
+				if(indexInArray = 0) {
+					// Queen 0 gives final decision
+					write "answer from final queen is " + conflicts;
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+
+				} else {
+					if(conflicts) {
+						// Immediate conflict - reject
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+					} else {
+						// No conflict with me, forward to my predecessor
+						do start_conversation(
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['validate_forward', test_col, asker_row, m]
+						);
+					}
+				}
+			}
+			else if(msg_type = 'validate_forward') {
+				int test_col <- int(data[1]);
+				int asker_row <- int(data[2]);
+				message original_req <- message(data[3]);
+				
+				// Check if it conflicts with my position
+				bool conflicts <- false;
+				if(my_col >= 0) {
+					if(my_col = test_col) {
+						conflicts <- true;
+					}
+					if(abs(indexInArray - asker_row) = abs(my_col - test_col)) {
+						conflicts <- true;
+					}
+				}
+				
+				if(indexInArray = 0) {
+					// Queen 0 - send final result
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+				} else {
+					if(conflicts) {
+						// Immediate conflict - reject
+					do start_conversation(
+						to::[queen[asker_row]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['result', !conflicts]
+					);
+					} else {
+						// No conflict, keep forwarding
+						do start_conversation(
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['validate_forward', test_col, asker_row, original_req]
+						);
+					}
+				}
+			}
+		}
+		
+		
+		loop m over: informs {
+			list data <- list(m.contents);
+			string msg_type <- string(data[0]);
+			
+			if (msg_type = "SUCCESS") {
+				map<int, int> solution <- map(data[1]);
+				write "Queen " + indexInArray + " received SUCCESS: " + solution;
+				
+				bool already_exists <- false;
+				loop existing_sol over: solutions {
+					if (existing_sol = solution) {
+						already_exists <- true;
+						break;
+					}
+				}
+				
+				if (!already_exists) {
+					add solution to: solutions;
+					write "========================================";
+					write "=== Solution #" + length(solutions) + " found ===";
+					write solution;
+					write "========================================";
+				}
+				
+				if (indexInArray > 0) {
+					do start_conversation (
+						to :: [queen[indexInArray - 1]],
+						protocol :: 'fipa-request',
+						performative :: 'inform',
+						contents :: ['SUCCESS', solution]
+					);
+				}
+			}
+			else if(msg_type = "result" and waiting_for_validation){
+				bool is_valid <- bool(data[1]);
+				waiting_for_validation <- false;
+				
+				write "Queen " + indexInArray + " received validation result: " + is_valid + " for column " + pending_column;
+				
+				if(is_valid) {
+					my_col <- pending_column;
+					placed <- true;
+					color <- #green;
+					
+					location <- {(my_col+1) * cell_size, (indexInArray+1) * cell_size};
+					write "  ✓ Queen " + indexInArray + " placed in column " + my_col;
+					write "  ✓ Queen " + indexInArray + " placed at Row " + indexInArray + ", Col " + my_col + " location: " + location;
+					write "  Grid bounds: 0 to " + (N-1);
+					
+					
+					if (indexInArray < N - 1 ) {
+						write "  → Sending TRY to Queen " + (indexInArray + 1);
+						do start_conversation (
+							to :: [queen[indexInArray + 1]],
+							protocol :: 'fipa-request',
+							performative :: 'request',
+							contents :: ['TRY']
+						);
+					} 
+					else {
+						write "*** SOLUTION FOUND BY LAST QUEEN ***";
+						color <- #gold;
+						do start_conversation (
+							to :: [queen[indexInArray - 1]],
+							protocol :: 'fipa-request',
+							performative :: 'inform',
+							contents :: ['SUCCESS']
+						);
+					}
+				}
+				else{
+					write "  ✗ Queen " + indexInArray + " rejected for column " + pending_column;
+					col_index <- col_index + 1;
+					pending_column <- -1;
+					do try_place;
+				}
+			}
+		}
+	}
+
+	action try_place {
+		write "Queen " + indexInArray + " trying to place (col_index=" + col_index + ")";
+		
+		if (length(possible_columns) = 0) {
+			write "ERROR: Queen " + indexInArray + " has empty possible_columns list!";
+			return;
+		}
+		
+		if(col_index < length(possible_columns) and !waiting_for_validation){
+			int test_col <- possible_columns[col_index];
+			write "  Testing column " + test_col;
+			
+			do checkForPredecessor(test_col);
+			return; // Wait for validation response
+		}
+		
+		if(col_index >= length(possible_columns)){
+			write "  ✗ Queen " + indexInArray + " failed to place, backtracking";
+			color <- #red;
+			
+			if (indexInArray > 0) {
+				write "  ← Sending BACKTRACK to Queen " + (indexInArray - 1);
+				do start_conversation (
+					to :: [queen[indexInArray - 1]],
+					protocol :: 'fipa-request',
+					performative :: 'request',
+					contents :: ['BACKTRACK']
+				);
+			} else {
+				write "========================================";
+				write "=== Search complete. Total solutions: " + length(solutions) + " ===";
+				write "========================================";
+				searching <- false;
+			}
+		}
+	}
+	
+	aspect default {
+			// Draw shadow
+			draw circle(cell_size*0.42) color: rgb(0, 0, 0, 80) at: {location.x + 0.2, location.y + 0.2};
+			// Draw queen with glow effect
+			draw circle(cell_size*0.45) color: color border: rgb(255, 255, 255, 150) width: 2;
+			// Draw number with contrast
+			draw string(indexInArray) color: #white size: cell_size * 0.5 at: location font: font("Arial", int(cell_size * 0.5), #bold);
+		
+	}
+}
+
+
+experiment NQueens type: gui {
+    parameter "Board Size (N)" var: N min: 4 max: 20 category: "Board";
+    parameter "Max Solutions to Find" var: max_solutions min: 1 max: 100 category: "Search";
+    
+    output {
+        display "N-Queens Board" type: 2d background: rgb(40, 44, 52) {
+            graphics "Chessboard" {
+    // Draw board background with shadow effect
+    draw square(N * cell_size + 0.8) at: {(N+1) * cell_size / 2 + 0.4, (N+1) * cell_size / 2 + 0.4} color: rgb(20, 20, 20);
+    draw square(N * cell_size) at: {(N+1) * cell_size / 2, (N+1) * cell_size / 2} color: rgb(60, 60, 60);
+    
+    // Draw chess squares with elegant colors
+    loop i from: 1 to: N {
+        loop j from: 1 to: N {
+            rgb cell_color <- ((i + j) mod 2 = 0) ? rgb(240, 217, 181) : rgb(181, 136, 99);
+            draw square(cell_size) at: {j * cell_size, i * cell_size} color: cell_color;
+        }
+    }
+    
+    // Draw thin grid lines for clarity
+    loop i from: 1 to: N-1 {
+        draw line([{cell_size, (i+1) * cell_size}, {(N+1) * cell_size, (i+1) * cell_size}]) color: rgb(140, 100, 70) width: 0.5;
+        draw line([{(i+1) * cell_size, cell_size}, {(i+1) * cell_size, (N+1) * cell_size}]) color: rgb(140, 100, 70) width: 0.5;
+    }
+    
+    // Draw outer border frame with elegant dark border
+    draw line([{cell_size, cell_size}, {(N+1) * cell_size, cell_size}]) color: rgb(40, 40, 40) width: 3;
+    draw line([{cell_size, (N+1) * cell_size}, {(N+1) * cell_size, (N+1) * cell_size}]) color: rgb(40, 40, 40) width: 3;
+    draw line([{cell_size, cell_size}, {cell_size, (N+1) * cell_size}]) color: rgb(40, 40, 40) width: 3;
+    draw line([{(N+1) * cell_size, cell_size}, {(N+1) * cell_size, (N+1) * cell_size}]) color: rgb(40, 40, 40) width: 3;
+    
+    // Draw row numbers on left
+    loop i from: 1 to: N {
+        draw string(i) at: {cell_size * 0.4, i * cell_size + cell_size * 0.5} color: rgb(220, 220, 220) size: cell_size * 0.6 font: font("Arial", int(cell_size * 0.6), #bold);
+    }
+    
+    // Draw column numbers on top
+    loop i from: 1 to: N {
+        draw string(i) at: {i * cell_size + cell_size * 0.5, cell_size * 0.4} color: rgb(220, 220, 220) size: cell_size * 0.6 font: font("Arial", int(cell_size * 0.6), #bold);
+    }
+            }
+            
+            species queen aspect: default;
+        }
+        
+        display "Statistics" type: 2d background: rgb(40, 44, 52) {
+            graphics "Info" {
+                draw "N-Queens Problem Solver" at: {10, 25} color: rgb(97, 218, 251) font: font("Arial", 18, #bold);
+                draw "Board Size: " + N at: {10, 60} color: rgb(220, 220, 220) font: font("Arial", 15, #plain);
+                draw "Solutions Found: " + length(solutions) at: {10, 90} color: rgb(220, 220, 220) font: font("Arial", 15, #plain);
+                draw "Status: " + (searching ? "Searching..." : "Complete") at: {10, 120} color: (searching ? rgb(255, 200, 87) : rgb(152, 195, 121)) font: font("Arial", 15, #plain);
+                
+                draw "Legend:" at: {10, 165} color: rgb(97, 218, 251) font: font("Arial", 16, #bold);
+                
+                draw circle(8) at: {25, 195} color: #blue border: rgb(255, 255, 255, 150) width: 2;
+                draw "Trying to place" at: {50, 195} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+                
+                draw circle(8) at: {25, 230} color: #green border: rgb(255, 255, 255, 150) width: 2;
+                draw "Successfully placed" at: {50, 230} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+                
+                draw circle(8) at: {25, 265} color: #orange border: rgb(255, 255, 255, 150) width: 2;
+                draw "Backtracking" at: {50, 265} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+                
+                draw circle(8) at: {25, 300} color: #red border: rgb(255, 255, 255, 150) width: 2;
+                draw "Failed to place" at: {50, 300} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+                
+                draw circle(8) at: {25, 335} color: #gold border: rgb(255, 255, 255, 150) width: 2;
+                draw "Solution found!" at: {50, 335} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+            }
+        }
+        
+        display "Solutions" type: 2d background: rgb(40, 44, 52) {
+            graphics "Solution List" {
+                draw "All Solutions Found:" at: {10, 25} color: rgb(97, 218, 251) font: font("Arial", 16, #bold);
+                
+                int y_pos <- 60;
+                loop i from: 0 to: length(solutions) - 1 {
+                    map sol <- solutions[i];
+                    string sol_text <- "Solution " + (i + 1) + ": " + sol;
+                    draw sol_text at: {10, y_pos} color: rgb(220, 220, 220) font: font("Arial", 13, #plain);
+                    y_pos <- y_pos + 35;
+                }
+            }
+        }
+        
+        monitor "Board Size (N)" value: N;
+        monitor "Solutions Found" value: length(solutions);
+        monitor "Currently Searching" value: searching;
+        monitor "Queens Created" value: length(queen);
+    }
+}
