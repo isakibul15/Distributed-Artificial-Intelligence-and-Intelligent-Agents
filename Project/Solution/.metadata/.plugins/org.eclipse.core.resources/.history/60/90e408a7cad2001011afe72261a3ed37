@@ -136,27 +136,19 @@ species Guest skills: [fipa, moving] {
     init {
         // Start at a random location
         do choose_new_location;
-        write "Guest " + name + " initialized at " + location + " targeting " + target_location;
     }
     
     reflex move_to_location when: target_location != nil and location distance_to target_location.location > 1.0 {
-        float dist <- location distance_to target_location.location;
-        if cycle < 100 {
-            write "Guest " + name + " moving. Distance: " + dist;
-        }
         do goto target: target_location.location speed: 1.5;
     }
     
     reflex arrive_at_location when: target_location != nil and location distance_to target_location.location <= 1.0 {
-        write "Guest " + name + " ARRIVED at " + target_location;
-        
         // Snap to location
         location <- target_location.location;
         
         // Register arrival
         if !(self in target_location.current_guests) {
             target_location.current_guests << self;
-            write "  -> Registered. Location now has " + length(target_location.current_guests) + " guests";
         }
         
         time_at_location <- 0;
@@ -166,24 +158,17 @@ species Guest skills: [fipa, moving] {
     reflex stay_and_interact when: target_location != nil and location = target_location.location {
         time_at_location <- time_at_location + 1;
         
-        // Debug early cycles
-        if cycle < 100 and cycle mod 10 = 0 {
-            write "Guest " + name + " staying at " + target_location + " (time: " + time_at_location + "/" + stay_duration + ")";
-        }
-        
         // Try to interact with others at this location
         list<Guest> others <- target_location.current_guests - self - interacted_this_visit;
         
         if length(others) > 0 and flip(0.3) {
             Guest other <- one_of(others);
-            write "INTERACTION: " + name + " <-> " + other.name + " at " + target_location;
             do interact_with(other);
             interacted_this_visit << other;
         }
         
         // Leave after stay duration
         if time_at_location >= stay_duration {
-            write "Guest " + name + " LEAVING " + target_location;
             do leave_and_choose_new_location;
         }
     }
@@ -192,9 +177,6 @@ species Guest skills: [fipa, moving] {
         if length(Location) > 0 {
             target_location <- one_of(Location);
             stay_duration <- rnd(min_stay_time, max_stay_time);
-            write "Guest " + name + " chose location " + target_location + " at " + target_location.location;
-        } else {
-            write "ERROR: No locations available!";
         }
     }
     
