@@ -133,19 +133,15 @@ species Guest skills: [fipa, moving] {
     list<Guest> recently_interacted <- [];
     
     reflex move when: is_moving and target != nil {
-        do goto target: target speed: speed;
+        do goto target: target;
         
-        if location distance_to target < 2.0 {
+        if location distance_to target < 1.0 {
             is_moving <- false;
             stay_time <- 0;
+            current_location <- Location closest_to self;
             
-            // Find closest location within reasonable distance
-            list<Location> nearby_locations <- Location at_distance 5.0;
-            if length(nearby_locations) > 0 {
-                current_location <- nearby_locations closest_to self;
-                if current_location != nil {
-                    current_location.current_guests << self;
-                }
+            if current_location != nil {
+                current_location.current_guests << self;
             }
         }
     }
@@ -176,19 +172,14 @@ species Guest skills: [fipa, moving] {
     }
     
     action choose_new_destination {
-        // Choose a random location to visit
-        Location dest <- one_of(Location);
-        if dest != nil {
-            target <- dest.location;
-            is_moving <- true;
-            max_stay_time <- rnd(50, 150);
-        }
+        target <- any_location_in(world.shape);
+        is_moving <- true;
+        current_location <- nil;
     }
     
     action leave_location {
         if current_location != nil {
             current_location.current_guests >> self;
-            current_location <- nil;
         }
     }
     
@@ -203,9 +194,7 @@ species Guest skills: [fipa, moving] {
     
     aspect default {
         draw circle(1.5) color: color border: #black;
-        // Happiness indicator above agent
-        rgb happiness_color <- rgb(255 * (1 - happiness), 255 * happiness, 0);
-        draw circle(0.8) color: happiness_color at: location + {0, 3};
+        draw circle(0.5) color: rgb(255 * (1 - happiness), 255 * happiness, 0) at: location + {0, 2};
     }
 }
 
@@ -462,6 +451,7 @@ species SportsFan parent: Guest {
     }
 }
 
+
 experiment SocialSimulation type: gui {
     parameter "Party People" var: nb_party_people min: 5 max: 30;
     parameter "Introverts" var: nb_introverts min: 5 max: 30;
@@ -480,11 +470,7 @@ experiment SocialSimulation type: gui {
             species Concert;
             species Restaurant;
             species SportsVenue;
-            species PartyPerson;
-            species Introvert;
-            species MusicLover;
-            species Foodie;
-            species SportsFan;
+            species Guest;
         }
         
         display happiness_chart refresh: every(5#cycle) {
