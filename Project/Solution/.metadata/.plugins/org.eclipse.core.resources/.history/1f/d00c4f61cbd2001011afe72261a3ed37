@@ -150,8 +150,6 @@ species Guest skills: [fipa, moving] {
     
     // Interaction tracking
     list<Guest> interacted_this_visit <- [];
-    list<Guest> friends <- [];
-    list<Guest> known_agents <- [];
     
     init {
         // Start at a random location - but delay until locations exist
@@ -160,61 +158,6 @@ species Guest skills: [fipa, moving] {
             write "✓ Guest " + name + " → " + target_location;
         } else {
             write "✗ ERROR: Guest " + name + " - no locations available!";
-        }
-    }
-    
-    // FIPA Messaging - Send invitations to friends at different locations
-    reflex send_invitation when: target_location != nil and flip(0.05) and length(friends) > 0 {
-        Guest friend <- one_of(friends);
-        
-        // Only send if friend is at a different location
-        if friend.target_location != nil and friend.target_location != target_location {
-            do start_conversation to: [friend] protocol: 'fipa-request' 
-               performative: 'inform' 
-               contents: ['Come to ' + target_location + '! It is great here!'];
-            
-            if cycle < 200 {
-                write "📧 " + name + " invited " + friend.name + " to " + target_location;
-            }
-        }
-    }
-    
-    // FIPA Messaging - Receive and process messages
-    reflex receive_messages when: !empty(informs) {
-        loop msg over: informs {
-            if cycle < 200 {
-                write "📬 " + name + " received: " + msg.contents;
-            }
-            
-            // If highly sociable, might accept invitation
-            if sociability > 0.6 and flip(0.4) {
-                Guest sender <- Guest(msg.sender);
-                if sender != nil and sender.target_location != nil {
-                    // Accept invitation - go to friend's location
-                    do leave_and_choose_new_location;
-                    target_location <- sender.target_location;
-                    stay_duration <- rnd(min_stay_time, max_stay_time);
-                    
-                    if cycle < 200 {
-                        write "  ✓ " + name + " accepted! Going to " + target_location;
-                    }
-                    
-                    // Reply back
-                    do start_conversation to: [sender] protocol: 'fipa-request' 
-                       performative: 'agree' 
-                       contents: ['On my way!'];
-                }
-            }
-        }
-    }
-    
-    // Receive agreement messages
-    reflex receive_agreements when: !empty(agrees) {
-        loop msg over: agrees {
-            if cycle < 200 {
-                write "👍 " + name + " got agreement from " + Guest(msg.sender).name;
-            }
-            do update_happiness(0.02);
         }
     }
     
@@ -258,16 +201,6 @@ species Guest skills: [fipa, moving] {
             write "INTERACTION: " + name + " <-> " + other.name + " at " + target_location;
             do interact_with(other);
             interacted_this_visit << other;
-            
-            // Build friendships through positive interactions
-            if flip(0.3) and !(other in friends) {
-                friends << other;
-                ask other {
-                    if !(myself in friends) {
-                        friends << myself;
-                    }
-                }
-            }
         }
         
         // Leave after stay duration
@@ -554,13 +487,10 @@ experiment SocialSimulation type: gui {
     parameter "Foodies" var: nb_foodies min: 5 max: 30;
     parameter "Sports Fans" var: nb_sports_fans min: 5 max: 30;
     
-    // Make simulation run continuously without stopping
-    float minimum_cycle_duration <- 0.01;
-    
     output {
-        display main_display type: 2d axes: false synchronized: true {
+        display main_display {
             graphics "locations_bg" {
-                loop loc over: all_locations {
+                loop loc over: Location {
                     draw circle(6) at: loc.location color: rgb(loc.color, 0.2);
                 }
             }
@@ -576,14 +506,13 @@ experiment SocialSimulation type: gui {
         }
         
         display happiness_chart refresh: every(5#cycle) {
-            chart "Global Happiness Over Time" type: series size: {1.0, 0.5} position: {0, 0} {
+            chart "Global Happiness Over Time" type: series {
                 data "Average Happiness" value: global_happiness color: #blue;
-                data "Threshold (0.5)" value: 0.5 color: #gray;
             }
         }
         
         display interaction_chart refresh: every(10#cycle) {
-            chart "Interaction Statistics" type: histogram size: {1.0, 0.5} position: {0, 0.5} {
+            chart "Interaction Statistics" type: histogram {
                 data "Positive" value: total_positive_interactions color: #green;
                 data "Negative" value: total_negative_interactions color: #red;
             }
@@ -595,6 +524,5 @@ experiment SocialSimulation type: gui {
         monitor "Negative Interactions" value: total_negative_interactions;
         monitor "Active Guests" value: length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
         monitor "Total Locations" value: length(all_locations);
-        monitor "Positive Rate %" value: total_interactions > 0 ? (total_positive_interactions / total_interactions * 100.0) : 0.0;
     }
 }
