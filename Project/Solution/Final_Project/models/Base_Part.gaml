@@ -47,10 +47,6 @@ global {
             all_locations << self;
         }
         
-        write "=== LOCATIONS CREATED ===";
-        write "Total locations: " + length(all_locations);
-        write "Bars: " + length(Bar) + ", Concerts: " + length(Concert) + ", Restaurants: " + length(Restaurant) + ", Sports: " + length(SportsVenue);
-        
         // Create guests AFTER locations exist
         create PartyPerson number: nb_party_people;
         create Introvert number: nb_introverts;
@@ -59,9 +55,7 @@ global {
         create SportsFan number: nb_sports_fans;
         
         int total_guests <- length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
-        write "=== GUESTS CREATED ===";
-        write "Total guests: " + total_guests;
-        write "Simulation initialized successfully!";
+        write "✓ Simulation started: " + total_guests + " guests, " + length(all_locations) + " locations";
     }
     
     reflex update_global_happiness {
@@ -94,7 +88,7 @@ species Location {
 
 species Bar parent: Location {
     init {
-        location <- any_location_in(world.shape);
+        location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         color <- #blue;
         noise_level <- rnd(0.6, 1.0);
     }
@@ -104,7 +98,7 @@ species Concert parent: Location {
     string music_genre <- one_of(["rock", "pop", "jazz", "electronic"]);
     
     init {
-        location <- any_location_in(world.shape);
+        location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         color <- #purple;
         noise_level <- rnd(0.7, 1.0);
     }
@@ -114,7 +108,7 @@ species Restaurant parent: Location {
     string cuisine_type <- one_of(["italian", "asian", "vegan", "steakhouse"]);
     
     init {
-        location <- any_location_in(world.shape);
+        location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         color <- #orange;
         noise_level <- rnd(0.2, 0.5);
     }
@@ -124,7 +118,7 @@ species SportsVenue parent: Location {
     string sport_type <- one_of(["football", "basketball", "tennis"]);
     
     init {
-        location <- any_location_in(world.shape);
+        location <- {rnd(10.0, 90.0), rnd(10.0, 90.0)};
         color <- #green;
         noise_level <- rnd(0.5, 0.9);
     }
@@ -154,27 +148,23 @@ species Guest skills: [fipa, moving] {
     list<Guest> known_agents <- [];
     
     init {
-        // Start at a random location - but delay until locations exist
         if length(all_locations) > 0 {
             do choose_new_location;
-            write "✓ Guest " + name + " → " + target_location;
-        } else {
-            write "✗ ERROR: Guest " + name + " - no locations available!";
         }
     }
     
     // FIPA Messaging - Send invitations to friends at different locations
-    reflex send_invitation when: target_location != nil and flip(0.05) and length(friends) > 0 {
+    reflex send_invitation when: target_location != nil and time_at_location > 10 and flip(0.1) and length(friends) > 0 {
         Guest friend <- one_of(friends);
         
         // Only send if friend is at a different location
         if friend.target_location != nil and friend.target_location != target_location {
             do start_conversation to: [friend] protocol: 'fipa-request' 
                performative: 'inform' 
-               contents: ['Come to ' + target_location + '! It is great here!'];
+               contents: ['invitation', target_location];
             
-            if cycle < 200 {
-                write "📧 " + name + " invited " + friend.name + " to " + target_location;
+            if cycle mod 50 = 0 {
+                write "📧 " + name + " → " + friend.name + ": Come to " + target_location;
             }
         }
     }
@@ -182,12 +172,8 @@ species Guest skills: [fipa, moving] {
     // FIPA Messaging - Receive and process messages
     reflex receive_messages when: !empty(informs) {
         loop msg over: informs {
-            if cycle < 200 {
-                write "📬 " + name + " received: " + msg.contents;
-            }
-            
             // If highly sociable, might accept invitation
-            if sociability > 0.6 and flip(0.4) {
+            if sociability > 0.6 and flip(0.5) {
                 Guest sender <- Guest(msg.sender);
                 if sender != nil and sender.target_location != nil {
                     // Accept invitation - go to friend's location
@@ -195,14 +181,14 @@ species Guest skills: [fipa, moving] {
                     target_location <- sender.target_location;
                     stay_duration <- rnd(min_stay_time, max_stay_time);
                     
-                    if cycle < 200 {
-                        write "  ✓ " + name + " accepted! Going to " + target_location;
+                    if cycle mod 50 = 0 {
+                        write "  ✓ " + name + " accepted invitation to " + target_location;
                     }
                     
                     // Reply back
                     do start_conversation to: [sender] protocol: 'fipa-request' 
                        performative: 'agree' 
-                       contents: ['On my way!'];
+                       contents: ['accepted'];
                 }
             }
         }
@@ -211,31 +197,22 @@ species Guest skills: [fipa, moving] {
     // Receive agreement messages
     reflex receive_agreements when: !empty(agrees) {
         loop msg over: agrees {
-            if cycle < 200 {
-                write "👍 " + name + " got agreement from " + Guest(msg.sender).name;
-            }
             do update_happiness(0.02);
         }
     }
     
     reflex move_to_location when: target_location != nil and location distance_to target_location.location > 1.0 {
         float dist <- location distance_to target_location.location;
-        if cycle < 100 {
-            write "Guest " + name + " moving. Distance: " + dist;
-        }
-        do goto target: target_location.location speed: 1.5;
+        do goto target: target_location.location speed: 2.0;
     }
     
     reflex arrive_at_location when: target_location != nil and location distance_to target_location.location <= 1.0 {
-        write "Guest " + name + " ARRIVED at " + target_location;
-        
         // Snap to location
         location <- target_location.location;
         
         // Register arrival
         if !(self in target_location.current_guests) {
             target_location.current_guests << self;
-            write "  -> Registered. Location now has " + length(target_location.current_guests) + " guests";
         }
         
         time_at_location <- 0;
@@ -245,17 +222,14 @@ species Guest skills: [fipa, moving] {
     reflex stay_and_interact when: target_location != nil and location = target_location.location {
         time_at_location <- time_at_location + 1;
         
-        // Debug early cycles
-        if cycle < 100 and cycle mod 10 = 0 {
-            write "Guest " + name + " staying at " + target_location + " (time: " + time_at_location + "/" + stay_duration + ")";
-        }
-        
         // Try to interact with others at this location
         list<Guest> others <- target_location.current_guests - self - interacted_this_visit;
         
         if length(others) > 0 and flip(0.3) {
             Guest other <- one_of(others);
-            write "INTERACTION: " + name + " <-> " + other.name + " at " + target_location;
+            if cycle mod 100 = 0 {
+                write "INTERACTION: " + name + " <-> " + other.name + " at " + target_location;
+            }
             do interact_with(other);
             interacted_this_visit << other;
             
@@ -272,7 +246,6 @@ species Guest skills: [fipa, moving] {
         
         // Leave after stay duration
         if time_at_location >= stay_duration {
-            write "Guest " + name + " LEAVING " + target_location;
             do leave_and_choose_new_location;
         }
     }
@@ -281,11 +254,6 @@ species Guest skills: [fipa, moving] {
         if length(all_locations) > 0 {
             target_location <- one_of(all_locations);
             stay_duration <- rnd(min_stay_time, max_stay_time);
-            if cycle < 100 {
-                write "  → " + name + " targeting " + target_location + " at " + target_location.location;
-            }
-        } else {
-            write "✗ ERROR: " + name + " cannot choose location - none available!";
         }
     }
     
@@ -558,21 +526,25 @@ experiment SocialSimulation type: gui {
     float minimum_cycle_duration <- 0.01;
     
     output {
-        display main_display type: 2d axes: false {
+        display main_display type: 2d {
+            graphics "world_boundary" {
+                draw square(100) color: #white border: #black wireframe: true;
+            }
             graphics "locations_bg" {
                 loop loc over: all_locations {
-                    draw circle(6) at: loc.location color: rgb(loc.color, 0.2);
+                    draw circle(7) at: loc.location color: rgb(loc.color, 0.15) border: loc.color;
+                    draw string(length(loc.current_guests)) at: loc.location color: #black size: 8;
                 }
             }
-            species Bar;
-            species Concert;
-            species Restaurant;
-            species SportsVenue;
-            species PartyPerson;
-            species Introvert;
-            species MusicLover;
-            species Foodie;
-            species SportsFan;
+            species Bar aspect: default;
+            species Concert aspect: default;
+            species Restaurant aspect: default;
+            species SportsVenue aspect: default;
+            species PartyPerson aspect: default;
+            species Introvert aspect: default;
+            species MusicLover aspect: default;
+            species Foodie aspect: default;
+            species SportsFan aspect: default;
         }
         
         display happiness_chart refresh: every(5#cycle) {
