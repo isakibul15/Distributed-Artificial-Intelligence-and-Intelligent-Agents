@@ -134,8 +134,6 @@ species Guest skills: [fipa, moving] {
     // State variables
     float happiness <- 0.5;
     Location target_location <- nil;
-    Location current_location <- nil;
-    bool has_arrived <- false;
     rgb color;
     
     // Movement and timing
@@ -156,17 +154,17 @@ species Guest skills: [fipa, moving] {
     }
     
     // FIPA Messaging - Send invitations to friends at different locations
-    reflex send_invitation when: has_arrived and time_at_location > 10 and flip(0.1) and length(friends) > 0 {
+    reflex send_invitation when: target_location != nil and time_at_location > 10 and flip(0.1) and length(friends) > 0 {
         Guest friend <- one_of(friends);
         
         // Only send if friend is at a different location
-        if friend.current_location != nil and friend.current_location != current_location {
+        if friend.target_location != nil and friend.target_location != target_location {
             do start_conversation to: [friend] protocol: 'fipa-request' 
                performative: 'inform' 
-               contents: ['invitation', current_location];
+               contents: ['invitation', target_location];
             
             if cycle mod 50 = 0 {
-                write "📧 " + name + " → " + friend.name + ": Come to " + current_location;
+                write "📧 " + name + " → " + friend.name + ": Come to " + target_location;
             }
         }
     }
@@ -177,16 +175,15 @@ species Guest skills: [fipa, moving] {
             // If highly sociable, might accept invitation
             if sociability > 0.6 and flip(0.5) {
                 Guest sender <- Guest(msg.sender);
-                if sender != nil and sender.current_location != nil {
-                    write "📬 " + name + " received invitation from " + sender.name;
-                    
+                if sender != nil and sender.target_location != nil {
                     // Accept invitation - go to friend's location
                     do leave_and_choose_new_location;
-                    target_location <- sender.current_location;
-                    has_arrived <- false;
+                    target_location <- sender.target_location;
                     stay_duration <- rnd(min_stay_time, max_stay_time);
                     
-                    write "  ✓ " + name + " accepted invitation to " + target_location;
+                    if cycle mod 50 = 0 {
+                        write "  ✓ " + name + " accepted invitation to " + target_location;
+                    }
                     
                     // Reply back
                     do start_conversation to: [sender] protocol: 'fipa-request' 
@@ -204,47 +201,34 @@ species Guest skills: [fipa, moving] {
         }
     }
     
-    reflex move_to_location when: target_location != nil and !has_arrived {
+    reflex move_to_location when: target_location != nil and location distance_to target_location.location > 1.0 {
         float dist <- location distance_to target_location.location;
-        
-        if dist > 1.0 {
-            do goto target: target_location.location speed: 2.0;
-        } else {
-            // Arrived!
-            location <- target_location.location;
-            current_location <- target_location;
-            has_arrived <- true;
-            time_at_location <- 0;
-            interacted_this_visit <- [];
-            
-            if !(self in current_location.current_guests) {
-                current_location.current_guests << self;
-            }
-            
-            write "✓ " + name + " ARRIVED at " + current_location + " (guests: " + length(current_location.current_guests) + ")";
-        }
+        do goto target: target_location.location speed: 2.0;
     }
     
     reflex arrive_at_location when: target_location != nil and location distance_to target_location.location <= 1.0 {
-        // This reflex is now handled in move_to_location
-        // Keeping empty to avoid conflicts
-    }
-    
-    reflex stay_and_interact when: has_arrived and current_location != nil {
-        time_at_location <- time_at_location + 1;
+        // Snap to location
+        location <- target_location.location;
         
-        // Debug staying
-        if cycle mod 100 = 0 {
-            write "  " + name + " staying at " + current_location + " (" + time_at_location + "/" + stay_duration + ")";
+        // Register arrival
+        if !(self in target_location.current_guests) {
+            target_location.current_guests << self;
         }
         
+        time_at_location <- 0;
+        interacted_this_visit <- [];
+    }
+    
+    reflex stay_and_interact when: target_location != nil and location = target_location.location {
+        time_at_location <- time_at_location + 1;
+        
         // Try to interact with others at this location
-        list<Guest> others <- current_location.current_guests - self - interacted_this_visit;
+        list<Guest> others <- target_location.current_guests - self - interacted_this_visit;
         
         if length(others) > 0 and flip(0.3) {
             Guest other <- one_of(others);
             if cycle mod 100 = 0 {
-                write "INTERACTION: " + name + " <-> " + other.name + " at " + current_location;
+                write "INTERACTION: " + name + " <-> " + other.name + " at " + target_location;
             }
             do interact_with(other);
             interacted_this_visit << other;
@@ -262,7 +246,6 @@ species Guest skills: [fipa, moving] {
         
         // Leave after stay duration
         if time_at_location >= stay_duration {
-            write "→ " + name + " LEAVING " + current_location + " after " + time_at_location + " cycles";
             do leave_and_choose_new_location;
         }
     }
@@ -276,21 +259,14 @@ species Guest skills: [fipa, moving] {
     
     action leave_and_choose_new_location {
         // Leave current location
-        if current_location != nil {
-            current_location.current_guests >> self;
-            write "  ← " + name + " unregistered from " + current_location;
+        if target_location != nil {
+            target_location.current_guests >> self;
         }
-        
-        // Reset state
-        current_location <- nil;
-        target_location <- nil;
-        has_arrived <- false;
-        time_at_location <- 0;
-        interacted_this_visit <- [];
         
         // Choose new destination
         do choose_new_location;
-        write "  → " + name + " heading to NEW location: " + target_location;
+        time_at_location <- 0;
+        interacted_this_visit <- [];
     }
     
     action interact_with(Guest other) {
