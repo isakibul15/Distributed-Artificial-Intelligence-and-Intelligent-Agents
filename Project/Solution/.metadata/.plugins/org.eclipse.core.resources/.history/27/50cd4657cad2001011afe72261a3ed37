@@ -30,7 +30,7 @@ global {
     geometry shape <- square(100);
     
     init {
-        // Create locations first
+        // Create locations
         create Bar number: nb_bars;
         create Concert number: nb_concerts;
         create Restaurant number: nb_restaurants;
@@ -43,7 +43,7 @@ global {
         create Foodie number: nb_foodies;
         create SportsFan number: nb_sports_fans;
         
-        write "Simulation initialized with " + length(Guest) + " guests and " + length(Location) + " locations";
+        write "Simulation initialized with " + length(Guest) + " guests";
     }
     
     reflex update_global_happiness {
@@ -53,7 +53,7 @@ global {
         }
     }
     
-    reflex monitor_stats when: every(50#cycle) {
+    reflex monitor_stats when: every(10#cycle) {
         write "=== Cycle " + cycle + " Stats ===";
         write "Global Happiness: " + global_happiness;
         write "Total Interactions: " + total_interactions;
@@ -68,9 +68,7 @@ species Location {
     list<Guest> current_guests <- [];
     
     aspect default {
-        draw circle(5) color: color border: #black;
-        // Show number of guests at location
-        draw string(length(current_guests)) color: #white size: 3 at: location;
+        draw circle(3) color: color border: #black;
     }
 }
 
@@ -78,7 +76,7 @@ species Bar parent: Location {
     init {
         location <- any_location_in(world.shape);
         color <- #blue;
-        noise_level <- rnd(0.6, 1.0);
+        noise_level <- rnd(0.6, 1.0); // Bars are noisy
     }
 }
 
@@ -88,7 +86,7 @@ species Concert parent: Location {
     init {
         location <- any_location_in(world.shape);
         color <- #purple;
-        noise_level <- rnd(0.7, 1.0);
+        noise_level <- rnd(0.7, 1.0); // Concerts are very noisy
     }
 }
 
@@ -98,7 +96,7 @@ species Restaurant parent: Location {
     init {
         location <- any_location_in(world.shape);
         color <- #orange;
-        noise_level <- rnd(0.2, 0.5);
+        noise_level <- rnd(0.2, 0.5); // Restaurants are quieter
     }
 }
 
@@ -108,7 +106,7 @@ species SportsVenue parent: Location {
     init {
         location <- any_location_in(world.shape);
         color <- #green;
-        noise_level <- rnd(0.5, 0.9);
+        noise_level <- rnd(0.5, 0.9); // Sports venues vary in noise
     }
 }
 
@@ -121,75 +119,77 @@ species Guest skills: [fipa, moving] {
     
     // State variables
     float happiness <- 0.5;
-    Location target_location <- nil;
+    Location current_location <- nil;
+    point target <- nil;
+    float speed <- 2.0;
     rgb color;
     
-    // Movement and timing
-    int time_at_location <- 0;
-    int min_stay_time <- 30;
-    int max_stay_time <- 100;
-    int stay_duration <- rnd(30, 100);
+    // Movement states
+    bool is_moving <- true;
+    int stay_time <- 0;
+    int max_stay_time <- rnd(50, 150);
     
-    // Interaction tracking
-    list<Guest> interacted_this_visit <- [];
+    // Interaction cooldown
+    list<Guest> recently_interacted <- [];
     
-    init {
-        // Start at a random location
-        do choose_new_location;
-    }
-    
-    reflex move_to_location when: target_location != nil and location distance_to target_location.location > 1.0 {
-        do goto target: target_location.location speed: 1.5;
-    }
-    
-    reflex arrive_at_location when: target_location != nil and location distance_to target_location.location <= 1.0 {
-        // Snap to location
-        location <- target_location.location;
+    reflex move when: is_moving and target != nil {
+        do goto target: target speed: speed;
         
-        // Register arrival
-        if !(self in target_location.current_guests) {
-            target_location.current_guests << self;
+        if location distance_to target < 2.0 {
+            is_moving <- false;
+            stay_time <- 0;
+            
+            // Find closest location within reasonable distance
+            list<Location> nearby_locations <- Location at_distance 5.0;
+            if length(nearby_locations) > 0 {
+                current_location <- nearby_locations closest_to self;
+                if current_location != nil {
+                    current_location.current_guests << self;
+                }
+            }
         }
-        
-        time_at_location <- 0;
-        interacted_this_visit <- [];
     }
     
-    reflex stay_and_interact when: target_location != nil and location = target_location.location {
-        time_at_location <- time_at_location + 1;
+    reflex stay when: !is_moving {
+        stay_time <- stay_time + 1;
         
-        // Try to interact with others at this location
-        list<Guest> others <- target_location.current_guests - self - interacted_this_visit;
+        if stay_time >= max_stay_time {
+            do leave_location;
+            do choose_new_destination;
+        }
+    }
+    
+    reflex interact when: !is_moving and current_location != nil {
+        list<Guest> nearby_guests <- current_location.current_guests - self;
+        nearby_guests <- nearby_guests - recently_interacted;
         
-        if length(others) > 0 and flip(0.3) {
-            Guest other <- one_of(others);
+        if length(nearby_guests) > 0 {
+            Guest other <- one_of(nearby_guests);
             do interact_with(other);
-            interacted_this_visit << other;
-        }
-        
-        // Leave after stay duration
-        if time_at_location >= stay_duration {
-            do leave_and_choose_new_location;
-        }
-    }
-    
-    action choose_new_location {
-        if length(Location) > 0 {
-            target_location <- one_of(Location);
-            stay_duration <- rnd(min_stay_time, max_stay_time);
+            recently_interacted << other;
+            
+            // Clean up interaction history
+            if length(recently_interacted) > 5 {
+                recently_interacted >> first(recently_interacted);
+            }
         }
     }
     
-    action leave_and_choose_new_location {
-        // Leave current location
-        if target_location != nil {
-            target_location.current_guests >> self;
+    action choose_new_destination {
+        // Choose a random location to visit
+        Location dest <- one_of(Location);
+        if dest != nil {
+            target <- dest.location;
+            is_moving <- true;
+            max_stay_time <- rnd(50, 150);
         }
-        
-        // Choose new destination
-        do choose_new_location;
-        time_at_location <- 0;
-        interacted_this_visit <- [];
+    }
+    
+    action leave_location {
+        if current_location != nil {
+            current_location.current_guests >> self;
+            current_location <- nil;
+        }
     }
     
     action interact_with(Guest other) {
@@ -203,9 +203,9 @@ species Guest skills: [fipa, moving] {
     
     aspect default {
         draw circle(1.5) color: color border: #black;
-        // Happiness indicator
+        // Happiness indicator above agent
         rgb happiness_color <- rgb(255 * (1 - happiness), 255 * happiness, 0);
-        draw circle(0.7) color: happiness_color at: location + {0, 2.5};
+        draw circle(0.8) color: happiness_color at: location + {0, 3};
     }
 }
 
@@ -216,26 +216,31 @@ species PartyPerson parent: Guest {
         sociability <- rnd(0.7, 1.0);
         generosity <- rnd(0.5, 1.0);
         tolerance <- rnd(0.4, 0.8);
+        do choose_new_destination;
     }
     
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location.noise_level > 0.6 {
+        if current_location.noise_level > 0.6 {
+            // Party people love noisy places
             do update_happiness(0.02);
             
             if other is Introvert {
+                // Introvert gets annoyed in noisy place
                 ask other {
                     do update_happiness(-0.05);
                 }
                 total_negative_interactions <- total_negative_interactions + 1;
             } else if other is PartyPerson or other is MusicLover {
+                // Good interaction with similar types
                 do update_happiness(0.03);
                 ask other {
                     do update_happiness(0.03);
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
                 
+                // Generous party person might buy drinks
                 if generosity > 0.7 and flip(0.3) {
                     ask other {
                         do update_happiness(0.02);
@@ -243,37 +248,43 @@ species PartyPerson parent: Guest {
                 }
             }
         } else {
+            // Neutral interaction in quiet place
             do update_happiness(0.01);
         }
     }
 }
 
-// Introvert: Prefers quiet places
+// Introvert: Prefers quiet places, gets overwhelmed easily
 species Introvert parent: Guest {
     init {
         color <- #lightblue;
         sociability <- rnd(0.1, 0.4);
         tolerance <- rnd(0.2, 0.6);
         generosity <- rnd(0.3, 0.7);
+        do choose_new_destination;
     }
     
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location.noise_level < 0.5 {
+        if current_location.noise_level < 0.5 {
+            // Happy in quiet places
             do update_happiness(0.02);
             
             if other is Introvert or other is Foodie {
+                // Good interaction with calm types
                 do update_happiness(0.03);
                 ask other {
                     do update_happiness(0.02);
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
             } else if other is PartyPerson {
+                // Mild discomfort with loud types
                 do update_happiness(-0.02);
                 total_negative_interactions <- total_negative_interactions + 1;
             }
         } else {
+            // Stressed in noisy places
             do update_happiness(-0.04);
             
             if other is PartyPerson {
@@ -284,7 +295,7 @@ species Introvert parent: Guest {
     }
 }
 
-// Music Lover: Loves concerts
+// Music Lover: Loves concerts, genre-specific preferences
 species MusicLover parent: Guest {
     string favorite_genre <- one_of(["rock", "pop", "jazz", "electronic"]);
     
@@ -293,26 +304,30 @@ species MusicLover parent: Guest {
         sociability <- rnd(0.5, 0.9);
         tolerance <- rnd(0.6, 1.0);
         generosity <- rnd(0.4, 0.8);
+        do choose_new_destination;
     }
     
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is Concert {
-            Concert concert <- Concert(target_location);
+        if current_location is Concert {
+            Concert concert <- Concert(current_location);
             
             if concert.music_genre = favorite_genre {
+                // At favorite concert
                 do update_happiness(0.05);
                 
                 if other is MusicLover {
                     MusicLover ml <- MusicLover(other);
                     if ml.favorite_genre = favorite_genre {
+                        // Share same music taste!
                         do update_happiness(0.04);
                         ask other {
                             do update_happiness(0.04);
                         }
                         total_positive_interactions <- total_positive_interactions + 1;
                     } else {
+                        // Different taste
                         do update_happiness(0.01);
                     }
                 } else if other is PartyPerson {
@@ -326,6 +341,7 @@ species MusicLover parent: Guest {
                 do update_happiness(0.01);
             }
         } else {
+            // Regular interaction
             if tolerance > 0.7 {
                 do update_happiness(0.01);
             }
@@ -333,7 +349,7 @@ species MusicLover parent: Guest {
     }
 }
 
-// Foodie: Loves restaurants
+// Foodie: Loves restaurants, cuisine preferences
 species Foodie parent: Guest {
     string diet_preference <- one_of(["vegetarian", "vegan", "meat", "flexible"]);
     
@@ -342,13 +358,14 @@ species Foodie parent: Guest {
         sociability <- rnd(0.4, 0.7);
         tolerance <- rnd(0.5, 0.9);
         generosity <- rnd(0.6, 1.0);
+        do choose_new_destination;
     }
     
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is Restaurant {
-            Restaurant rest <- Restaurant(target_location);
+        if current_location is Restaurant {
+            Restaurant rest <- Restaurant(current_location);
             
             bool food_match <- false;
             if diet_preference = "vegan" and rest.cuisine_type = "vegan" {
@@ -363,6 +380,7 @@ species Foodie parent: Guest {
                 do update_happiness(0.04);
                 
                 if other is Foodie {
+                    // Foodies bond over food
                     do update_happiness(0.03);
                     ask other {
                         do update_happiness(0.03);
@@ -370,11 +388,13 @@ species Foodie parent: Guest {
                     total_positive_interactions <- total_positive_interactions + 1;
                     
                     if generosity > 0.8 and flip(0.4) {
+                        // Share food
                         ask other {
                             do update_happiness(0.02);
                         }
                     }
                 } else if other is Introvert {
+                    // Quiet conversation over food
                     do update_happiness(0.02);
                     ask other {
                         do update_happiness(0.02);
@@ -388,7 +408,7 @@ species Foodie parent: Guest {
     }
 }
 
-// Sports Fan: Loves sports venues
+// Sports Fan: Loves sports venues, team spirit
 species SportsFan parent: Guest {
     string favorite_sport <- one_of(["football", "basketball", "tennis"]);
     
@@ -397,13 +417,14 @@ species SportsFan parent: Guest {
         sociability <- rnd(0.6, 0.95);
         tolerance <- rnd(0.5, 0.85);
         generosity <- rnd(0.5, 0.9);
+        do choose_new_destination;
     }
     
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is SportsVenue {
-            SportsVenue venue <- SportsVenue(target_location);
+        if current_location is SportsVenue {
+            SportsVenue venue <- SportsVenue(current_location);
             
             if venue.sport_type = favorite_sport {
                 do update_happiness(0.05);
@@ -411,6 +432,7 @@ species SportsFan parent: Guest {
                 if other is SportsFan {
                     SportsFan sf <- SportsFan(other);
                     if sf.favorite_sport = favorite_sport {
+                        // Same team spirit!
                         do update_happiness(0.05);
                         ask other {
                             do update_happiness(0.05);
@@ -418,12 +440,14 @@ species SportsFan parent: Guest {
                         total_positive_interactions <- total_positive_interactions + 1;
                     }
                 } else if other is PartyPerson {
+                    // Party atmosphere
                     do update_happiness(0.02);
                     ask other {
                         do update_happiness(0.02);
                     }
                     total_positive_interactions <- total_positive_interactions + 1;
                 } else if other is Introvert {
+                    // Introvert uncomfortable in loud venue
                     ask other {
                         do update_happiness(-0.03);
                     }
@@ -449,7 +473,7 @@ experiment SocialSimulation type: gui {
         display main_display {
             graphics "locations_bg" {
                 loop loc over: Location {
-                    draw circle(6) at: loc.location color: rgb(loc.color, 0.2);
+                    draw circle(4) at: loc.location color: rgb(loc.color, 0.3);
                 }
             }
             species Bar;
@@ -480,6 +504,5 @@ experiment SocialSimulation type: gui {
         monitor "Total Interactions" value: total_interactions;
         monitor "Positive Interactions" value: total_positive_interactions;
         monitor "Negative Interactions" value: total_negative_interactions;
-        monitor "Active Guests" value: length(Guest);
     }
 }
