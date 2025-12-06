@@ -67,51 +67,9 @@ global {
     
     reflex monitor_stats when: every(50#cycle) {
         write "=== Cycle " + cycle + " Stats ===";
-        write "Global Happiness: " + with_precision(global_happiness, 3);
+        write "Global Happiness: " + global_happiness;
         write "Total Interactions: " + total_interactions;
         write "Positive: " + total_positive_interactions + " | Negative: " + total_negative_interactions;
-        
-        // Draw conclusions periodically
-        if cycle > 0 and cycle mod 500 = 0 {
-            write "";
-            write "╔════════════════════════════════════════════════╗";
-            write "║          SIMULATION ANALYSIS (Cycle " + cycle + ")      ║";
-            write "╚════════════════════════════════════════════════╝";
-            
-            float positive_rate <- total_interactions > 0 ? (total_positive_interactions / float(total_interactions)) : 0.0;
-            
-            write "📊 Key Metrics:";
-            write "  • Average Happiness: " + with_precision(global_happiness, 3);
-            write "  • Positive Interaction Rate: " + with_precision(positive_rate * 100, 1) + "%";
-            
-            write "";
-            write "🔍 Conclusion:";
-            
-            if global_happiness > 0.55 {
-                write "  ✓ POSITIVE ENVIRONMENT: When compatible personality types";
-                write "    meet in appropriate locations (e.g., Introverts in quiet";
-                write "    Restaurants, Party People at Bars), overall happiness rises.";
-            } else if global_happiness < 0.45 {
-                write "  ✗ NEGATIVE ENVIRONMENT: Personality mismatches in unsuitable";
-                write "    locations (e.g., Introverts forced into noisy Concerts/Bars)";
-                write "    significantly decrease overall happiness.";
-            } else {
-                write "  ≈ BALANCED ENVIRONMENT: Mixed interactions create neutral";
-                write "    happiness. Some agents thrive while others struggle.";
-            }
-            
-            write "";
-            write "💡 Insight:";
-            if positive_rate > 0.55 {
-                write "  → Compatibility matters! Matching agent types with suitable";
-                write "    venues leads to more positive social interactions.";
-            } else {
-                write "  → Context is everything! The same agents can have vastly";
-                write "    different experiences based on location characteristics.";
-            }
-            write "═══════════════════════════════════════════════════";
-            write "";
-        }
     }
 }
 
@@ -122,7 +80,9 @@ species Location {
     list<Guest> current_guests <- [];
     
     aspect default {
-        draw circle(5) at: location color: color border: #black width: 1;
+        draw circle(5) color: color border: #black;
+        // Show number of guests at location
+        draw string(length(current_guests)) color: #white size: 3 at: location;
     }
 }
 
@@ -590,16 +550,14 @@ experiment SocialSimulation type: gui {
     float minimum_cycle_duration <- 0.01;
     
     output {
-        layout #split consoles: false editors: false parameters: false navigator: false tray: false tabs: false toolbars: false;
-        
-        display main_display type: java2D background: #white {
+        display main_display type: 2d {
             graphics "world_boundary" {
-                draw square(100) at: {50, 50} color: #lightgray border: #black width: 2;
+                draw square(100) color: #white border: #black wireframe: true;
             }
-            graphics "locations" {
+            graphics "locations_bg" {
                 loop loc over: all_locations {
-                    draw circle(7) at: loc.location color: rgb(loc.color, 0.2) border: loc.color width: 2;
-                    draw string(length(loc.current_guests)) at: loc.location + {0, -1} color: #black size: 10 font: font("Arial", 12, #bold);
+                    draw circle(7) at: loc.location color: rgb(loc.color, 0.15) border: loc.color;
+                    draw string(length(loc.current_guests)) at: loc.location color: #black size: 8;
                 }
             }
             species Bar aspect: default;
@@ -613,45 +571,26 @@ experiment SocialSimulation type: gui {
             species SportsFan aspect: default;
         }
         
-        display happiness_chart background: #white refresh: every(5#cycle) {
-            chart "Global Happiness Over Time" type: series 
-                  x_label: "Time (cycles)" y_label: "Happiness (0-1)"
-                  y_range: [0.0, 1.0] {
-                data "Average Happiness" value: global_happiness color: #blue marker: false;
-                data "Baseline (0.5)" value: 0.5 color: #gray marker: false style: line;
+        display happiness_chart refresh: every(5#cycle) {
+            chart "Global Happiness Over Time" type: series size: {1.0, 0.5} position: {0, 0} {
+                data "Average Happiness" value: global_happiness color: #blue;
+                data "Threshold (0.5)" value: 0.5 color: #gray;
             }
         }
         
-        display stats_chart background: #white refresh: every(10#cycle) {
-            chart "Interaction Quality Over Time" type: series
-                  x_label: "Time (cycles)" y_label: "Count" {
-                data "Positive Interactions" value: total_positive_interactions color: #green marker: false;
-                data "Negative Interactions" value: total_negative_interactions color: #red marker: false;
+        display interaction_chart refresh: every(10#cycle) {
+            chart "Interaction Statistics" type: histogram size: {1.0, 0.5} position: {0, 0.5} {
+                data "Positive" value: total_positive_interactions color: #green;
+                data "Negative" value: total_negative_interactions color: #red;
             }
         }
         
-        monitor "=== SIMULATION STATUS ===" value: "";
-        monitor "Cycle" value: cycle;
+        monitor "Global Happiness" value: global_happiness;
+        monitor "Total Interactions" value: total_interactions;
+        monitor "Positive Interactions" value: total_positive_interactions;
+        monitor "Negative Interactions" value: total_negative_interactions;
         monitor "Active Guests" value: length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
         monitor "Total Locations" value: length(all_locations);
-        monitor "" value: "";
-        monitor "=== HAPPINESS METRICS ===" value: "";
-        monitor "Global Happiness" value: global_happiness;
-        monitor "Happiness Trend" value: length(happiness_history) > 10 ? 
-            (happiness_history[length(happiness_history)-1] > happiness_history[length(happiness_history)-10] ? "↑ Improving" : "↓ Declining") : "Stabilizing";
-        monitor "" value: "";
-        monitor "=== INTERACTIONS ===" value: "";
-        monitor "Total Interactions" value: total_interactions;
-        monitor "Positive" value: total_positive_interactions;
-        monitor "Negative" value: total_negative_interactions;
-        monitor "Positive Rate %" value: total_interactions > 0 ? 
-            with_precision(total_positive_interactions / total_interactions * 100.0, 1) : 0.0;
-        monitor "" value: "";
-        monitor "=== KEY FINDINGS ===" value: "";
-        monitor "Conclusion" value: total_interactions > 500 ? 
-            (total_positive_interactions > total_negative_interactions ? 
-                "✓ Compatible agents thrive together" : 
-                "✗ Mismatches cause unhappiness") : 
-            "Gathering data...";
+        monitor "Positive Rate %" value: total_interactions > 0 ? (total_positive_interactions / total_interactions * 100.0) : 0.0;
     }
 }
