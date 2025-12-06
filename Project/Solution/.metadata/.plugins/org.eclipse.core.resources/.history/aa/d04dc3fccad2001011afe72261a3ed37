@@ -36,18 +36,14 @@ global {
         create Restaurant number: nb_restaurants;
         create SportsVenue number: nb_sports_venues;
         
-        write "Locations created: " + length(Location);
-        write "Bars: " + length(Bar) + ", Concerts: " + length(Concert) + ", Restaurants: " + length(Restaurant) + ", Sports: " + length(SportsVenue);
-        
-        // Create guests AFTER locations exist
+        // Create guests
         create PartyPerson number: nb_party_people;
         create Introvert number: nb_introverts;
         create MusicLover number: nb_music_lovers;
         create Foodie number: nb_foodies;
         create SportsFan number: nb_sports_fans;
         
-        int total_guests <- length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
-        write "Simulation initialized with " + total_guests + " guests and " + length(Location) + " locations";
+        write "Simulation initialized with " + length(Guest) + " guests and " + length(Location) + " locations";
     }
     
     reflex update_global_happiness {
@@ -138,13 +134,9 @@ species Guest skills: [fipa, moving] {
     list<Guest> interacted_this_visit <- [];
     
     init {
-        // Start at a random location - but delay until locations exist
-        if length(Location) > 0 {
-            do choose_new_location;
-            write "Guest " + name + " initialized at " + location + " targeting " + target_location;
-        } else {
-            write "WARNING: Guest " + name + " initialized but no locations exist yet!";
-        }
+        // Start at a random location
+        do choose_new_location;
+        write "Guest " + name + " initialized at " + location + " targeting " + target_location;
     }
     
     reflex move_to_location when: target_location != nil and location distance_to target_location.location > 1.0 {
@@ -506,7 +498,6 @@ experiment SocialSimulation type: gui {
         monitor "Total Interactions" value: total_interactions;
         monitor "Positive Interactions" value: total_positive_interactions;
         monitor "Negative Interactions" value: total_negative_interactions;
-        monitor "Active Guests" value: length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
-        monitor "Total Locations" value: length(Location);
+        monitor "Active Guests" value: length(Guest);
     }
 }
