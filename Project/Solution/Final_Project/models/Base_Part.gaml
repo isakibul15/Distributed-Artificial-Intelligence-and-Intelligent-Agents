@@ -19,6 +19,9 @@ global {
     int nb_restaurants <- 2;
     int nb_sports_venues <- 2;
     
+    // Track all locations
+    list<Location> all_locations <- [];
+    
     // Global monitoring values
     float global_happiness <- 0.0;
     list<float> happiness_history <- [];
@@ -31,12 +34,21 @@ global {
     
     init {
         // Create locations first
-        create Bar number: nb_bars;
-        create Concert number: nb_concerts;
-        create Restaurant number: nb_restaurants;
-        create SportsVenue number: nb_sports_venues;
+        create Bar number: nb_bars {
+            all_locations << self;
+        }
+        create Concert number: nb_concerts {
+            all_locations << self;
+        }
+        create Restaurant number: nb_restaurants {
+            all_locations << self;
+        }
+        create SportsVenue number: nb_sports_venues {
+            all_locations << self;
+        }
         
-        write "Locations created: " + length(Location);
+        write "=== LOCATIONS CREATED ===";
+        write "Total locations: " + length(all_locations);
         write "Bars: " + length(Bar) + ", Concerts: " + length(Concert) + ", Restaurants: " + length(Restaurant) + ", Sports: " + length(SportsVenue);
         
         // Create guests AFTER locations exist
@@ -47,7 +59,9 @@ global {
         create SportsFan number: nb_sports_fans;
         
         int total_guests <- length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
-        write "Simulation initialized with " + total_guests + " guests and " + length(Location) + " locations";
+        write "=== GUESTS CREATED ===";
+        write "Total guests: " + total_guests;
+        write "Simulation initialized successfully!";
     }
     
     reflex update_global_happiness {
@@ -139,11 +153,11 @@ species Guest skills: [fipa, moving] {
     
     init {
         // Start at a random location - but delay until locations exist
-        if length(Location) > 0 {
+        if length(all_locations) > 0 {
             do choose_new_location;
-            write "Guest " + name + " initialized at " + location + " targeting " + target_location;
+            write "✓ Guest " + name + " → " + target_location;
         } else {
-            write "WARNING: Guest " + name + " initialized but no locations exist yet!";
+            write "✗ ERROR: Guest " + name + " - no locations available!";
         }
     }
     
@@ -197,12 +211,14 @@ species Guest skills: [fipa, moving] {
     }
     
     action choose_new_location {
-        if length(Location) > 0 {
-            target_location <- one_of(Location);
+        if length(all_locations) > 0 {
+            target_location <- one_of(all_locations);
             stay_duration <- rnd(min_stay_time, max_stay_time);
-            write "Guest " + name + " chose location " + target_location + " at " + target_location.location;
+            if cycle < 100 {
+                write "  → " + name + " targeting " + target_location + " at " + target_location.location;
+            }
         } else {
-            write "ERROR: No locations available!";
+            write "✗ ERROR: " + name + " cannot choose location - none available!";
         }
     }
     
@@ -507,6 +523,6 @@ experiment SocialSimulation type: gui {
         monitor "Positive Interactions" value: total_positive_interactions;
         monitor "Negative Interactions" value: total_negative_interactions;
         monitor "Active Guests" value: length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
-        monitor "Total Locations" value: length(Location);
+        monitor "Total Locations" value: length(all_locations);
     }
 }
