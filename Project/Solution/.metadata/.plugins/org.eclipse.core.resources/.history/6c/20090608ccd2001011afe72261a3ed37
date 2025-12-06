@@ -558,7 +558,7 @@ experiment SocialSimulation type: gui {
     float minimum_cycle_duration <- 0.01;
     
     output {
-        display main_display type: 2d axes: false {
+        display main_display type: 2d axes: false synchronized: true {
             graphics "locations_bg" {
                 loop loc over: all_locations {
                     draw circle(6) at: loc.location color: rgb(loc.color, 0.2);
