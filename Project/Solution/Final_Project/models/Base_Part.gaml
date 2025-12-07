@@ -213,25 +213,100 @@ species Guest skills: [fipa, moving] {
     
     // FIPA Messaging - Receive and process messages
     reflex receive_messages when: !empty(informs) {
+        // If multiple invitations received, choose based on sociability and friendship
+        if length(informs) > 1 {
+            write "📬📬 " + name + " received " + length(informs) + " invitations simultaneously!";
+        }
+        
+        // Collect all valid invitations
+        list<message> valid_invitations <- [];
         loop msg over: informs {
-            // If highly sociable, might accept invitation
-            if sociability > 0.6 and flip(0.5) {
-                Guest sender <- Guest(msg.sender);
-                if sender != nil and sender.current_location != nil {
-                    write "📬 " + name + " received invitation from " + sender.name;
+            Guest sender <- Guest(msg.sender);
+            if sender != nil and sender.current_location != nil {
+                valid_invitations << msg;
+            }
+        }
+        
+        // Process invitations
+        if length(valid_invitations) > 0 {
+            message chosen_invitation <- nil;
+            
+            if length(valid_invitations) = 1 {
+                // Only one invitation
+                chosen_invitation <- valid_invitations[0];
+            } else {
+                // Multiple invitations - choose based on friendship and sociability
+                write "  🤔 " + name + " must choose between " + length(valid_invitations) + " invitations...";
+                
+                // High sociability = more likely to accept any invitation
+                if sociability > 0.7 {
+                    // Very social - prioritize friends
+                    list<message> friend_invitations <- [];
+                    loop msg over: valid_invitations {
+                        Guest sender <- Guest(msg.sender);
+                        if sender in friends {
+                            friend_invitations << msg;
+                        }
+                    }
                     
-                    // Accept invitation - go to friend's location
-                    do leave_and_choose_new_location;
-                    target_location <- sender.current_location;
-                    has_arrived <- false;
-                    stay_duration <- rnd(min_stay_time, max_stay_time);
+                    if length(friend_invitations) > 0 {
+                        chosen_invitation <- one_of(friend_invitations);
+                        write "  👥 Chose friend's invitation (high sociability: " + with_precision(sociability,2) + ")";
+                    } else {
+                        chosen_invitation <- one_of(valid_invitations);
+                        write "  🎲 Chose random invitation (no friends, but sociable)";
+                    }
+                } else if sociability > 0.4 {
+                    // Moderately social - only accept if from friend
+                    list<message> friend_invitations <- [];
+                    loop msg over: valid_invitations {
+                        Guest sender <- Guest(msg.sender);
+                        if sender in friends {
+                            friend_invitations << msg;
+                        }
+                    }
                     
-                    write "  ✓ " + name + " accepted invitation to " + target_location;
-                    
-                    // Reply back
-                    do start_conversation to: [sender] protocol: 'fipa-request' 
-                       performative: 'agree' 
-                       contents: ['accepted'];
+                    if length(friend_invitations) > 0 {
+                        chosen_invitation <- one_of(friend_invitations);
+                        write "  👥 Chose friend's invitation (moderate sociability)";
+                    } else {
+                        write "  ✗ Declined all - no friends (moderate sociability: " + with_precision(sociability,2) + ")";
+                    }
+                } else {
+                    // Low sociability - very unlikely to accept multiple invitations
+                    write "  ✗ Declined all - too introverted (sociability: " + with_precision(sociability,2) + ")";
+                }
+            }
+            
+            // Accept chosen invitation
+            if chosen_invitation != nil and flip(0.5) {
+                Guest sender <- Guest(chosen_invitation.sender);
+                write "  ✓ " + name + " accepted invitation from " + sender.name;
+                
+                // Go to friend's location
+                do leave_and_choose_new_location;
+                target_location <- sender.current_location;
+                has_arrived <- false;
+                stay_duration <- rnd(min_stay_time, max_stay_time);
+                
+                write "  → Heading to " + target_location;
+                
+                // Reply back
+                do start_conversation to: [sender] protocol: 'fipa-request' 
+                   performative: 'agree' 
+                   contents: ['accepted'];
+                   
+                // Reject others if multiple
+                if length(valid_invitations) > 1 {
+                    loop msg over: valid_invitations {
+                        if msg != chosen_invitation {
+                            Guest rejected_sender <- Guest(msg.sender);
+                            do start_conversation to: [rejected_sender] protocol: 'fipa-request' 
+                               performative: 'refuse' 
+                               contents: ['sorry, busy'];
+                            write "  ✗ Rejected " + rejected_sender.name + "'s invitation";
+                        }
+                    }
                 }
             }
         }
@@ -241,6 +316,14 @@ species Guest skills: [fipa, moving] {
     reflex receive_agreements when: !empty(agrees) {
         loop msg over: agrees {
             do update_happiness(0.02);
+        }
+    }
+    
+    // Receive rejection messages
+    reflex receive_rejections when: !empty(refuses) {
+        loop msg over: refuses {
+            write "  😔 " + name + "'s invitation was rejected by " + Guest(msg.sender).name;
+            do update_happiness(-0.01);
         }
     }
     
@@ -275,13 +358,16 @@ species Guest skills: [fipa, moving] {
         
         // Debug staying
         if cycle mod 100 = 0 {
-            write "  " + name + " staying at " + current_location + " (" + time_at_location + "/" + stay_duration + ")";
+            write "  " + name + " staying at " + current_location + " (" + time_at_location + "/" + stay_duration + ") [G:" + with_precision(generosity,2) + " S:" + with_precision(sociability,2) + " T:" + with_precision(tolerance,2) + "]";
         }
         
         // Try to interact with others at this location
         list<Guest> others <- current_location.current_guests - self - interacted_this_visit;
         
-        if length(others) > 0 and flip(0.3) {
+        // SOCIABILITY affects interaction frequency
+        float interaction_chance <- 0.2 + (sociability * 0.3); // 0.2 to 0.5 based on sociability
+        
+        if length(others) > 0 and flip(interaction_chance) {
             Guest other <- one_of(others);
             if cycle mod 100 = 0 {
                 write "INTERACTION: " + name + " <-> " + other.name + " at " + current_location;
@@ -289,14 +375,17 @@ species Guest skills: [fipa, moving] {
             do interact_with(other);
             interacted_this_visit << other;
             
-            // Build friendships through positive interactions
-            if flip(0.3) and !(other in friends) {
+            // TOLERANCE affects friendship building
+            float friendship_chance <- 0.2 + (tolerance * 0.3); // More tolerant = more friends
+            
+            if flip(friendship_chance) and !(other in friends) {
                 friends << other;
                 ask other {
                     if !(myself in friends) {
                         friends << myself;
                     }
                 }
+                write "  💛 " + name + " and " + other.name + " became friends! (tolerance: " + with_precision(tolerance,2) + ")";
             }
         }
         
@@ -377,10 +466,12 @@ species PartyPerson parent: Guest {
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
                 
-                if generosity > 0.7 and flip(0.3) {
+                // GENEROSITY: High generosity = more likely to buy drinks
+                if generosity > 0.7 and flip(generosity * 0.5) {
                     ask other {
-                        do update_happiness(0.02);
+                        do update_happiness(0.03);
                     }
+                    write "  🍺 " + name + " bought " + other.name + " a drink! (generosity: " + with_precision(generosity,2) + ")";
                 }
             }
         } else {
@@ -411,14 +502,26 @@ species Introvert parent: Guest {
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
             } else if other is PartyPerson {
-                do update_happiness(-0.02);
+                // TOLERANCE: High tolerance = less bothered by party people
+                if tolerance > 0.5 {
+                    do update_happiness(-0.01);
+                    write "  😌 " + name + " tolerated " + other.name + "'s energy (tolerance: " + with_precision(tolerance,2) + ")";
+                } else {
+                    do update_happiness(-0.03);
+                }
                 total_negative_interactions <- total_negative_interactions + 1;
             }
         } else {
-            do update_happiness(-0.04);
+            // In noisy place - TOLERANCE helps cope
+            float noise_penalty <- -0.04 * (1.0 - tolerance); // High tolerance = less penalty
+            do update_happiness(noise_penalty);
             
             if other is PartyPerson {
-                do update_happiness(-0.02);
+                if tolerance > 0.6 {
+                    do update_happiness(-0.01);
+                } else {
+                    do update_happiness(-0.03);
+                }
                 total_negative_interactions <- total_negative_interactions + 1;
             }
         }
@@ -510,10 +613,12 @@ species Foodie parent: Guest {
                     }
                     total_positive_interactions <- total_positive_interactions + 1;
                     
-                    if generosity > 0.8 and flip(0.4) {
+                    // GENEROSITY: High generosity = share food
+                    if generosity > 0.75 and flip(generosity * 0.6) {
                         ask other {
-                            do update_happiness(0.02);
+                            do update_happiness(0.03);
                         }
+                        write "  🍽️ " + name + " shared food with " + other.name + "! (generosity: " + with_precision(generosity,2) + ")";
                     }
                 } else if other is Introvert {
                     do update_happiness(0.02);
@@ -590,8 +695,6 @@ experiment SocialSimulation type: gui {
     float minimum_cycle_duration <- 0.01;
     
     output {
-        layout #split consoles: false editors: false parameters: false navigator: false tray: false tabs: false toolbars: false;
-        
         display main_display type: java2D background: #white {
             graphics "world_boundary" {
                 draw square(100) at: {50, 50} color: #lightgray border: #black width: 2;
@@ -599,7 +702,7 @@ experiment SocialSimulation type: gui {
             graphics "locations" {
                 loop loc over: all_locations {
                     draw circle(7) at: loc.location color: rgb(loc.color, 0.2) border: loc.color width: 2;
-                    draw string(length(loc.current_guests)) at: loc.location + {0, -1} color: #black size: 10 font: font("Arial", 12, #bold);
+                    draw string(length(loc.current_guests)) at: loc.location + {0, -1} color: #black size: 10;
                 }
             }
             species Bar aspect: default;
@@ -614,44 +717,26 @@ experiment SocialSimulation type: gui {
         }
         
         display happiness_chart background: #white refresh: every(5#cycle) {
-            chart "Global Happiness Over Time" type: series 
-                  x_label: "Time (cycles)" y_label: "Happiness (0-1)"
-                  y_range: [0.0, 1.0] {
-                data "Average Happiness" value: global_happiness color: #blue marker: false;
-                data "Baseline (0.5)" value: 0.5 color: #gray marker: false style: line;
+            chart "Global Happiness Over Time" type: series y_range: [0.0, 1.0] {
+                data "Average Happiness" value: global_happiness color: #blue;
+                data "Baseline (0.5)" value: 0.5 color: #gray;
             }
         }
         
-        display stats_chart background: #white refresh: every(10#cycle) {
-            chart "Interaction Quality Over Time" type: series
-                  x_label: "Time (cycles)" y_label: "Count" {
-                data "Positive Interactions" value: total_positive_interactions color: #green marker: false;
-                data "Negative Interactions" value: total_negative_interactions color: #red marker: false;
+        display interaction_chart background: #white refresh: every(10#cycle) {
+            chart "Positive vs Negative Interactions" type: series {
+                data "Positive" value: total_positive_interactions color: #green;
+                data "Negative" value: total_negative_interactions color: #red;
             }
         }
         
-        monitor "=== SIMULATION STATUS ===" value: "";
         monitor "Cycle" value: cycle;
+        monitor "Global Happiness" value: global_happiness;
+        monitor "Total Interactions" value: total_interactions;
+        monitor "Positive Interactions" value: total_positive_interactions;
+        monitor "Negative Interactions" value: total_negative_interactions;
         monitor "Active Guests" value: length(PartyPerson) + length(Introvert) + length(MusicLover) + length(Foodie) + length(SportsFan);
         monitor "Total Locations" value: length(all_locations);
-        monitor "" value: "";
-        monitor "=== HAPPINESS METRICS ===" value: "";
-        monitor "Global Happiness" value: global_happiness;
-        monitor "Happiness Trend" value: length(happiness_history) > 10 ? 
-            (happiness_history[length(happiness_history)-1] > happiness_history[length(happiness_history)-10] ? "↑ Improving" : "↓ Declining") : "Stabilizing";
-        monitor "" value: "";
-        monitor "=== INTERACTIONS ===" value: "";
-        monitor "Total Interactions" value: total_interactions;
-        monitor "Positive" value: total_positive_interactions;
-        monitor "Negative" value: total_negative_interactions;
-        monitor "Positive Rate %" value: total_interactions > 0 ? 
-            with_precision(total_positive_interactions / total_interactions * 100.0, 1) : 0.0;
-        monitor "" value: "";
-        monitor "=== KEY FINDINGS ===" value: "";
-        monitor "Conclusion" value: total_interactions > 500 ? 
-            (total_positive_interactions > total_negative_interactions ? 
-                "✓ Compatible agents thrive together" : 
-                "✗ Mismatches cause unhappiness") : 
-            "Gathering data...";
+        monitor "Positive Rate %" value: total_interactions > 0 ? (total_positive_interactions / total_interactions * 100.0) : 0.0;
     }
 }
