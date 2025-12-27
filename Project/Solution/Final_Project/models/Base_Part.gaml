@@ -1,6 +1,6 @@
 /**
  * Social Agents Simulation - Final Project
- * Minimum Requirements Implementation
+ * Minimum Requirements Implementation - FIXED VERSION
  */
 
 model SocialAgentsSimulation
@@ -23,7 +23,7 @@ global {
     list<Location> all_locations <- [];
     
     // Global monitoring values
-    float global_happiness <- 0.0;
+    float global_happiness <- 0.5;
     list<float> happiness_history <- [];
     int total_positive_interactions <- 0;
     int total_negative_interactions <- 0;
@@ -59,8 +59,9 @@ global {
     }
     
     reflex update_global_happiness {
-        if length(Guest) > 0 {
-            global_happiness <- mean(Guest collect each.happiness);
+        list<Guest> all_guests <- (list(PartyPerson) + list(Introvert) + list(MusicLover) + list(Foodie) + list(SportsFan));
+        if length(all_guests) > 0 {
+            global_happiness <- mean(all_guests collect each.happiness);
             happiness_history << global_happiness;
         }
     }
@@ -187,7 +188,10 @@ species Guest skills: [fipa, moving] {
     // Interaction tracking
     list<Guest> interacted_this_visit <- [];
     list<Guest> friends <- [];
-    list<Guest> known_agents <- [];
+    
+    // FIPA cooldown to prevent message spam
+    int last_invitation_sent <- -100;
+    int last_invitation_received <- -100;
     
     init {
         if length(all_locations) > 0 {
@@ -195,8 +199,12 @@ species Guest skills: [fipa, moving] {
         }
     }
     
-    // FIPA Messaging - Send invitations to friends at different locations
-    reflex send_invitation when: has_arrived and time_at_location > 10 and flip(0.1) and length(friends) > 0 {
+    // FIPA Messaging - Send invitations with cooldown
+    reflex send_invitation when: has_arrived and 
+                                  time_at_location > 10 and 
+                                  (cycle - last_invitation_sent) > 50 and
+                                  flip(0.05) and 
+                                  length(friends) > 0 {
         Guest friend <- one_of(friends);
         
         // Only send if friend is at a different location
@@ -205,14 +213,13 @@ species Guest skills: [fipa, moving] {
                performative: 'inform' 
                contents: ['invitation', current_location];
             
-            if cycle mod 50 = 0 {
-                write "📧 " + name + " → " + friend.name + ": Come to " + current_location;
-            }
+            last_invitation_sent <- cycle;
+            write "📧 " + name + " → " + friend.name + ": Come to " + current_location;
         }
     }
     
-    // FIPA Messaging - Receive and process messages
-    reflex receive_messages when: !empty(informs) {
+    // FIPA Messaging - Receive and process messages with cooldown
+    reflex receive_messages when: !empty(informs) and (cycle - last_invitation_received) > 30 {
         // If multiple invitations received, choose based on sociability and friendship
         if length(informs) > 1 {
             write "📬📬 " + name + " received " + length(informs) + " invitations simultaneously!";
@@ -251,10 +258,10 @@ species Guest skills: [fipa, moving] {
                     
                     if length(friend_invitations) > 0 {
                         chosen_invitation <- one_of(friend_invitations);
-                        write "  👥 Chose friend's invitation (high sociability: " + with_precision(sociability,2) + ")";
+                        write "  👥 Chose friend's invitation (high sociability)";
                     } else {
                         chosen_invitation <- one_of(valid_invitations);
-                        write "  🎲 Chose random invitation (no friends, but sociable)";
+                        write "  🎲 Chose random invitation";
                     }
                 } else if sociability > 0.4 {
                     // Moderately social - only accept if from friend
@@ -268,18 +275,18 @@ species Guest skills: [fipa, moving] {
                     
                     if length(friend_invitations) > 0 {
                         chosen_invitation <- one_of(friend_invitations);
-                        write "  👥 Chose friend's invitation (moderate sociability)";
+                        write "  👥 Chose friend's invitation";
                     } else {
-                        write "  ✗ Declined all - no friends (moderate sociability: " + with_precision(sociability,2) + ")";
+                        write "  ✗ Declined all - no friends";
                     }
                 } else {
-                    // Low sociability - very unlikely to accept multiple invitations
-                    write "  ✗ Declined all - too introverted (sociability: " + with_precision(sociability,2) + ")";
+                    // Low sociability
+                    write "  ✗ Declined all - too introverted";
                 }
             }
             
-            // Accept chosen invitation
-            if chosen_invitation != nil and flip(0.5) {
+            // Accept chosen invitation with probability
+            if chosen_invitation != nil and flip(0.3) {
                 Guest sender <- Guest(chosen_invitation.sender);
                 write "  ✓ " + name + " accepted invitation from " + sender.name;
                 
@@ -288,8 +295,7 @@ species Guest skills: [fipa, moving] {
                 target_location <- sender.current_location;
                 has_arrived <- false;
                 stay_duration <- rnd(min_stay_time, max_stay_time);
-                
-                write "  → Heading to " + target_location;
+                last_invitation_received <- cycle;
                 
                 // Reply back
                 do start_conversation to: [sender] protocol: 'fipa-request' 
@@ -304,7 +310,6 @@ species Guest skills: [fipa, moving] {
                             do start_conversation to: [rejected_sender] protocol: 'fipa-request' 
                                performative: 'refuse' 
                                contents: ['sorry, busy'];
-                            write "  ✗ Rejected " + rejected_sender.name + "'s invitation";
                         }
                     }
                 }
@@ -322,7 +327,6 @@ species Guest skills: [fipa, moving] {
     // Receive rejection messages
     reflex receive_rejections when: !empty(refuses) {
         loop msg over: refuses {
-            write "  😔 " + name + "'s invitation was rejected by " + Guest(msg.sender).name;
             do update_happiness(-0.01);
         }
     }
@@ -343,40 +347,25 @@ species Guest skills: [fipa, moving] {
             if !(self in current_location.current_guests) {
                 current_location.current_guests << self;
             }
-            
-            write "✓ " + name + " ARRIVED at " + current_location + " (guests: " + length(current_location.current_guests) + ")";
         }
-    }
-    
-    reflex arrive_at_location when: target_location != nil and location distance_to target_location.location <= 1.0 {
-        // This reflex is now handled in move_to_location
-        // Keeping empty to avoid conflicts
     }
     
     reflex stay_and_interact when: has_arrived and current_location != nil {
         time_at_location <- time_at_location + 1;
         
-        // Debug staying
-        if cycle mod 100 = 0 {
-            write "  " + name + " staying at " + current_location + " (" + time_at_location + "/" + stay_duration + ") [G:" + with_precision(generosity,2) + " S:" + with_precision(sociability,2) + " T:" + with_precision(tolerance,2) + "]";
-        }
-        
         // Try to interact with others at this location
         list<Guest> others <- current_location.current_guests - self - interacted_this_visit;
         
         // SOCIABILITY affects interaction frequency
-        float interaction_chance <- 0.2 + (sociability * 0.3); // 0.2 to 0.5 based on sociability
+        float interaction_chance <- 0.2 + (sociability * 0.3);
         
         if length(others) > 0 and flip(interaction_chance) {
             Guest other <- one_of(others);
-            if cycle mod 100 = 0 {
-                write "INTERACTION: " + name + " <-> " + other.name + " at " + current_location;
-            }
             do interact_with(other);
             interacted_this_visit << other;
             
             // TOLERANCE affects friendship building
-            float friendship_chance <- 0.2 + (tolerance * 0.3); // More tolerant = more friends
+            float friendship_chance <- 0.2 + (tolerance * 0.3);
             
             if flip(friendship_chance) and !(other in friends) {
                 friends << other;
@@ -385,13 +374,14 @@ species Guest skills: [fipa, moving] {
                         friends << myself;
                     }
                 }
-                write "  💛 " + name + " and " + other.name + " became friends! (tolerance: " + with_precision(tolerance,2) + ")";
+                if cycle mod 20 = 0 {
+                    write "  💛 " + name + " and " + other.name + " became friends! (tolerance: " + with_precision(tolerance,2) + ")";
+                }
             }
         }
         
         // Leave after stay duration
         if time_at_location >= stay_duration {
-            write "→ " + name + " LEAVING " + current_location + " after " + time_at_location + " cycles";
             do leave_and_choose_new_location;
         }
     }
@@ -407,7 +397,6 @@ species Guest skills: [fipa, moving] {
         // Leave current location
         if current_location != nil {
             current_location.current_guests >> self;
-            write "  ← " + name + " unregistered from " + current_location;
         }
         
         // Reset state
@@ -419,7 +408,6 @@ species Guest skills: [fipa, moving] {
         
         // Choose new destination
         do choose_new_location;
-        write "  → " + name + " heading to NEW location: " + target_location;
     }
     
     action interact_with(Guest other) {
@@ -451,7 +439,7 @@ species PartyPerson parent: Guest {
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location.noise_level > 0.6 {
+        if current_location.noise_level > 0.6 {
             do update_happiness(0.02);
             
             if other is Introvert {
@@ -466,16 +454,21 @@ species PartyPerson parent: Guest {
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
                 
-                // GENEROSITY: High generosity = more likely to buy drinks
+                // GENEROSITY
                 if generosity > 0.7 and flip(generosity * 0.5) {
                     ask other {
                         do update_happiness(0.03);
                     }
-                    write "  🍺 " + name + " bought " + other.name + " a drink! (generosity: " + with_precision(generosity,2) + ")";
+                    if cycle mod 50 = 0 {
+                        write "  🍺 " + name + " bought " + other.name + " a drink! (generosity: " + with_precision(generosity,2) + ")";
+                    }
                 }
+            } else {
+                total_positive_interactions <- total_positive_interactions + 1;
             }
         } else {
             do update_happiness(0.01);
+            total_positive_interactions <- total_positive_interactions + 1;
         }
     }
 }
@@ -492,7 +485,7 @@ species Introvert parent: Guest {
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location.noise_level < 0.5 {
+        if current_location.noise_level < 0.5 {
             do update_happiness(0.02);
             
             if other is Introvert or other is Foodie {
@@ -502,18 +495,21 @@ species Introvert parent: Guest {
                 }
                 total_positive_interactions <- total_positive_interactions + 1;
             } else if other is PartyPerson {
-                // TOLERANCE: High tolerance = less bothered by party people
                 if tolerance > 0.5 {
                     do update_happiness(-0.01);
-                    write "  😌 " + name + " tolerated " + other.name + "'s energy (tolerance: " + with_precision(tolerance,2) + ")";
+                    if cycle mod 50 = 0 {
+                        write "  😌 " + name + " tolerated " + other.name + "'s energy (tolerance: " + with_precision(tolerance,2) + ")";
+                    }
                 } else {
                     do update_happiness(-0.03);
                 }
                 total_negative_interactions <- total_negative_interactions + 1;
+            } else {
+                total_positive_interactions <- total_positive_interactions + 1;
             }
         } else {
-            // In noisy place - TOLERANCE helps cope
-            float noise_penalty <- -0.04 * (1.0 - tolerance); // High tolerance = less penalty
+            // In noisy place
+            float noise_penalty <- -0.04 * (1.0 - tolerance);
             do update_happiness(noise_penalty);
             
             if other is PartyPerson {
@@ -522,6 +518,8 @@ species Introvert parent: Guest {
                 } else {
                     do update_happiness(-0.03);
                 }
+                total_negative_interactions <- total_negative_interactions + 1;
+            } else {
                 total_negative_interactions <- total_negative_interactions + 1;
             }
         }
@@ -542,8 +540,8 @@ species MusicLover parent: Guest {
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is Concert {
-            Concert concert <- Concert(target_location);
+        if current_location is Concert {
+            Concert concert <- Concert(current_location);
             
             if concert.music_genre = favorite_genre {
                 do update_happiness(0.05);
@@ -558,6 +556,7 @@ species MusicLover parent: Guest {
                         total_positive_interactions <- total_positive_interactions + 1;
                     } else {
                         do update_happiness(0.01);
+                        total_positive_interactions <- total_positive_interactions + 1;
                     }
                 } else if other is PartyPerson {
                     do update_happiness(0.02);
@@ -565,14 +564,18 @@ species MusicLover parent: Guest {
                         do update_happiness(0.02);
                     }
                     total_positive_interactions <- total_positive_interactions + 1;
+                } else {
+                    total_positive_interactions <- total_positive_interactions + 1;
                 }
             } else {
                 do update_happiness(0.01);
+                total_positive_interactions <- total_positive_interactions + 1;
             }
         } else {
             if tolerance > 0.7 {
                 do update_happiness(0.01);
             }
+            total_positive_interactions <- total_positive_interactions + 1;
         }
     }
 }
@@ -591,8 +594,8 @@ species Foodie parent: Guest {
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is Restaurant {
-            Restaurant rest <- Restaurant(target_location);
+        if current_location is Restaurant {
+            Restaurant rest <- Restaurant(current_location);
             
             bool food_match <- false;
             if diet_preference = "vegan" and rest.cuisine_type = "vegan" {
@@ -613,12 +616,13 @@ species Foodie parent: Guest {
                     }
                     total_positive_interactions <- total_positive_interactions + 1;
                     
-                    // GENEROSITY: High generosity = share food
                     if generosity > 0.75 and flip(generosity * 0.6) {
                         ask other {
                             do update_happiness(0.03);
                         }
-                        write "  🍽️ " + name + " shared food with " + other.name + "! (generosity: " + with_precision(generosity,2) + ")";
+                        if cycle mod 50 = 0 {
+                            write "  🍽️ " + name + " shared food with " + other.name + "! (generosity: " + with_precision(generosity,2) + ")";
+                        }
                     }
                 } else if other is Introvert {
                     do update_happiness(0.02);
@@ -626,10 +630,15 @@ species Foodie parent: Guest {
                         do update_happiness(0.02);
                     }
                     total_positive_interactions <- total_positive_interactions + 1;
+                } else {
+                    total_positive_interactions <- total_positive_interactions + 1;
                 }
             } else {
                 do update_happiness(-0.01);
+                total_negative_interactions <- total_negative_interactions + 1;
             }
+        } else {
+            total_positive_interactions <- total_positive_interactions + 1;
         }
     }
 }
@@ -648,8 +657,8 @@ species SportsFan parent: Guest {
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         
-        if target_location is SportsVenue {
-            SportsVenue venue <- SportsVenue(target_location);
+        if current_location is SportsVenue {
+            SportsVenue venue <- SportsVenue(current_location);
             
             if venue.sport_type = favorite_sport {
                 do update_happiness(0.05);
@@ -661,6 +670,8 @@ species SportsFan parent: Guest {
                         ask other {
                             do update_happiness(0.05);
                         }
+                        total_positive_interactions <- total_positive_interactions + 1;
+                    } else {
                         total_positive_interactions <- total_positive_interactions + 1;
                     }
                 } else if other is PartyPerson {
@@ -674,12 +685,17 @@ species SportsFan parent: Guest {
                         do update_happiness(-0.03);
                     }
                     total_negative_interactions <- total_negative_interactions + 1;
+                } else {
+                    total_positive_interactions <- total_positive_interactions + 1;
                 }
+            } else {
+                total_positive_interactions <- total_positive_interactions + 1;
             }
         } else {
             if sociability > 0.7 {
                 do update_happiness(0.01);
             }
+            total_positive_interactions <- total_positive_interactions + 1;
         }
     }
 }
@@ -691,7 +707,6 @@ experiment SocialSimulation type: gui {
     parameter "Foodies" var: nb_foodies min: 5 max: 30;
     parameter "Sports Fans" var: nb_sports_fans min: 5 max: 30;
     
-    // Make simulation run continuously without stopping
     float minimum_cycle_duration <- 0.01;
     
     output {
