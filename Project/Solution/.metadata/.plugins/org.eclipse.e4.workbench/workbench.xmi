@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_NKslIdLPEfChvONA0XxtPw" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_NKslItLPEfChvONA0XxtPw" bindingContexts="_NKslK9LPEfChvONA0XxtPw">
   <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workbench>&#xA;&lt;mruList>&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;gaml.compiler.Gaml&quot; name=&quot;Base_Part.gaml&quot; tooltip=&quot;Final_Project/models/Base_Part.gaml&quot;>&#xA;&lt;persistable path=&quot;/Final_Project/models/Base_Part.gaml&quot;/>&#xA;&lt;/file>&#xA;&lt;/mruList>&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_NKslItLPEfChvONA0XxtPw" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_NO03MdLPEfChvONA0XxtPw" x="-1512" y="874" width="1080" height="1920">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_NKslItLPEfChvONA0XxtPw" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_NO03MdLPEfChvONA0XxtPw" x="-1080" y="-105" width="1080" height="847">
     <persistedState key="coolBarVisible" value="true"/>
     <persistedState key="perspectiveBarVisible" value="true"/>
     <persistedState key="isRestored" value="true"/>
@@ -10,6 +10,7 @@
     <persistedState key="workingSets" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workingSets/>"/>
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1765044784012"/>
     <tags>topLevel</tags>
+    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_NO03MdLPEfChvONA0XxtPw" selectedElement="_NO03MtLPEfChvONA0XxtPw" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_NO03MtLPEfChvONA0XxtPw" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_NQK7ANLPEfChvONA0XxtPw">
         <children xsi:type="advanced:Perspective" xmi:id="_NQK7ANLPEfChvONA0XxtPw" elementId="gama.ui.application.perspectives.ModelingPerspective" selectedElement="_NQK7AdLPEfChvONA0XxtPw" label="Modeling" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/perspective.modeling.png">
@@ -32,7 +33,7 @@
           <tags>persp.editorOnboardingCommand:New$$$&#x2318;N</tags>
           <tags>persp.editorOnboardingCommand:Documentation$$$&#x21e7;&#x2318;D</tags>
           <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7AdLPEfChvONA0XxtPw" selectedElement="_NQK7CNLPEfChvONA0XxtPw" horizontal="true">
-            <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7AtLPEfChvONA0XxtPw" containerData="2500" selectedElement="_NQK7A9LPEfChvONA0XxtPw">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7AtLPEfChvONA0XxtPw" containerData="1926" selectedElement="_NQK7A9LPEfChvONA0XxtPw">
               <children xsi:type="basic:PartStack" xmi:id="_NQK7A9LPEfChvONA0XxtPw" elementId="gama.ui.application.view.GamaNavigatorMStack" containerData="6500" selectedElement="_NQK7BNLPEfChvONA0XxtPw">
                 <tags>Standalone</tags>
                 <children xsi:type="advanced:Placeholder" xmi:id="_NQK7BNLPEfChvONA0XxtPw" elementId="gama.ui.application.view.GamaNavigator" ref="_NQJs4NLPEfChvONA0XxtPw" closeable="true">
@@ -52,7 +53,7 @@
                 </children>
               </children>
             </children>
-            <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7CNLPEfChvONA0XxtPw" containerData="7500" selectedElement="_NQK7CdLPEfChvONA0XxtPw" horizontal="true">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7CNLPEfChvONA0XxtPw" containerData="8074" selectedElement="_NQK7CdLPEfChvONA0XxtPw" horizontal="true">
               <children xsi:type="advanced:Placeholder" xmi:id="_NQK7CdLPEfChvONA0XxtPw" elementId="org.eclipse.ui.editorss" containerData="8000" ref="_NQIewNLPEfChvONA0XxtPw"/>
               <children xsi:type="basic:PartSashContainer" xmi:id="_NQK7CtLPEfChvONA0XxtPw" containerData="2000">
                 <children xsi:type="basic:PartStack" xmi:id="_NQK7C9LPEfChvONA0XxtPw" elementId="gama.ui.application.view.outlineMStack" containerData="5000" selectedElement="_NQK7DNLPEfChvONA0XxtPw">
@@ -91,7 +92,7 @@
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>active</tags>
         <children xsi:type="basic:Part" xmi:id="_9DyrwNO6EfCzCIPes--j9A" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Base_Part.gaml" iconURI="platform:/plugin/gama.ui.shared/icons/light/navigator/files/file.model.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;gaml.compiler.Gaml&quot; name=&quot;Base_Part.gaml&quot; partName=&quot;Base_Part.gaml&quot; title=&quot;Base_Part.gaml&quot; tooltip=&quot;Final_Project/models/Base_Part.gaml&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Final_Project/models/Base_Part.gaml&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;27224&quot; selectionTopPixel=&quot;8139&quot;/>&#xA;&lt;/editor>"/>
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;gaml.compiler.Gaml&quot; name=&quot;Base_Part.gaml&quot; partName=&quot;Base_Part.gaml&quot; title=&quot;Base_Part.gaml&quot; tooltip=&quot;Final_Project/models/Base_Part.gaml&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Final_Project/models/Base_Part.gaml&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;2131&quot; selectionTopPixel=&quot;0&quot;/>&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>removeOnHide</tags>
           <tags>gaml.compiler.Gaml</tags>
@@ -103,7 +104,7 @@
     <sharedElements xsi:type="basic:Part" xmi:id="_NQJs4NLPEfChvONA0XxtPw" elementId="gama.ui.application.view.GamaNavigator" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Models" iconURI="platform:/plugin/gama.ui.shared/icons/light/views/tabs/view.navigator.png" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="gama.ui.navigator.view.GamaNavigator"/>
       <persistedState key="originalCompatibilityViewBundle" value="gama.ui.navigator"/>
-      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view CommonNavigator.LINKING_ENABLED=&quot;0&quot; EXPANDED_STATE=&quot;User models@@/Final_Project@@/Final_Project/models&quot;>&#xA;&lt;lastRecentlyUsedFilters/>&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Gama</tags>
       <menus xmi:id="_NQrRUNLPEfChvONA0XxtPw" elementId="gama.ui.application.view.GamaNavigator">
@@ -1268,7 +1269,7 @@
     <bindings xmi:id="_NLAHIdLPEfChvONA0XxtPw" keySequence="COMMAND+INSERT" command="_NK2WK9LPEfChvONA0XxtPw"/>
   </bindingTables>
   <bindingTables xmi:id="_NLf2Z9LPEfChvONA0XxtPw" contributorURI="platform:/fragment/org.eclipse.e4.ui.workbench.renderers.swt.cocoa" bindingContext="_NKslLtLPEfChvONA0XxtPw">
-    <bindings xmi:id="_SPlLEeLEEfCcRe7TgX5WFA" keySequence="M1+W" command="_NLf2ZdLPEfChvONA0XxtPw"/>
+    <bindings xmi:id="_wVB34OWGEfCSwthzih6e6w" keySequence="M1+W" command="_NLf2ZdLPEfChvONA0XxtPw"/>
   </bindingTables>
   <bindingTables xmi:id="_NQIew9LPEfChvONA0XxtPw" bindingContext="_NQIewtLPEfChvONA0XxtPw"/>
   <bindingTables xmi:id="_NQIexdLPEfChvONA0XxtPw" bindingContext="_NQIexNLPEfChvONA0XxtPw"/>
@@ -1910,7 +1911,7 @@
   <addons xmi:id="_NKslN9LPEfChvONA0XxtPw" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_NKslONLPEfChvONA0XxtPw" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_NKvBYNLPEfChvONA0XxtPw" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_wU-NgeWGEfCSwthzih6e6w" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <addons xmi:id="_NLfPUNLPEfChvONA0XxtPw" elementId="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.cocoa.CocoaUIHandler"/>
   <categories xmi:id="_NK1IANLPEfChvONA0XxtPw" elementId="org.eclipse.team.ui.category.team" name="Version control (Team)" description="Actions that apply when working with a version control system"/>
