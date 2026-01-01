@@ -1,6 +1,6 @@
 /**
  * Social Agents Simulation - Final Project
- * Minimum Requirements Implementation - FIXED VERSION
+ * FIXED VERSION - With Full Console Output
  */
 
 model SocialAgentsSimulation
@@ -310,6 +310,7 @@ species Guest skills: [fipa, moving] {
                             do start_conversation to: [rejected_sender] protocol: 'fipa-request' 
                                performative: 'refuse' 
                                contents: ['sorry, busy'];
+                            write "  ✗ Rejected " + rejected_sender.name + "'s invitation";
                         }
                     }
                 }
@@ -327,6 +328,7 @@ species Guest skills: [fipa, moving] {
     // Receive rejection messages
     reflex receive_rejections when: !empty(refuses) {
         loop msg over: refuses {
+            write "  😔 " + name + "'s invitation was rejected by " + Guest(msg.sender).name;
             do update_happiness(-0.01);
         }
     }
@@ -347,6 +349,8 @@ species Guest skills: [fipa, moving] {
             if !(self in current_location.current_guests) {
                 current_location.current_guests << self;
             }
+            
+            write "✓ " + name + " ARRIVED at " + current_location + " (guests: " + length(current_location.current_guests) + ")";
         }
     }
     
@@ -374,14 +378,13 @@ species Guest skills: [fipa, moving] {
                         friends << myself;
                     }
                 }
-                if cycle mod 20 = 0 {
-                    write "  💛 " + name + " and " + other.name + " became friends! (tolerance: " + with_precision(tolerance,2) + ")";
-                }
+                write "  💛 " + name + " and " + other.name + " became friends! (tolerance: " + with_precision(tolerance,2) + ")";
             }
         }
         
         // Leave after stay duration
         if time_at_location >= stay_duration {
+            write "→ " + name + " LEAVING " + current_location + " after " + time_at_location + " cycles";
             do leave_and_choose_new_location;
         }
     }
@@ -397,6 +400,7 @@ species Guest skills: [fipa, moving] {
         // Leave current location
         if current_location != nil {
             current_location.current_guests >> self;
+            write "  ← " + name + " unregistered from " + current_location;
         }
         
         // Reset state
@@ -408,6 +412,7 @@ species Guest skills: [fipa, moving] {
         
         // Choose new destination
         do choose_new_location;
+        write "  → " + name + " heading to NEW location: " + target_location;
     }
     
     action interact_with(Guest other) {
@@ -459,9 +464,7 @@ species PartyPerson parent: Guest {
                     ask other {
                         do update_happiness(0.03);
                     }
-                    if cycle mod 50 = 0 {
-                        write "  🍺 " + name + " bought " + other.name + " a drink! (generosity: " + with_precision(generosity,2) + ")";
-                    }
+                    write "  🍺 " + name + " bought " + other.name + " a drink! (generosity: " + with_precision(generosity,2) + ")";
                 }
             } else {
                 total_positive_interactions <- total_positive_interactions + 1;
@@ -497,9 +500,7 @@ species Introvert parent: Guest {
             } else if other is PartyPerson {
                 if tolerance > 0.5 {
                     do update_happiness(-0.01);
-                    if cycle mod 50 = 0 {
-                        write "  😌 " + name + " tolerated " + other.name + "'s energy (tolerance: " + with_precision(tolerance,2) + ")";
-                    }
+                    write "  😌 " + name + " tolerated " + other.name + "'s energy (tolerance: " + with_precision(tolerance,2) + ")";
                 } else {
                     do update_happiness(-0.03);
                 }
@@ -620,9 +621,7 @@ species Foodie parent: Guest {
                         ask other {
                             do update_happiness(0.03);
                         }
-                        if cycle mod 50 = 0 {
-                            write "  🍽️ " + name + " shared food with " + other.name + "! (generosity: " + with_precision(generosity,2) + ")";
-                        }
+                        write "  🍽️ " + name + " shared food with " + other.name + "! (generosity: " + with_precision(generosity,2) + ")";
                     }
                 } else if other is Introvert {
                     do update_happiness(0.02);
