@@ -200,16 +200,35 @@ species GuestBDI skills: [moving] control: simple_bdi {
     }
     
     // PERCEPTION: Detect suitable venues based on noise preference
-    perceive target: Location in: 1000.0 {
-        myself.evaluate_venue(self);
-    }
+perceive target: Location in: 1000.0 {
+    // Check if venue matches noise preferences
+    bool is_suitable <- (noise_level >= myself.preferred_noise_min and noise_level <= myself.preferred_noise_max);
     
-    // PERCEPTION: Detect friends at locations
-    perceive target: GuestBDI where (each in myself.friends) in: 1000.0 {
-        if (self.current_location != nil and self.current_location != myself.current_location) {
-            myself.detect_friend_at_venue(self, self.current_location);
+    if (is_suitable) {
+        focus id: suitable_venue_found var: location;
+        ask myself {
+            if (target_location = nil) {
+                target_location <- Location first_with (each.location = myself.location);
+                do add_desire(go_to_venue);
+            }
         }
+    } else if (noise_level > myself.preferred_noise_max) {
+        focus id: venue_too_noisy var: location;
+    } else {
+        focus id: venue_too_quiet var: location;
     }
+}
+
+// PERCEPTION: Detect friends at locations
+perceive target: GuestBDI in: 1000.0 {
+    // Check if this is a friend at a different location
+    bool is_friend <- (self in myself.friends);
+    bool at_different_location <- (current_location != nil and current_location != myself.current_location);
+    
+    if (is_friend and at_different_location) {
+        focus id: friend_nearby var: location;
+    }
+}
     
     // BDI RULE: If agent knows suitable venue and is unhappy, desire to go there
     rule belief: new_predicate(suitable_venue_found) new_desire: go_to_venue strength: 3.0;
