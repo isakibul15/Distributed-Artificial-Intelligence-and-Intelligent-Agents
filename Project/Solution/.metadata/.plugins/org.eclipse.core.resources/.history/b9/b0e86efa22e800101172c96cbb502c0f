@@ -200,35 +200,16 @@ species GuestBDI skills: [moving] control: simple_bdi {
     }
     
     // PERCEPTION: Detect suitable venues based on noise preference
-    // PERCEPTION: Detect suitable venues based on noise preference
-perceive target: Location in: 1000.0 {
-    // In perceive context, 'self' is the Location, 'myself' is the GuestBDI
-    ask myself {
-        // Now we're in GuestBDI context
-        if (noise_level >= preferred_noise_min and noise_level <= preferred_noise_max) {
-            do add_belief(new_predicate(suitable_venue_found, ["location_value"::myself.location]));
-            if (target_location = nil) {
-                target_location <- myself;
-                do add_desire(go_to_venue);
-            }
-        } else if (noise_level > preferred_noise_max) {
-            do add_belief(new_predicate(venue_too_noisy, ["location_value"::myself.location]));
-        } else {
-            do add_belief(new_predicate(venue_too_quiet, ["location_value"::myself.location]));
+    perceive target: Location in: 1000.0 {
+        myself.evaluate_venue(self);
+    }
+    
+    // PERCEPTION: Detect friends at locations
+    perceive target: GuestBDI where (each in myself.friends) in: 1000.0 {
+        if (self.current_location != nil and self.current_location != myself.current_location) {
+            myself.detect_friend_at_venue(self, self.current_location);
         }
     }
-}
-
-// PERCEPTION: Detect friends at locations
-perceive target: GuestBDI where (each in myself.friends) in: 1000.0 {
-    // In perceive context, 'self' is the perceived GuestBDI, 'myself' is the perceiving GuestBDI
-    if (current_location != nil and current_location != myself.current_location) {
-        ask myself {
-            // 'myself' here refers to the PERCEIVED friend, 'self' is the perceiving agent
-            do add_belief(new_predicate(friend_nearby, ["friend_name"::myself.name, "location_value"::myself.current_location]));
-        }
-    }
-}
     
     // BDI RULE: If agent knows suitable venue and is unhappy, desire to go there
     rule belief: new_predicate(suitable_venue_found) new_desire: go_to_venue strength: 3.0;
