@@ -700,4 +700,8 @@ experiment BDISimulation type: gui {
         monitor "Global Happiness" value: global_happiness;
         monitor "Total Beliefs" value: sum((list(PartyPersonBDI) + list(IntrovertBDI) + list(MusicLoverBDI) + list(FoodieBDI) + list(SportsFanBDI)) collect length(each.get_beliefs()));
         monitor "Total Desires" value: sum((list(PartyPersonBDI) + list(IntrovertBDI) + list(MusicLoverBDI) + list(FoodieBDI) + list(SportsFanBDI)) collect length(each.get_desires()));
-        monitor "Total Intentions" value: sum((list(PartyPersonBD
+        monitor "Total Intentions" value: sum((list(PartyPersonBDI) + list(IntrovertBDI) + list(MusicLoverBDI) + list(FoodieBDI) + list(SportsFanBDI)) collect length(each.get_intentions()));
+        monitor "Total Interactions" value: total_interactions;
+        monitor "Positive/Negative Ratio" value: total_interactions > 0 ? total_positive_interactions / float(total_interactions) : 0.0;
+    }
+}
