@@ -200,6 +200,7 @@ species GuestBDI skills: [moving] control: simple_bdi {
     }
     
     // PERCEPTION: Detect suitable venues based on noise preference
+    // PERCEPTION: Detect suitable venues based on noise preference
 perceive target: Location in: 1000.0 {
     // In perceive context, 'self' is the Location, 'myself' is the GuestBDI
     ask myself {
@@ -334,21 +335,21 @@ perceive target: GuestBDI where (each in myself.friends) in: 1000.0 {
     }
     
     // Helper actions
-//    action evaluate_venue(Location venue) {
-//        if venue.noise_level >= preferred_noise_min and venue.noise_level <= preferred_noise_max {
-//            do add_belief(new_predicate(suitable_venue_found, ["location_value"::venue.location]));
-//            
-//            if target_location = nil {
-//                target_location <- venue;
-//                write "[BDI] " + name + " formed BELIEF: suitable venue found at " + venue;
-//                do add_desire(go_to_venue);
-//            }
-//        } else if venue.noise_level > preferred_noise_max {
-//            do add_belief(new_predicate(venue_too_noisy, ["location_value"::venue.location]));
-//        } else {
-//            do add_belief(new_predicate(venue_too_quiet, ["location_value"::venue.location]));
-//        }
-//    }
+    action evaluate_venue(Location venue) {
+        if venue.noise_level >= preferred_noise_min and venue.noise_level <= preferred_noise_max {
+            do add_belief(new_predicate(suitable_venue_found, ["location_value"::venue.location]));
+            
+            if target_location = nil {
+                target_location <- venue;
+                write "[BDI] " + name + " formed BELIEF: suitable venue found at " + venue;
+                do add_desire(go_to_venue);
+            }
+        } else if venue.noise_level > preferred_noise_max {
+            do add_belief(new_predicate(venue_too_noisy, ["location_value"::venue.location]));
+        } else {
+            do add_belief(new_predicate(venue_too_quiet, ["location_value"::venue.location]));
+        }
+    }
     
     action detect_friend_at_venue(GuestBDI friend, Location venue) {
         do add_belief(new_predicate(friend_nearby, ["friend_name"::friend.name, "location_value"::venue]));
