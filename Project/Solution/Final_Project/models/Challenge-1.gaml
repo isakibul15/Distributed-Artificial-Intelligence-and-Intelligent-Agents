@@ -89,7 +89,7 @@ global {
         if cycle > 0 and cycle mod 500 = 0 {
             write "";
             write "╔════════════════════════════════════════════════╗";
-            write "║     BDI ANALYSIS (Cycle " + cycle + ")                 ║";
+            write "║     BDI ANALYSIS (Cycle " + cycle + ")         ║";
             write "╚════════════════════════════════════════════════╝";
             
             float positive_rate <- total_interactions > 0 ? (total_positive_interactions / float(total_interactions)) : 0.0;
