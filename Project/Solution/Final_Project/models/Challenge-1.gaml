@@ -118,7 +118,7 @@ species Guest skills: [fipa, moving] control: simple_bdi {
         }
     }
     
-    // BDI PERCEPTION - USE CASE demonstrations
+    // BDI PERCEPTION
     reflex perceive_nearby_agents {
         list<Guest> nearby <- Guest at_distance 10.0;
         
