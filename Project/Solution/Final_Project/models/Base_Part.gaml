@@ -1,7 +1,7 @@
 /**
- * Social Agents Simulation - Final Project
- * FIXED VERSION - With Full Console Output
- */
+* Name: Social Agents Simulation - Final Project
+* Author: Sakib, Ahsan, Sing 
+*/
 
 model SocialAgentsSimulation
 
