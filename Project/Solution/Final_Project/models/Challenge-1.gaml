@@ -1,4 +1,10 @@
+/**
+* Name: Challenge-1
+* Author: Sakib, Ahsan, Sing 
+*/
+
 model BDISocialAgentsSimulation
+
 
 global {
     int nb_party_people <- 12;
