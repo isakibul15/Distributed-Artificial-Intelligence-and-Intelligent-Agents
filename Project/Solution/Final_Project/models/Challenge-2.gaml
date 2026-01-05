@@ -1,3 +1,7 @@
+/**
+* Challenge-02
+* Author: Sakib, Ahsan, Sing 
+*/
 model BDIRLSocialAgentsSimulation
 
 global {
