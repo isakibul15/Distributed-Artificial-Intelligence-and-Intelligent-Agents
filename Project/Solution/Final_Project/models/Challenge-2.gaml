@@ -53,7 +53,7 @@ global {
         write "• Agents avoid negative experiences and seek positive ones";
         write "• Learning improves over time (exploration → exploitation)";
         write "═══════════════════════════════════════════════════════════════";
-        write "";
+        write "";      
     }
     
     reflex update_global_happiness {
@@ -371,6 +371,8 @@ species Guest skills: [fipa, moving] control: simple_bdi {
         }
     }
     
+
+    
     reflex send_invitation when: has_arrived and 
                                   (cycle - last_invitation_cycle) > 80 and
                                   length(friends) > 0 and flip(0.08) {
@@ -524,6 +526,7 @@ species Introvert parent: Guest {
         }
     }
     
+
     action interact_with(Guest other) {
         total_interactions <- total_interactions + 1;
         float reward <- 0.0;
